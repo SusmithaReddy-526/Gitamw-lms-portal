@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
   FACULTY: 'lms_v3_faculty_db',
   ADMINS: 'lms_v3_admins_db',
   NOTICES: 'lms_v3_notices_db',
-  CURRICULUM: 'lms_v4_curriculum_db',
+  CURRICULUM: 'lms_v6_curriculum_db',
   UPLOADED_FILES: 'lms_v3_uploaded_files_db',
   DOWNLOADS: 'lms_v3_user_downloads',
   REGISTERED_ROLES: 'lms_v3_registered_roles_history'
@@ -239,28 +239,139 @@ const INITIAL_CURRICULUM = [
     ]
   },
 
-  // 4th Year CSE (Final Year Subjects requested by User)
+  // 4th Year / Sem 7 CSE (Official JNTUA Subjects & Codes)
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: 'cs401',
-    subjectName: 'Internet of Things (IOT)',
-    subjectCode: 'CS401',
+    subjectId: '23a30602t',
+    subjectName: 'Deep Learning',
+    subjectCode: '23A30602T',
+    sem: 'Sem 7',
     units: [
       {
         unitId: 'unit-1',
-        title: 'Unit 1: Introduction to IoT Architecture & Sensing Protocols',
-        description: 'IoT Conceptual Framework, Sensors, Actuators, MQTT, CoAP, HTTP & 6LoWPAN Protocols',
+        title: 'Unit 1: Fundamentals of Deep Learning & Multi-Layer Perceptrons',
+        description: 'Biological vs Artificial Neurons, Perceptron Learning Rule, Backpropagation Derivation & Loss Optimization',
+        topics: [
+          { id: 'top-dl101', name: 'Multi-layer Perceptron (MLP) & Backpropagation Algorithm' },
+          { id: 'top-dl102', name: 'Activation Functions: Sigmoid, Tanh, ReLU & Softmax' },
+          { id: 'top-dl103', name: 'Gradient Descent Optimization: SGD, Momentum, Adam' }
+        ]
+      },
+      {
+        unitId: 'unit-2',
+        title: 'Unit 2: Convolutional Neural Networks (CNNs)',
+        description: 'Convolutional Operations, Feature Maps, Max Pooling, AlexNet, VGG-16 & ResNet Architectures',
+        topics: [
+          { id: 'top-dl201', name: 'Convolutional Layers, Stride, Padding & Feature Extraction' },
+          { id: 'top-dl202', name: 'ResNet Residual Connections & Transfer Learning' }
+        ]
+      },
+      {
+        unitId: 'unit-3',
+        title: 'Unit 3: Recurrent Neural Networks (RNNs) & Sequence Modeling',
+        description: 'Vanishing Gradient Problem, Long Short-Term Memory (LSTM), Gated Recurrent Units (GRU)',
+        topics: [
+          { id: 'top-dl301', name: 'RNN Architecture & Sequence-to-Sequence Modeling' },
+          { id: 'top-dl302', name: 'LSTM Cell Gating Mechanisms & Time-Series Prediction' }
+        ]
+      },
+      {
+        unitId: 'unit-4',
+        title: 'Unit 4: Autoencoders & Generative Adversarial Networks (GANs)',
+        description: 'Dimensionality Reduction, Variational Autoencoders (VAE), GAN Generator & Discriminator',
+        topics: [
+          { id: 'top-dl401', name: 'Variational Autoencoders (VAE) & Latent Space Sampling' },
+          { id: 'top-dl402', name: 'Generative Adversarial Networks (GANs) Minimax Training' }
+        ]
+      },
+      {
+        unitId: 'unit-5',
+        title: 'Unit 5: Deep Learning Deployment & Model Optimization',
+        description: 'Model Quantization, Pruning, ONNX Export, TensorRT Acceleration & Edge Inference',
+        topics: [
+          { id: 'top-dl501', name: 'Model Quantization & Pruning Strategies' },
+          { id: 'top-dl502', name: 'ONNX Runtime & TensorRT Deployment Pipelines' }
+        ]
+      }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a52701c',
+    subjectName: 'Management Science',
+    subjectCode: '23A52701c',
+    sem: 'Sem 7',
+    units: [
+      {
+        unitId: 'unit-1',
+        title: 'Unit 1: Principles of Management & Organizational Structure',
+        description: 'Fayol 14 Principles, Taylor Scientific Management, Line, Staff & Matrix Organizations',
+        topics: [
+          { id: 'top-ms101', name: 'Fayol 14 Principles of Management & Scientific Management' },
+          { id: 'top-ms102', name: 'Organizational Design: Functional, Line & Matrix Structures' }
+        ]
+      },
+      {
+        unitId: 'unit-2',
+        title: 'Unit 2: Operations Management & Project Networks (PERT/CPM)',
+        description: 'Plant Location & Layout, Inventory Models (EOQ, ABC), PERT & CPM Network Analysis',
+        topics: [
+          { id: 'top-ms201', name: 'PERT / CPM Network Diagram & Critical Path Method' },
+          { id: 'top-ms202', name: 'Economic Order Quantity (EOQ) & ABC Analysis' }
+        ]
+      },
+      {
+        unitId: 'unit-3',
+        title: 'Unit 3: Strategic & Marketing Management',
+        description: 'SWOT Analysis, BCG Matrix, Porter 5 Forces, 4 Ps of Marketing & Brand Strategies',
+        topics: [
+          { id: 'top-ms301', name: 'SWOT Analysis & Porter 5 Forces Framework' },
+          { id: 'top-ms302', name: 'Marketing Mix (4 Ps) & Market Segmentation' }
+        ]
+      },
+      {
+        unitId: 'unit-4',
+        title: 'Unit 4: Human Resource Management (HRM)',
+        description: 'HR Planning, Job Analysis, Recruitment, Selection, Performance Appraisal & Training',
+        topics: [
+          { id: 'top-ms401', name: 'Job Description, Specification & Recruitment Lifecycle' },
+          { id: 'top-ms402', name: 'Performance Appraisal Methods & 360-Degree Feedback' }
+        ]
+      },
+      {
+        unitId: 'unit-5',
+        title: 'Unit 5: Financial Management & Capital Budgeting',
+        description: 'Break-Even Analysis (BEP), Net Present Value (NPV), Payback Period & Project Evaluation',
+        topics: [
+          { id: 'top-ms501', name: 'Break-Even Analysis (BEP) & Margin of Safety' },
+          { id: 'top-ms502', name: 'Capital Budgeting: NPV, IRR & Payback Period' }
+        ]
+      }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a35501t',
+    subjectName: 'Internet Of Things',
+    subjectCode: '23A35501T',
+    sem: 'Sem 7',
+    units: [
+      {
+        unitId: 'unit-1',
+        title: 'Unit 1: IoT Architecture & Sensing Communication Protocols',
+        description: 'IoT Framework, Sensor Nodes, Actuators, MQTT, CoAP, HTTP, 6LoWPAN & Zigbee Protocols',
         topics: [
           { id: 'top-iot101', name: 'IoT Reference Architecture & Protocol Stack' },
-          { id: 'top-iot102', name: 'MQTT vs CoAP Communication Protocols' },
-          { id: 'top-iot103', name: 'Sensor Nodes & Wireless Sensor Networks (WSN)' }
+          { id: 'top-iot102', name: 'MQTT vs CoAP Communication Protocols' }
         ]
       },
       {
         unitId: 'unit-2',
         title: 'Unit 2: IoT Hardware Platforms & Microcontrollers',
-        description: 'Raspberry Pi, ESP32, Arduino Interfacing, GPIO Programming & Sensor Calibration',
+        description: 'Raspberry Pi, ESP32, Arduino Board Interfacing, GPIO Programming & Sensor Calibration',
         topics: [
           { id: 'top-iot201', name: 'Raspberry Pi Architecture & Python Interfacing' },
           { id: 'top-iot202', name: 'ESP32 Wi-Fi & Bluetooth Microcontroller Setup' }
@@ -268,26 +379,26 @@ const INITIAL_CURRICULUM = [
       },
       {
         unitId: 'unit-3',
-        title: 'Unit 3: Cloud IoT Platforms & Real-time Analytics',
-        description: 'AWS IoT Core, Azure IoT Hub, ThingsBoard Dashboards & Sensor Data Pipelines',
+        title: 'Unit 3: Cloud IoT Platforms & Data Analytics',
+        description: 'AWS IoT Core, Azure IoT Hub, ThingsBoard Dashboards & Real-Time Sensor Data Streaming',
         topics: [
           { id: 'top-iot301', name: 'AWS IoT Core Device Gateway & Shadow State' },
-          { id: 'top-iot302', name: 'ThingsBoard Telemetry Visualization' }
+          { id: 'top-iot302', name: 'ThingsBoard Telemetry Dashboards' }
         ]
       },
       {
         unitId: 'unit-4',
         title: 'Unit 4: IoT Security, Cryptography & Edge Computing',
-        description: 'Device Authentication, Firmware Over-The-Air (FOTA), Fog & Edge Computing',
+        description: 'Device Authentication, TLS Encryption, Firmware Over-The-Air (FOTA), Fog & Edge AI',
         topics: [
-          { id: 'top-iot401', name: 'IoT Security Threats, TLS Encryption & Device Auth' },
+          { id: 'top-iot401', name: 'IoT Security Threats & TLS Encryption' },
           { id: 'top-iot402', name: 'Edge AI & Fog Computing Frameworks' }
         ]
       },
       {
         unitId: 'unit-5',
         title: 'Unit 5: Smart City & Industrial IoT (IIoT) Applications',
-        description: 'Smart Grids, Intelligent Transportation, Industry 4.0 & Predictive Maintenance',
+        description: 'Smart Grids, Intelligent Transportation Systems, Industry 4.0 & Predictive Maintenance',
         topics: [
           { id: 'top-iot501', name: 'Smart City Infrastructure & Automated Grids' },
           { id: 'top-iot502', name: 'Industrial IoT (IIoT 4.0) & Predictive Asset Health' }
@@ -298,107 +409,54 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: 'cs402',
-    subjectName: 'Deep Learning (DL)',
-    subjectCode: 'CS402',
+    subjectId: '23a30604a',
+    subjectName: 'Computer Vision',
+    subjectCode: '23A30604a',
+    sem: 'Sem 7',
     units: [
       {
         unitId: 'unit-1',
-        title: 'Unit 1: Deep Neural Networks & Optimization Algorithms',
-        description: 'Perceptrons, Activation Functions (ReLU, Softmax), Gradient Descent, Loss Optimization',
+        title: 'Unit 1: Digital Image Fundamentals & Spatial Filtering',
+        description: 'Image Processing Pipeline, Histogram Equalization, Spatial Filtering, Sobel & Canny Operators',
         topics: [
-          { id: 'top-dl101', name: 'Multi-layer Perceptron (MLP) & Backpropagation Derivation' },
-          { id: 'top-dl102', name: 'Stochastic Gradient Descent (SGD), Adam & RMSProp' }
-        ]
-      },
-      {
-        unitId: 'unit-2',
-        title: 'Unit 2: Convolutional Neural Networks (CNNs)',
-        description: 'Convolution Layers, Pooling Operations, AlexNet, ResNet, VGG16 Architectures',
-        topics: [
-          { id: 'top-dl201', name: 'CNN Feature Map Convolutions & Pooling Mechanisms' },
-          { id: 'top-dl202', name: 'ResNet Residual Connections & Deep Architectures' }
-        ]
-      },
-      {
-        unitId: 'unit-3',
-        title: 'Unit 3: Recurrent Neural Networks (RNNs) & LSTMs',
-        description: 'Sequential Modeling, Vanishing Gradients, Long Short-Term Memory (LSTM), GRU Units',
-        topics: [
-          { id: 'top-dl301', name: 'RNN Architecture & Vanishing/Exploding Gradient Problems' },
-          { id: 'top-dl302', name: 'LSTM Cell Gating Mechanics & Sequence Prediction' }
-        ]
-      },
-      {
-        unitId: 'unit-4',
-        title: 'Unit 4: Autoencoders & Generative Adversarial Networks (GANs)',
-        description: 'Unsupervised Feature Learning, Latent Space representation, GAN Generator & Discriminator',
-        topics: [
-          { id: 'top-dl401', name: 'Variational Autoencoders (VAE) & Latent Space Sampling' },
-          { id: 'top-dl402', name: 'Generative Adversarial Networks (GANs) Minimax Game' }
-        ]
-      },
-      {
-        unitId: 'unit-5',
-        title: 'Unit 5: Model Deployment & TensorRT Optimization',
-        description: 'Model Quantization, ONNX Export, TensorRT Accelerators & Edge Inference',
-        topics: [
-          { id: 'top-dl501', name: 'Deep Learning Model Quantization & Pruning' },
-          { id: 'top-dl502', name: 'Deploying PyTorch/TensorFlow Models via ONNX' }
-        ]
-      }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: 'cs403',
-    subjectName: 'Computer Vision (CV)',
-    subjectCode: 'CS403',
-    units: [
-      {
-        unitId: 'unit-1',
-        title: 'Unit 1: Image Processing & Spatial Transformations',
-        description: 'Digital Image Fundamentals, Histogram Equalization, Spatial Filters, Edge Operators (Sobel, Canny)',
-        topics: [
-          { id: 'top-cv101', name: 'Histogram Equalization & Image Contrast Enhancement' },
-          { id: 'top-cv102', name: 'Canny Edge Detection & Gradient Filters' }
+          { id: 'top-cv101', name: 'Histogram Equalization & Contrast Enhancement' },
+          { id: 'top-cv102', name: 'Canny Edge Detection Algorithm' }
         ]
       },
       {
         unitId: 'unit-2',
         title: 'Unit 2: Feature Detection, Extraction & Matching',
-        description: 'Corner Detection (Harris), SIFT, SURF, ORB Descriptors & Feature Matching',
+        description: 'Harris Corner Detection, SIFT, SURF, ORB Keypoint Descriptors & Feature Matching',
         topics: [
           { id: 'top-cv201', name: 'Harris Corner Detector Mathematics' },
-          { id: 'top-cv202', name: 'SIFT Feature Invariance & Keypoint Descriptor Extraction' }
+          { id: 'top-cv202', name: 'SIFT Feature Invariance & Keypoint Descriptors' }
         ]
       },
       {
         unitId: 'unit-3',
         title: 'Unit 3: Image Segmentation & Motion Estimation',
-        description: 'K-Means Clustering Segmentation, Watershed Algorithm, Optical Flow & Motion Tracking',
+        description: 'K-Means Clustering Segmentation, Watershed Algorithm, Lucas-Kanade Optical Flow',
         topics: [
           { id: 'top-cv301', name: 'K-Means Image Color Segmentation' },
-          { id: 'top-cv302', name: 'Lucas-Kanade Optical Flow Motion Estimation' }
+          { id: 'top-cv302', name: 'Optical Flow & Object Motion Tracking' }
         ]
       },
       {
         unitId: 'unit-4',
         title: 'Unit 4: Deep Learning for Object Detection & Segmentation',
-        description: 'YOLOv8 Real-Time Object Detector, Faster R-CNN, Mask R-CNN & Semantic Segmentation',
+        description: 'YOLOv8 Real-Time Detector, Faster R-CNN, Mask R-CNN & Semantic Segmentation',
         topics: [
           { id: 'top-cv401', name: 'YOLO Real-Time Bounding Box Prediction' },
-          { id: 'top-cv402', name: 'U-Net Architecture for Biomedical Image Segmentation' }
+          { id: 'top-cv402', name: 'U-Net Architecture for Biomedical Segmentation' }
         ]
       },
       {
         unitId: 'unit-5',
-        title: 'Unit 5: 3D Vision, Camera Calibration & Augmented Reality',
-        description: 'Pinhole Camera Model, Stereo Disparity, Depth Estimation & AR Feature Tracking',
+        title: 'Unit 5: 3D Vision, Camera Calibration & AR',
+        description: 'Pinhole Camera Model, Stereo Disparity, Depth Reconstruction & AR Tracking',
         topics: [
-          { id: 'top-cv501', name: 'Stereo Disparity Mapping & 3D Point Cloud Reconstruction' },
-          { id: 'top-cv502', name: 'Camera Intrinsics Matrix Calibration' }
+          { id: 'top-cv501', name: 'Stereo Disparity Mapping & 3D Reconstruction' },
+          { id: 'top-cv502', name: 'Camera Intrinsics Calibration Matrix' }
         ]
       }
     ]
@@ -406,53 +464,54 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: 'lv404',
-    subjectName: 'Literary Vibes (LV)',
-    subjectCode: 'LV404',
+    subjectId: '23a05703',
+    subjectName: 'Prompt Engineering',
+    subjectCode: '23A05703',
+    sem: 'Sem 7',
     units: [
       {
         unitId: 'unit-1',
-        title: 'Unit 1: Classical & Modern World Literature Analysis',
-        description: 'Exploration of Masterpieces, Narrative Techniques, Character Development & Thematic Criticism',
+        title: 'Unit 1: LLM Architecture & Prompt Engineering Fundamentals',
+        description: 'Zero-Shot, Few-Shot, Chain-of-Thought (CoT), System Prompts & Temperature Parameters',
         topics: [
-          { id: 'top-lv101', name: 'Narrative Perspective & Stream of Consciousness' },
-          { id: 'top-lv102', name: 'Comparative Analysis of Classical Literature' }
+          { id: 'top-pe101', name: 'Zero-Shot, Few-Shot & Chain-of-Thought (CoT) Prompting' },
+          { id: 'top-pe102', name: 'Temperature, Top-P & Frequency Penalty Parameter Tuning' }
         ]
       },
       {
         unitId: 'unit-2',
-        title: 'Unit 2: Poetry, Metaphors & Stylistic Devices',
-        description: 'Poetic Meter, Rhyme Schemes, Imagery, Symbolism & Modern Free Verse Analysis',
+        title: 'Unit 2: System Prompt Architecture & Instruction Tuning',
+        description: 'Role-Based Persona Design, Output Structuring (JSON/Markdown Enforcers) & Context Windows',
         topics: [
-          { id: 'top-lv201', name: 'Metaphorical Structures & Poetic Imagery' },
-          { id: 'top-lv202', name: 'Analysis of Contemporary World Poetry' }
+          { id: 'top-pe201', name: 'System Prompt Persona Design & Constraint Enforcement' },
+          { id: 'top-pe202', name: 'Structured Data Output Extraction via Schema Prompts' }
         ]
       },
       {
         unitId: 'unit-3',
-        title: 'Unit 3: Dramatic Literature & Contemporary Prose',
-        description: 'Dramatic Monologues, Conflict Resolution, Character Arcs & Modern Essays',
+        title: 'Unit 3: Retrieval-Augmented Generation (RAG) & Vector Databases',
+        description: 'Document Chunking, Vector Embeddings, ChromaDB / FAISS, LangChain Integration',
         topics: [
-          { id: 'top-lv301', name: 'Dramatic Conflict & Dialogue Construction' },
-          { id: 'top-lv302', name: 'Critical Essay Writing & Stylistic Devices' }
+          { id: 'top-pe301', name: 'LangChain & LlamaIndex RAG Pipeline Architecture' },
+          { id: 'top-pe302', name: 'Vector Database (ChromaDB / FAISS) Cosine Similarity Search' }
         ]
       },
       {
         unitId: 'unit-4',
-        title: 'Unit 4: Post-Colonial Literature & Cultural Perspectives',
-        description: 'Subaltern Studies, Identity, Cultural Hybridity & Regional Translations',
+        title: 'Unit 4: AI Agent Workflows & Function Calling (Tools)',
+        description: 'ReAct Agent Framework, OpenAI / Anthropic Tool Use, Multi-Agent Orchestration',
         topics: [
-          { id: 'top-lv401', name: 'Post-Colonial Identity & Literary Expressions' },
-          { id: 'top-lv402', name: 'Indian Writing in English & Translated Classics' }
+          { id: 'top-pe401', name: 'ReAct (Reason + Act) Framework & Function Calling' },
+          { id: 'top-pe402', name: 'Multi-Agent Autonomous Workflow Orchestration' }
         ]
       },
       {
         unitId: 'unit-5',
-        title: 'Unit 5: Creative Writing, Literary Criticism & Reviews',
-        description: 'Short Story Crafting, Book Reviewing Techniques & Public Literary Expression',
+        title: 'Unit 5: Prompt Safety, Evaluation & Guardrails',
+        description: 'Prompt Injection Defense, Toxicity Filtering, Output Validation & Benchmark Evaluation',
         topics: [
-          { id: 'top-lv501', name: 'Art of Book Reviewing & Critical Appraisal' },
-          { id: 'top-lv502', name: 'Creative Writing Workshops & Narrative Arcs' }
+          { id: 'top-pe501', name: 'Prompt Injection & Jailbreak Attack Prevention' },
+          { id: 'top-pe502', name: 'NeMo Guardrails & Automated LLM Benchmark Scoring' }
         ]
       }
     ]
@@ -460,117 +519,10 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: 'ms405',
-    subjectName: 'Management Science (MS)',
-    subjectCode: 'MS405',
-    units: [
-      {
-        unitId: 'unit-1',
-        title: 'Unit 1: Principles of Management & Organisational Design',
-        description: 'Taylor Scientific Management, Fayol 14 Principles, Organizational Structures & Leadership Styles',
-        topics: [
-          { id: 'top-ms101', name: 'Fayol 14 Principles of Management & Taylorism' },
-          { id: 'top-ms102', name: 'Matrix vs Functional Organizational Architecture' }
-        ]
-      },
-      {
-        unitId: 'unit-2',
-        title: 'Unit 2: Operations Management & Project Networks (PERT/CPM)',
-        description: 'Plant Location, Layout, Inventory Control (EOQ, ABC Analysis), PERT & CPM Networks',
-        topics: [
-          { id: 'top-ms201', name: 'PERT / CPM Project Scheduling & Critical Path Method' },
-          { id: 'top-ms202', name: 'Economic Order Quantity (EOQ) Inventory Model' }
-        ]
-      },
-      {
-        unitId: 'unit-3',
-        title: 'Unit 3: Strategic & Marketing Management',
-        description: 'SWOT Analysis, BCG Matrix, Porter 5 Forces, 4 Ps of Marketing & Consumer Behavior',
-        topics: [
-          { id: 'top-ms301', name: 'SWOT Analysis & Porter 5 Competitive Forces' },
-          { id: 'top-ms302', name: 'Marketing Mix (4 Ps) & Brand Positioning Strategies' }
-        ]
-      },
-      {
-        unitId: 'unit-4',
-        title: 'Unit 4: Human Resource Management (HRM)',
-        description: 'HR Planning, Job Analysis, Recruitment & Selection, Performance Appraisal & Training Methods',
-        topics: [
-          { id: 'top-ms401', name: 'Job Description, Specification & Recruitment Lifecycle' },
-          { id: 'top-ms402', name: '360-Degree Performance Appraisal & HR Metrics' }
-        ]
-      },
-      {
-        unitId: 'unit-5',
-        title: 'Unit 5: Financial Management & Project Evaluation',
-        description: 'Capital Budgeting, Net Present Value (NPV), Payback Period, Break-Even Analysis (BEP)',
-        topics: [
-          { id: 'top-ms501', name: 'Break-Even Analysis & Margin of Safety Calculation' },
-          { id: 'top-ms502', name: 'Net Present Value (NPV) & Internal Rate of Return (IRR)' }
-        ]
-      }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: 'ems406',
-    subjectName: 'Employability Skills (EMS)',
-    subjectCode: 'EMS406',
-    units: [
-      {
-        unitId: 'unit-1',
-        title: 'Unit 1: Quantitative Aptitude & Numerical Ability',
-        description: 'Percentages, Profit & Loss, Ratio & Proportion, Speed Time & Distance, Permutations & Combinations',
-        topics: [
-          { id: 'top-ems101', name: 'Speed, Time & Distance Shortcuts for Competitive Exams' },
-          { id: 'top-ems102', name: 'Permutations, Combinations & Probability Problems' }
-        ]
-      },
-      {
-        unitId: 'unit-2',
-        title: 'Unit 2: Logical & Analytical Reasoning',
-        description: 'Syllogisms, Blood Relations, Coding-Decoding, Seating Arrangements & Data Interpretation',
-        topics: [
-          { id: 'top-ems201', name: 'Syllogism Euler Diagrams & Deductive Logic' },
-          { id: 'top-ems202', name: 'Data Interpretation: Bar Charts, Pie Charts & Tables' }
-        ]
-      },
-      {
-        unitId: 'unit-3',
-        title: 'Unit 3: Verbal Ability & Corporate Communication',
-        description: 'Grammar Precision, Error Spotting, Vocabulary Enhancement, Reading Comprehension Passages',
-        topics: [
-          { id: 'top-ems301', name: 'Subject-Verb Agreement & Error Spotting Strategies' },
-          { id: 'top-ems302', name: 'Technical Reading Comprehension Speed Techniques' }
-        ]
-      },
-      {
-        unitId: 'unit-4',
-        title: 'Unit 4: ATS Resume Crafting & Professional Branding',
-        description: 'ATS-Optimized Resumes, GitHub Portfolio Showcase, LinkedIn Networking & Cover Letters',
-        topics: [
-          { id: 'top-ems401', name: 'ATS Resume Keyword Optimization & Formatting' },
-          { id: 'top-ems402', name: 'LinkedIn Professional Profile & Technical Branding' }
-        ]
-      },
-      {
-        unitId: 'unit-5',
-        title: 'Unit 5: Group Discussions, Mock Interviews & Corporate Ethics',
-        description: 'GD Strategies, STAR Interview Technique, Technical HR Rounds & Workplace Etiquette',
-        topics: [
-          { id: 'top-ems501', name: 'Group Discussion Entry/Exit Strategies & Debating' },
-          { id: 'top-ems502', name: 'STAR Technique for HR & Technical Behavioral Interviews' }
-        ]
-      }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: 'gs407',
-    subjectName: 'Gender Sensitization (GS)',
-    subjectCode: 'GS407',
+    subjectId: '23a52702',
+    subjectName: 'Gender Sensitization',
+    subjectCode: '23A52702',
+    sem: 'Sem 7',
     units: [
       {
         unitId: 'unit-1',
@@ -622,53 +574,54 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: 'cs408l',
-    subjectName: 'Prompt Engineering Lab',
-    subjectCode: 'CS408L',
+    subjectId: '23a52703',
+    subjectName: 'Employability Skills',
+    subjectCode: '23A52703',
+    sem: 'Sem 7',
     units: [
       {
         unitId: 'unit-1',
-        title: 'Unit 1: LLM Architecture & Prompt Engineering Fundamentals',
-        description: 'Zero-Shot, Few-Shot, Chain-of-Thought (CoT), System Prompts & Temperature Parameters',
+        title: 'Unit 1: Quantitative Aptitude & Numerical Ability',
+        description: 'Percentages, Profit & Loss, Ratio & Proportion, Speed Time & Distance, Permutations & Combinations',
         topics: [
-          { id: 'top-pe101', name: 'Zero-Shot, Few-Shot & Chain-of-Thought (CoT) Prompting' },
-          { id: 'top-pe102', name: 'Temperature, Top-P & Frequency Penalty Parameter Tuning' }
+          { id: 'top-ems101', name: 'Speed, Time & Distance Shortcuts for Competitive Exams' },
+          { id: 'top-ems102', name: 'Permutations, Combinations & Probability Problems' }
         ]
       },
       {
         unitId: 'unit-2',
-        title: 'Unit 2: System Prompt Architecture & Instruction Tuning',
-        description: 'Role-Based Prompting, Output Structuring (JSON/Markdown Enforcers) & Context Windows',
+        title: 'Unit 2: Logical & Analytical Reasoning',
+        description: 'Syllogisms, Blood Relations, Coding-Decoding, Seating Arrangements & Data Interpretation',
         topics: [
-          { id: 'top-pe201', name: 'System Prompt Persona Design & Constraint Enforcement' },
-          { id: 'top-pe202', name: 'Structured Data Output Extraction via Schema Prompts' }
+          { id: 'top-ems201', name: 'Syllogism Euler Diagrams & Deductive Logic' },
+          { id: 'top-ems202', name: 'Data Interpretation: Bar Charts, Pie Charts & Tables' }
         ]
       },
       {
         unitId: 'unit-3',
-        title: 'Unit 3: Retrieval-Augmented Generation (RAG) & Vector Databases',
-        description: 'Document Chunking, Vector Embeddings, ChromaDB / FAISS, LangChain Integration',
+        title: 'Unit 3: Verbal Ability & Corporate Communication',
+        description: 'Grammar Precision, Error Spotting, Vocabulary Enhancement, Reading Comprehension Passages',
         topics: [
-          { id: 'top-pe301', name: 'LangChain & LlamaIndex RAG Pipeline Architecture' },
-          { id: 'top-pe302', name: 'Vector Database (ChromaDB / FAISS) Cosine Similarity Search' }
+          { id: 'top-ems301', name: 'Subject-Verb Agreement & Error Spotting Strategies' },
+          { id: 'top-ems302', name: 'Technical Reading Comprehension Speed Techniques' }
         ]
       },
       {
         unitId: 'unit-4',
-        title: 'Unit 4: AI Agent Workflows & Function Calling (Tools)',
-        description: 'ReAct Agent Framework, OpenAI / Anthropic Tool Use, Multi-Agent Orchestration',
+        title: 'Unit 4: ATS Resume Crafting & Professional Branding',
+        description: 'ATS-Optimized Resumes, GitHub Portfolio Showcase, LinkedIn Networking & Cover Letters',
         topics: [
-          { id: 'top-pe401', name: 'ReAct (Reason + Act) Framework & Function Calling' },
-          { id: 'top-pe402', name: 'Multi-Agent Autonomous Workflow Orchestration' }
+          { id: 'top-ems401', name: 'ATS Resume Keyword Optimization & Formatting' },
+          { id: 'top-ems402', name: 'LinkedIn Professional Profile & Technical Branding' }
         ]
       },
       {
         unitId: 'unit-5',
-        title: 'Unit 5: Prompt Safety, Evaluation & Guardrails',
-        description: 'Prompt Injection Defense, Toxicity Filtering, Output Validation & Benchmark Evaluation',
+        title: 'Unit 5: Group Discussions, Mock Interviews & Corporate Ethics',
+        description: 'GD Strategies, STAR Interview Technique, Technical HR Rounds & Workplace Etiquette',
         topics: [
-          { id: 'top-pe501', name: 'Prompt Injection & Jailbreak Attack Prevention' },
-          { id: 'top-pe502', name: 'NeMo Guardrails & Automated LLM Benchmark Scoring' }
+          { id: 'top-ems501', name: 'Group Discussion Entry/Exit Strategies & Debating' },
+          { id: 'top-ems502', name: 'STAR Technique for HR & Technical Behavioral Interviews' }
         ]
       }
     ]
