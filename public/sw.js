@@ -1,9 +1,9 @@
-// GITAMW Autonomous LMS Service Worker for 100% Offline Capability
-const CACHE_NAME = 'gitamw-lms-cache-v1';
+const CACHE_NAME = 'gitamw-lms-v1';
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  './',
+  './index.html',
+  './favicon.ico',
+  './manifest.json'
 ];
 
 // Install Event
@@ -19,11 +19,11 @@ self.addEventListener('install', (event) => {
 // Activate Event
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
           }
         })
       );
@@ -32,14 +32,15 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Event - Cache First Strategy for Offline Performance
+// Fetch Event (Offline First for Static Assets & Network First with Offline Fallback)
 self.addEventListener('fetch', (event) => {
+  // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
-        // Return cached asset immediately
+        // Fetch fresh copy in background to keep cache updated
         fetch(event.request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
@@ -48,19 +49,21 @@ self.addEventListener('fetch', (event) => {
         return cachedResponse;
       }
 
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type !== 'basic') {
-          return response;
+      return fetch(event.request).then((networkResponse) => {
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+          return networkResponse;
         }
-        const responseToCache = response.clone();
+
+        const responseToCache = networkResponse.clone();
         caches.open(CACHE_NAME).then((cache) => {
           cache.put(event.request, responseToCache);
         });
-        return response;
+
+        return networkResponse;
       }).catch(() => {
-        // If offline and request is for page navigation
-        if (event.request.headers.get('accept')?.includes('text/html')) {
-          return caches.match('/index.html');
+        // Offline fallback to main index.html if navigating
+        if (event.request.mode === 'navigate') {
+          return caches.match('./index.html') || caches.match('./');
         }
       });
     })

@@ -97,14 +97,34 @@ export function UnitPage({ subject, unit, onBack }) {
                   </div>
 
                   {/* PROMINENT DOWNLOAD PDF BUTTON */}
-                  <a
-                    href={file.fileData}
-                    download={file.fileName}
-                    className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 via-blue-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02]"
+                  <button
+                    onClick={() => {
+                      dbService.saveUserDownload(user?.id || 'guest', {
+                        id: file.id,
+                        title: file.title,
+                        fileName: file.fileName,
+                        fileData: file.fileData,
+                        fileSize: file.fileSize,
+                        fileType: file.fileType,
+                        subjectName: subject.subjectName,
+                        subjectCode: subject.subjectCode,
+                        unitName: displayUnitName,
+                        uploadedBy: file.uploadedBy
+                      });
+                      
+                      // Trigger browser download
+                      const a = document.createElement('a');
+                      a.href = file.fileData;
+                      a.download = file.fileName;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }}
+                    className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 via-blue-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] cursor-pointer"
                   >
                     <Download className="w-4 h-4 animate-bounce" />
                     Download PDF File ({file.fileName})
-                  </a>
+                  </button>
                 </div>
               </motion.div>
             ))}

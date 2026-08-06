@@ -1352,5 +1352,13 @@ export const dbService = {
       });
       localStorage.setItem(STORAGE_KEYS.DOWNLOADS, JSON.stringify(downloads));
     }
+  },
+
+  deleteUserDownload: (userId, fileId) => {
+    const downloads = JSON.parse(localStorage.getItem(STORAGE_KEYS.DOWNLOADS) || '{}');
+    if (downloads[userId]) {
+      downloads[userId] = downloads[userId].filter(item => item.id !== fileId);
+      localStorage.setItem(STORAGE_KEYS.DOWNLOADS, JSON.stringify(downloads));
+    }
   }
 };

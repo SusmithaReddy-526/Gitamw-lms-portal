@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 
-// Register Service Worker for 100% Offline Support
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+// Register Service Worker for 100% Offline Web Portal Support
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((err) => {
+    navigator.serviceWorker.register('./sw.js').catch((err) => {
       console.log('SW registration failed:', err);
     });
   });
