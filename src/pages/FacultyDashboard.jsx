@@ -67,11 +67,12 @@ export function FacultyDashboard({ user }) {
       const sizeKB = Math.round(fileObject.size / 1024);
       const formattedSize = sizeKB > 1024 ? `${(sizeKB / 1024).toFixed(1)} MB` : `${sizeKB} KB`;
 
-      // Format unit ID
-      const unitId = unitTitle.toLowerCase().includes('unit 1') ? 'unit-1' 
-        : unitTitle.toLowerCase().includes('unit 2') ? 'unit-2'
-        : unitTitle.toLowerCase().includes('unit 3') ? 'unit-3'
-        : unitTitle.toLowerCase().includes('unit 4') ? 'unit-4'
+      // Format unit ID cleanly (e.g. Unit-1 -> unit-1, Unit-2 -> unit-2)
+      const cleanUnitStr = unitTitle.toLowerCase().trim();
+      const unitId = cleanUnitStr.includes('unit-1') || cleanUnitStr.includes('unit 1') ? 'unit-1' 
+        : cleanUnitStr.includes('unit-2') || cleanUnitStr.includes('unit 2') ? 'unit-2'
+        : cleanUnitStr.includes('unit-3') || cleanUnitStr.includes('unit 3') ? 'unit-3'
+        : cleanUnitStr.includes('unit-4') || cleanUnitStr.includes('unit 4') ? 'unit-4'
         : 'unit-5';
 
       const subjectId = subjectCode.toLowerCase().replace(/[^a-z0-9]/g, '');

@@ -1184,8 +1184,15 @@ export const dbService = {
     const files = JSON.parse(localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES) || '[]');
     const cleanSubId = (subjectId || '').toLowerCase().trim();
     const cleanSubCode = (subjectCode || '').toLowerCase().trim();
-    const cleanUnitId = (unitId || '').toLowerCase().trim();
-    const cleanUnitTitle = (unitTitle || '').toLowerCase().trim();
+    
+    // Helper to extract exact Unit Number (1 to 5) from unitId, unitTitle or string
+    const extractUnitNum = (str) => {
+      if (!str) return null;
+      const match = str.toLowerCase().match(/unit\s*[-_]?\s*([1-5])/);
+      return match ? match[1] : null;
+    };
+
+    const targetNum = extractUnitNum(unitId) || extractUnitNum(unitTitle);
 
     return files.filter(f => {
       // Subject Match (by subjectId or subjectCode)
@@ -1196,12 +1203,12 @@ export const dbService = {
         (f.subjectCode && cleanSubId && f.subjectCode.toLowerCase().trim() === cleanSubId) ||
         (f.subjectId && cleanSubCode && f.subjectId.toLowerCase().trim() === cleanSubCode);
 
-      // Unit Match (by unitId or unit title)
-      const unitMatch = 
-        (!cleanUnitId && !cleanUnitTitle) ? true :
-        (f.unitId && f.unitId.toLowerCase().trim() === cleanUnitId) ||
-        (f.unitTitle && cleanUnitTitle && f.unitTitle.toLowerCase().trim() === cleanUnitTitle) ||
-        (f.title && cleanUnitTitle && f.title.toLowerCase().includes(cleanUnitTitle));
+      // Strict Unit Number Match (Unit 1 file -> Unit 1 page ONLY, Unit 2 file -> Unit 2 page ONLY)
+      const fileNum = extractUnitNum(f.unitId) || extractUnitNum(f.unitTitle);
+
+      const unitMatch = (targetNum && fileNum) 
+        ? targetNum === fileNum 
+        : (f.unitId && f.unitId.toLowerCase().trim() === (unitId || '').toLowerCase().trim());
 
       return subMatch && unitMatch;
     });
