@@ -6,15 +6,10 @@ import {
   BookOpen, 
   Download, 
   FileType, 
-  Image as ImageIcon, 
-  FileText, 
-  ArrowRight,
-  UserCheck,
-  Eye,
-  Sparkles
+  UserCheck
 } from 'lucide-react';
 
-export function UnitPage({ subject, unit, onOpenTopic, onBack }) {
+export function UnitPage({ subject, unit, onBack }) {
   // Fetch files uploaded by faculty for this specific subject & unit
   const uploadedFiles = dbService.getUploadedFilesForUnit(
     subject.yearId,
@@ -24,6 +19,8 @@ export function UnitPage({ subject, unit, onOpenTopic, onBack }) {
     subject.subjectCode,
     unit.title
   );
+
+  const displayUnitName = unit.title?.split(':')[0] || unit.title || 'Unit';
 
   return (
     <div className="space-y-8 pb-12">
@@ -46,17 +43,17 @@ export function UnitPage({ subject, unit, onOpenTopic, onBack }) {
       <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 text-xs font-semibold">
           <BookOpen className="w-4 h-4" />
-          Official GITAMW Autonomous Study Unit
+          {subject.subjectName}
         </div>
         <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white font-outfit">
-          {unit.title}
+          {displayUnitName}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          {unit.description}
+          Faculty Reference Materials & Downloadable PDF Documents for {displayUnitName}.
         </p>
       </div>
 
-      {/* SECTION 1: FACULTY UPLOADED PDF & IMAGE FILES */}
+      {/* FACULTY UPLOADED PDF & REFERENCE FILES */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
@@ -77,7 +74,7 @@ export function UnitPage({ subject, unit, onOpenTopic, onBack }) {
                   <div className="flex items-center justify-between mb-3">
                     <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-300 border border-red-200 dark:border-red-800 flex items-center gap-1">
                       <FileType className="w-3.5 h-3.5" />
-                      {file.fileType?.includes('pdf') ? 'PDF DOCUMENT' : 'IMAGE / FILE'}
+                      {file.fileType?.includes('pdf') ? 'PDF DOCUMENT' : 'FACULTY FILE'}
                     </span>
                     <span className="text-xs font-mono font-bold text-slate-400">{file.fileSize}</span>
                   </div>
@@ -113,49 +110,14 @@ export function UnitPage({ subject, unit, onOpenTopic, onBack }) {
             ))}
           </div>
         ) : (
-          <div className="p-8 rounded-2xl glass-card text-center space-y-2 border border-slate-200 dark:border-slate-800">
-            <FileType className="w-10 h-10 text-slate-300 mx-auto" />
-            <h4 className="font-bold text-slate-700 dark:text-slate-300 text-sm">No Faculty PDFs Uploaded Yet</h4>
-            <p className="text-xs text-slate-500">Faculty can upload PDFs for this unit from the Faculty Portal.</p>
+          <div className="p-10 rounded-3xl glass-card text-center space-y-3 border border-slate-200 dark:border-slate-800">
+            <FileType className="w-12 h-12 text-brand-500/40 mx-auto" />
+            <h4 className="font-bold text-slate-800 dark:text-slate-200 text-base">No Faculty PDFs Uploaded Yet for {displayUnitName}</h4>
+            <p className="text-xs text-slate-500 max-w-md mx-auto">
+              Faculty will upload syllabus reference notes and PDFs for this unit directly from the Faculty Portal.
+            </p>
           </div>
         )}
-      </div>
-
-      {/* SECTION 2: TOPICS & STUDY GUIDES */}
-      <div className="space-y-4 pt-4">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
-          Unit Syllabus Topics
-        </h3>
-
-        <div className="space-y-3">
-          {unit.topics?.map((topic, index) => (
-            <motion.div
-              key={topic.id}
-              whileHover={{ x: 6 }}
-              className="p-5 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 hover:border-brand-400 transition-all cursor-pointer flex items-center justify-between"
-              onClick={() => onOpenTopic(subject, unit, topic)}
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-500 font-bold flex items-center justify-center text-sm shrink-0">
-                  {index + 1}
-                </div>
-                <div>
-                  <h4 className="font-bold text-slate-900 dark:text-white text-base">
-                    {topic.name}
-                  </h4>
-                  <p className="text-xs text-slate-500">
-                    Detailed Notes, Explanations, SVG Diagrams, Viva & Quiz
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs font-bold text-brand-600 dark:text-brand-400">
-                <span>View Study Guide</span>
-                <ArrowRight className="w-4 h-4" />
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </div>
   );
