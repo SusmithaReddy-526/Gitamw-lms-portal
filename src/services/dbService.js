@@ -2,14 +2,14 @@
 // Manages Students, Faculty, Admin, Notices, Curriculum (JNTUA Autonomous), Uploaded Files (PDF/Images), and Profiles.
 
 const STORAGE_KEYS = {
-  USERS: 'lms_v20_users_db',
-  FACULTY: 'lms_v20_faculty_db',
-  ADMINS: 'lms_v20_admins_db',
-  NOTICES: 'lms_v20_notices_db',
-  CURRICULUM: 'lms_v20_curriculum_db',
-  UPLOADED_FILES: 'lms_v20_uploaded_files_db',
-  DOWNLOADS: 'lms_v20_user_downloads',
-  REGISTERED_ROLES: 'lms_v20_registered_roles_history'
+  USERS: 'lms_v25_users_db',
+  FACULTY: 'lms_v25_faculty_db',
+  ADMINS: 'lms_v25_admins_db',
+  NOTICES: 'lms_v25_notices_db',
+  CURRICULUM: 'lms_v25_curriculum_db',
+  UPLOADED_FILES: 'lms_v25_uploaded_files_db',
+  DOWNLOADS: 'lms_v25_user_downloads',
+  REGISTERED_ROLES: 'lms_v25_registered_roles_history'
 };
 
 // 4 Active Branches (MECH, CIVIL, IT removed as requested)
@@ -95,8 +95,115 @@ const INITIAL_NOTICES = [
   }
 ];
 
-// Comprehensive JNTUA Autonomous Curriculum Database (CSE, AIML, ECE, EEE across 1st-4th Years)
-const INITIAL_CURRICULUM = [];
+// Official Curriculum Database - Contains strictly the user-provided 4th Year CSE Sem 7 subjects
+const INITIAL_CURRICULUM = [
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a30602t',
+    subjectName: 'Deep Learning',
+    subjectCode: '23A30602T',
+    sem: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a52701c',
+    subjectName: 'Management Science',
+    subjectCode: '23A52701c',
+    sem: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a35501t',
+    subjectName: 'Internet Of Things',
+    subjectCode: '23A35501T',
+    sem: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a30604a',
+    subjectName: 'Computer Vision',
+    subjectCode: '23A30604a',
+    sem: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a05703',
+    subjectName: 'Prompt Engineering',
+    subjectCode: '23A05703',
+    sem: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a52702',
+    subjectName: 'Gender Sensitization',
+    subjectCode: '23A52702',
+    sem: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a52703',
+    subjectName: 'Employability Skills',
+    subjectCode: '23A52703',
+    sem: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  }
+];
+
 const INITIAL_UPLOADED_FILES = [];
 
 // Helper to initialize local storage with clean slate (no pre-existing user credentials)
