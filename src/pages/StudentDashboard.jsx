@@ -51,22 +51,33 @@ export function StudentDashboard({ user, onSelectYear }) {
             <UserCheck className="w-7 h-7" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-2xl font-black font-outfit text-slate-900 dark:text-white">
-                {overallPercentage}%
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300">
-                🟢 Eligible (&gt;75%)
-              </span>
-            </div>
+            {totalConducted > 0 ? (
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-black font-outfit text-slate-900 dark:text-white">
+                  {overallPercentage}%
+                </span>
+                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${overallPercentage >= 75 ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300' : 'bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-300'}`}>
+                  {overallPercentage >= 75 ? '🟢 Eligible (>75%)' : '🟡 Shortage (<75%)'}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-base font-bold text-slate-800 dark:text-slate-200">
+                  No Attendance Posted Yet
+                </span>
+              </div>
+            )}
             <p className="text-xs text-slate-500">
-              ECAP Aggregate Attendance Statement • {totalAttended} / {totalConducted} Periods Attended
+              {totalConducted > 0 
+                ? `ECAP Aggregate Attendance Statement • ${totalAttended} / ${totalConducted} Periods Attended`
+                : 'Faculty will publish subject-wise attendance for your roll number from the Faculty Attendance Portal.'
+              }
             </p>
           </div>
         </div>
 
         <div className="text-xs font-semibold text-slate-400">
-          Faculty updates attendance daily. Students have read-only access.
+          Faculty updates attendance. Students have read-only access.
         </div>
       </div>
 

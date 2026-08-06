@@ -180,17 +180,9 @@ export function FacultyDashboard({ user }) {
               <select
                 value={selectedYear}
                 onChange={e => {
-                  const y = e.target.value;
-                  setSelectedYear(y);
+                  setSelectedYear(e.target.value);
                   setSubjectName('');
                   setSubjectCode('');
-                  if (y && selectedBranch) {
-                    const subs = dbService.getSubjectsForBranchAndYear(y, selectedBranch);
-                    if (subs && subs.length > 0) {
-                      setSubjectName(subs[0].subjectName);
-                      setSubjectCode(subs[0].subjectCode);
-                    }
-                  }
                 }}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
               >
@@ -229,17 +221,9 @@ export function FacultyDashboard({ user }) {
               <select
                 value={selectedBranch}
                 onChange={e => {
-                  const b = e.target.value;
-                  setSelectedBranch(b);
+                  setSelectedBranch(e.target.value);
                   setSubjectName('');
                   setSubjectCode('');
-                  if (selectedYear && b) {
-                    const subs = dbService.getSubjectsForBranchAndYear(selectedYear, b);
-                    if (subs && subs.length > 0) {
-                      setSubjectName(subs[0].subjectName);
-                      setSubjectCode(subs[0].subjectCode);
-                    }
-                  }
                 }}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
               >

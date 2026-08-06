@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { dbService, BRANCHES, YEARS } from '../services/dbService';
 import { 
@@ -6,32 +6,24 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   XCircle, 
-  Calendar, 
   BookOpen, 
-  Award, 
   Save, 
   Plus, 
-  Search, 
-  BarChart3, 
-  FileText,
-  ShieldAlert,
-  Clock
+  ShieldAlert
 } from 'lucide-react';
 
 export function AttendancePage({ user }) {
   const isFaculty = user?.role === 'faculty';
-  const isAdmin = user?.role === 'admin';
-  const rollNumber = user?.rollNumber || user?.username || '238U1A0561';
+  const rollNumber = user?.rollNumber || user?.username || '';
 
-  // State for Faculty Posting
-  const [selectedYear, setSelectedYear] = useState('4th');
-  const [selectedBranch, setSelectedBranch] = useState('CSE');
-  const [selectedSubjectCode, setSelectedSubjectCode] = useState('23A30602T');
+  // Faculty Posting Form State - STRICTLY INITIALIZED TO EMPTY (NO AUTO-SELECTED DEFAULTS)
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState('');
+  const [selectedSubjectCode, setSelectedSubjectCode] = useState('');
   
-  const [inputRollNumber, setInputRollNumber] = useState('238U1A0561');
-  const [studentNameInput, setStudentNameInput] = useState('B.Tech CSE Student');
-  const [totalClassesInput, setTotalClassesInput] = useState('45');
-  const [attendedClassesInput, setAttendedClassesInput] = useState('40');
+  const [inputRollNumber, setInputRollNumber] = useState('');
+  const [totalClassesInput, setTotalClassesInput] = useState('');
+  const [attendedClassesInput, setAttendedClassesInput] = useState('');
   
   const [postingMessage, setPostingMessage] = useState('');
   const [postingError, setPostingError] = useState('');
@@ -44,11 +36,21 @@ export function AttendancePage({ user }) {
     setPostingMessage('');
     setPostingError('');
 
+    if (!selectedYear || !selectedBranch || !selectedSubjectCode) {
+      setPostingError('Please select Academic Year, Engineering Branch, and Course Subject.');
+      return;
+    }
+
+    if (!inputRollNumber.trim()) {
+      setPostingError('Please enter Student Roll Number.');
+      return;
+    }
+
     const total = parseInt(totalClassesInput, 10);
     const attended = parseInt(attendedClassesInput, 10);
 
     if (isNaN(total) || isNaN(attended) || total <= 0) {
-      setPostingError('Please enter valid total and attended classes counts.');
+      setPostingError('Please enter valid Total Classes and Attended Classes.');
       return;
     }
 
@@ -59,13 +61,12 @@ export function AttendancePage({ user }) {
 
     const subjects = dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch);
     const foundSub = subjects.find(s => s.subjectCode === selectedSubjectCode) || {
-      subjectName: 'Deep Learning',
+      subjectName: 'Course Subject',
       subjectCode: selectedSubjectCode
     };
 
     const newRecord = {
       rollNumber: inputRollNumber.trim().toUpperCase(),
-      studentName: studentNameInput.trim() || 'Student',
       yearId: selectedYear,
       branchId: selectedBranch,
       subjectCode: foundSub.subjectCode,
@@ -79,15 +80,20 @@ export function AttendancePage({ user }) {
 
     dbService.saveAttendanceRecord(newRecord);
     setAttendanceRecords(dbService.getAttendanceRecords());
-    setPostingMessage(`Successfully updated attendance for Roll No: ${newRecord.rollNumber} in ${foundSub.subjectName}! (${newRecord.percentage}%)`);
+    setPostingMessage(`Successfully published attendance for Roll No: ${newRecord.rollNumber} in ${foundSub.subjectName} (${newRecord.percentage}%)!`);
+    
+    // Clear inputs
+    setInputRollNumber('');
+    setTotalClassesInput('');
+    setAttendedClassesInput('');
   };
 
   // Student Attendance Overview Calculations
-  const studentRecords = dbService.getStudentAttendance(user?.rollNumber || user?.username || '238U1A0561');
+  const studentRecords = dbService.getStudentAttendance(user?.rollNumber || user?.username || '');
   
   const totalConducted = studentRecords.reduce((acc, curr) => acc + curr.totalClasses, 0);
   const totalAttended = studentRecords.reduce((acc, curr) => acc + curr.attendedClasses, 0);
-  const overallPercentage = totalConducted > 0 ? parseFloat(((totalAttended / totalConducted) * 100).toFixed(1)) : 88.5;
+  const overallPercentage = totalConducted > 0 ? parseFloat(((totalAttended / totalConducted) * 100).toFixed(1)) : 0;
 
   const getStatusBadge = (pct) => {
     if (pct >= 75) {
@@ -121,15 +127,15 @@ export function AttendancePage({ user }) {
         <div className="relative z-10 max-w-4xl space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold border border-emerald-400/30">
             <UserCheck className="w-4 h-4 text-emerald-400" />
-            GITAMW ECAP Attendance Portal
+            GITAMW Attendance Portal
           </div>
           <h1 className="text-4xl font-extrabold font-outfit tracking-tight">
-            {isFaculty ? 'Faculty Attendance Management' : 'My Attendance & ECAP Record'}
+            {isFaculty ? 'Faculty Attendance Portal' : 'My Attendance Statement'}
           </h1>
           <p className="text-sm text-slate-300">
             {isFaculty 
-              ? 'Mark, update, and publish official subject-wise attendance for B.Tech students.'
-              : `Official semester attendance statement for ${user?.fullName || user?.username} (Roll No: ${user?.rollNumber || rollNumber}).`
+              ? 'Publish and update subject-wise attendance for B.Tech students.'
+              : `Official semester attendance statement for ${user?.fullName || user?.username || 'Student'}${user?.rollNumber ? ` (Roll No: ${user.rollNumber})` : ''}.`
             }
           </p>
         </div>
@@ -138,133 +144,135 @@ export function AttendancePage({ user }) {
       {/* STUDENT VIEW (STRICT READ-ONLY ATTENDANCE STATEMENT) */}
       {!isFaculty && (
         <div className="space-y-8">
-          {/* Overall Percentage Card */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-8 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 space-y-4 md:col-span-2">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold uppercase text-slate-400 tracking-wider">
-                  Overall Aggregate Attendance
-                </span>
-                <span className={`px-3 py-1 rounded-full text-xs font-extrabold border flex items-center gap-1.5 ${overallBadge.color}`}>
-                  <StatusIcon className="w-4 h-4" />
-                  {overallBadge.label}
-                </span>
-              </div>
+          {studentRecords.length > 0 ? (
+            <>
+              {/* Overall Percentage Card */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="p-8 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 space-y-4 md:col-span-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-extrabold uppercase text-slate-400 tracking-wider">
+                      Overall Aggregate Attendance
+                    </span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-extrabold border flex items-center gap-1.5 ${overallBadge.color}`}>
+                      <StatusIcon className="w-4 h-4" />
+                      {overallBadge.label}
+                    </span>
+                  </div>
 
-              <div className="flex items-baseline gap-4">
-                <span className="text-6xl font-black font-outfit text-slate-900 dark:text-white">
-                  {overallPercentage}%
-                </span>
-                <div className="text-xs text-slate-500">
-                  <p className="font-bold text-slate-700 dark:text-slate-300">{totalAttended} / {totalConducted} Total Periods Attended</p>
-                  <p>Threshold Required: 75.0%</p>
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-6xl font-black font-outfit text-slate-900 dark:text-white">
+                      {overallPercentage}%
+                    </span>
+                    <div className="text-xs text-slate-500">
+                      <p className="font-bold text-slate-700 dark:text-slate-300">{totalAttended} / {totalConducted} Total Periods Attended</p>
+                      <p>Threshold Required: 75.0%</p>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="space-y-1.5">
+                    <div className="w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                      <div 
+                        className={`h-full transition-all duration-1000 ${
+                          overallPercentage >= 75 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' :
+                          overallPercentage >= 65 ? 'bg-gradient-to-r from-amber-500 to-yellow-400' :
+                          'bg-gradient-to-r from-rose-500 to-red-400'
+                        }`}
+                        style={{ width: `${Math.min(overallPercentage, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Attendance Rules Card */}
+                <div className="p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-3">
+                  <div className="flex items-center gap-2 text-brand-500 font-bold text-sm">
+                    <ShieldAlert className="w-5 h-5" />
+                    JNTUA Regulations
+                  </div>
+                  <ul className="text-xs text-slate-500 space-y-2 leading-relaxed">
+                    <li>• <strong>≥ 75%</strong>: Fully eligible for Semester End Examinations (SEE).</li>
+                    <li>• <strong>65% - 74%</strong>: Condonation permitted upon Principal approval.</li>
+                    <li>• <strong>&lt; 65%</strong>: Detained (Must repeat semester).</li>
+                  </ul>
                 </div>
               </div>
 
-              {/* Progress Bar */}
-              <div className="space-y-1.5">
-                <div className="w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
-                  <div 
-                    className={`h-full transition-all duration-1000 ${
-                      overallPercentage >= 75 ? 'bg-gradient-to-r from-emerald-500 to-teal-400' :
-                      overallPercentage >= 65 ? 'bg-gradient-to-r from-amber-500 to-yellow-400' :
-                      'bg-gradient-to-r from-rose-500 to-red-400'
-                    }`}
-                    style={{ width: `${Math.min(overallPercentage, 100)}%` }}
-                  />
+              {/* Subject Wise Attendance Statement Table */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
+                    <BookOpen className="w-6 h-6 text-brand-500" />
+                    Subject-Wise Attendance Breakdown
+                  </h3>
+                  <span className="text-xs font-mono text-slate-400">Read-Only Access</span>
+                </div>
+
+                <div className="rounded-3xl glass-card border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-[11px] font-extrabold uppercase text-slate-400">
+                          <th className="p-4">Subject Name</th>
+                          <th className="p-4">Subject Code</th>
+                          <th className="p-4 text-center">Conducted</th>
+                          <th className="p-4 text-center">Attended</th>
+                          <th className="p-4 text-center">Percentage</th>
+                          <th className="p-4 text-right">Exam Eligibility</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+                        {studentRecords.map((item, idx) => {
+                          const badge = getStatusBadge(item.percentage);
+                          const BadgeIcon = badge.icon;
+
+                          return (
+                            <tr key={idx} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
+                              <td className="p-4 font-bold text-slate-900 dark:text-white">
+                                {item.subjectName}
+                              </td>
+                              <td className="p-4 font-mono text-slate-500 font-bold">
+                                {item.subjectCode}
+                              </td>
+                              <td className="p-4 text-center font-mono font-bold text-slate-700 dark:text-slate-300">
+                                {item.totalClasses}
+                              </td>
+                              <td className="p-4 text-center font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                                {item.attendedClasses}
+                              </td>
+                              <td className="p-4 text-center">
+                                <span className="font-extrabold font-outfit text-sm text-slate-900 dark:text-white">
+                                  {item.percentage}%
+                                </span>
+                              </td>
+                              <td className="p-4 text-right">
+                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border ${badge.color}`}>
+                                  <BadgeIcon className="w-3.5 h-3.5" />
+                                  {item.percentage >= 75 ? 'Eligible' : item.percentage >= 65 ? 'Condonation' : 'Detained'}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
+            </>
+          ) : (
+            <div className="p-16 text-center rounded-3xl glass-card border border-slate-200 dark:border-slate-800 space-y-4">
+              <UserCheck className="w-14 h-14 text-brand-500/40 mx-auto" />
+              <h4 className="font-bold text-slate-800 dark:text-slate-200 text-lg">No Attendance Posted Yet</h4>
+              <p className="text-xs text-slate-500 max-w-md mx-auto">
+                Faculty will publish subject-wise attendance for your roll number directly from the Faculty Attendance Portal.
+              </p>
             </div>
-
-            {/* Attendance Rules Card */}
-            <div className="p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-3">
-              <div className="flex items-center gap-2 text-brand-500 font-bold text-sm">
-                <ShieldAlert className="w-5 h-5" />
-                JNTUA Regulations
-              </div>
-              <ul className="text-xs text-slate-500 space-y-2 leading-relaxed">
-                <li>• <strong>≥ 75%</strong>: Fully eligible for Semester End Examinations (SEE).</li>
-                <li>• <strong>65% - 74%</strong>: Condonation permitted upon Principal approval with medical certificate.</li>
-                <li>• <strong>&lt; 65%</strong>: Detained (Must repeat semester).</li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Subject Wise Attendance Statement Table */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
-                <BookOpen className="w-6 h-6 text-brand-500" />
-                Subject-Wise Attendance Breakdown (7th Sem CSE)
-              </h3>
-              <span className="text-xs font-mono text-slate-400">Read-Only Student Access</span>
-            </div>
-
-            {studentRecords.length > 0 ? (
-              <div className="rounded-3xl glass-card border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-[11px] font-extrabold uppercase text-slate-400">
-                        <th className="p-4">Subject Name</th>
-                        <th className="p-4">Subject Code</th>
-                        <th className="p-4 text-center">Conducted</th>
-                        <th className="p-4 text-center">Attended</th>
-                        <th className="p-4 text-center">Percentage</th>
-                        <th className="p-4 text-right">Exam Eligibility</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-                      {studentRecords.map((item, idx) => {
-                        const badge = getStatusBadge(item.percentage);
-                        const BadgeIcon = badge.icon;
-
-                        return (
-                          <tr key={idx} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
-                            <td className="p-4 font-bold text-slate-900 dark:text-white">
-                              {item.subjectName}
-                            </td>
-                            <td className="p-4 font-mono text-slate-500 font-bold">
-                              {item.subjectCode}
-                            </td>
-                            <td className="p-4 text-center font-mono font-bold text-slate-700 dark:text-slate-300">
-                              {item.totalClasses}
-                            </td>
-                            <td className="p-4 text-center font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                              {item.attendedClasses}
-                            </td>
-                            <td className="p-4 text-center">
-                              <span className="font-extrabold font-outfit text-sm text-slate-900 dark:text-white">
-                                {item.percentage}%
-                              </span>
-                            </td>
-                            <td className="p-4 text-right">
-                              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border ${badge.color}`}>
-                                <BadgeIcon className="w-3.5 h-3.5" />
-                                {item.percentage >= 75 ? 'Eligible' : item.percentage >= 65 ? 'Condonation' : 'Detained'}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            ) : (
-              <div className="p-12 text-center rounded-3xl glass-card border border-slate-200 dark:border-slate-800 space-y-3">
-                <UserCheck className="w-12 h-12 text-brand-500/40 mx-auto" />
-                <h4 className="font-bold text-slate-800 dark:text-slate-200 text-base">No Attendance Posted Yet</h4>
-                <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  Faculty will update subject-wise attendance for your roll number directly from the Faculty Attendance Portal.
-                </p>
-              </div>
-            )}
-          </div>
+          )}
         </div>
       )}
 
-      {/* FACULTY VIEW (FULL POSTING & EDITING ACCESS) */}
+      {/* FACULTY VIEW (FULL POSTING & EDITING ACCESS - NO DUMMY 88.5% CARD) */}
       {isFaculty && (
         <div className="space-y-8">
           {/* Post Attendance Form */}
@@ -275,9 +283,9 @@ export function AttendancePage({ user }) {
               </span>
               <div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
-                  Post / Update Student Attendance
+                  Post Student Attendance
                 </h3>
-                <p className="text-xs text-slate-500">Select subject and enter student roll number with conducted vs attended class count.</p>
+                <p className="text-xs text-slate-500">Select year, branch, subject, student roll number, and class counts.</p>
               </div>
             </div>
 
@@ -304,6 +312,7 @@ export function AttendancePage({ user }) {
             )}
 
             <form onSubmit={handlePostAttendance} className="space-y-6">
+              {/* Dropdowns - No Auto-Selected Defaults */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
@@ -311,9 +320,13 @@ export function AttendancePage({ user }) {
                   </label>
                   <select
                     value={selectedYear}
-                    onChange={e => setSelectedYear(e.target.value)}
+                    onChange={e => {
+                      setSelectedYear(e.target.value);
+                      setSelectedSubjectCode('');
+                    }}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
                   >
+                    <option value="">-- Select Academic Year --</option>
                     {YEARS.map(y => (
                       <option key={y.id} value={y.id}>{y.title}</option>
                     ))}
@@ -326,9 +339,13 @@ export function AttendancePage({ user }) {
                   </label>
                   <select
                     value={selectedBranch}
-                    onChange={e => setSelectedBranch(e.target.value)}
+                    onChange={e => {
+                      setSelectedBranch(e.target.value);
+                      setSelectedSubjectCode('');
+                    }}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
                   >
+                    <option value="">-- Select Engineering Branch --</option>
                     {BRANCHES.map(b => (
                       <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
                     ))}
@@ -344,7 +361,8 @@ export function AttendancePage({ user }) {
                     onChange={e => setSelectedSubjectCode(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/40 bg-brand-50/20 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none"
                   >
-                    {dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).map(s => (
+                    <option value="">-- Select Course Subject --</option>
+                    {selectedYear && selectedBranch && dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).map(s => (
                       <option key={s.subjectCode} value={s.subjectCode}>
                         {s.subjectName} ({s.subjectCode})
                       </option>
@@ -353,7 +371,8 @@ export function AttendancePage({ user }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Class Inputs - Student Name REMOVED */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Student Roll Number *
@@ -365,19 +384,6 @@ export function AttendancePage({ user }) {
                     value={inputRollNumber}
                     onChange={e => setInputRollNumber(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold font-mono focus:ring-2 focus:ring-brand-500 outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Student Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g. B.Tech Student"
-                    value={studentNameInput}
-                    onChange={e => setStudentNameInput(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
                   />
                 </div>
 
@@ -426,42 +432,48 @@ export function AttendancePage({ user }) {
               Published Attendance Log ({attendanceRecords.length} Records)
             </h3>
 
-            <div className="rounded-3xl glass-card border border-slate-200 dark:border-slate-800 overflow-hidden">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 font-bold uppercase text-slate-400">
-                    <th className="p-4">Roll Number</th>
-                    <th className="p-4">Subject</th>
-                    <th className="p-4 text-center">Conducted / Attended</th>
-                    <th className="p-4 text-center">Percentage</th>
-                    <th className="p-4 text-right">Posted By</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                  {attendanceRecords.map((item, idx) => (
-                    <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
-                      <td className="p-4 font-mono font-bold text-slate-900 dark:text-white">
-                        {item.rollNumber}
-                      </td>
-                      <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">
-                        {item.subjectName} ({item.subjectCode})
-                      </td>
-                      <td className="p-4 text-center font-mono font-bold">
-                        {item.attendedClasses} / {item.totalClasses}
-                      </td>
-                      <td className="p-4 text-center">
-                        <span className="font-extrabold text-emerald-500 font-outfit text-sm">
-                          {item.percentage}%
-                        </span>
-                      </td>
-                      <td className="p-4 text-right text-slate-400 font-medium">
-                        {item.postedBy}
-                      </td>
+            {attendanceRecords.length > 0 ? (
+              <div className="rounded-3xl glass-card border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 font-bold uppercase text-slate-400">
+                      <th className="p-4">Roll Number</th>
+                      <th className="p-4">Subject</th>
+                      <th className="p-4 text-center">Conducted / Attended</th>
+                      <th className="p-4 text-center">Percentage</th>
+                      <th className="p-4 text-right">Posted By</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                    {attendanceRecords.map((item, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                        <td className="p-4 font-mono font-bold text-slate-900 dark:text-white">
+                          {item.rollNumber}
+                        </td>
+                        <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">
+                          {item.subjectName} ({item.subjectCode})
+                        </td>
+                        <td className="p-4 text-center font-mono font-bold">
+                          {item.attendedClasses} / {item.totalClasses}
+                        </td>
+                        <td className="p-4 text-center">
+                          <span className="font-extrabold text-emerald-500 font-outfit text-sm">
+                            {item.percentage}%
+                          </span>
+                        </td>
+                        <td className="p-4 text-right text-slate-400 font-medium">
+                          {item.postedBy}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="p-10 rounded-3xl glass-card text-center text-slate-500 border border-slate-200 dark:border-slate-800">
+                <p className="text-xs font-semibold">No attendance records published yet. Fill out the form above to publish student attendance.</p>
+              </div>
+            )}
           </div>
         </div>
       )}
