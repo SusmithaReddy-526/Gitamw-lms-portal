@@ -2,14 +2,14 @@
 // Manages Students, Faculty, Admin, Notices, Curriculum (JNTUA Autonomous), Uploaded Files (PDF/Images), and Profiles.
 
 const STORAGE_KEYS = {
-  USERS: 'lms_v4_users_db',
-  FACULTY: 'lms_v4_faculty_db',
-  ADMINS: 'lms_v4_admins_db',
-  NOTICES: 'lms_v4_notices_db',
+  USERS: 'lms_v5_users_db',
+  FACULTY: 'lms_v5_faculty_db',
+  ADMINS: 'lms_v5_admins_db',
+  NOTICES: 'lms_v5_notices_db',
   CURRICULUM: 'lms_v6_curriculum_db',
-  UPLOADED_FILES: 'lms_v4_uploaded_files_db',
-  DOWNLOADS: 'lms_v4_user_downloads',
-  REGISTERED_ROLES: 'lms_v4_registered_roles_history'
+  UPLOADED_FILES: 'lms_v5_uploaded_files_db',
+  DOWNLOADS: 'lms_v5_user_downloads',
+  REGISTERED_ROLES: 'lms_v5_registered_roles_history'
 };
 
 // 4 Active Branches (MECH, CIVIL, IT removed as requested)
@@ -995,12 +995,15 @@ export const dbService = {
     }
 
     const bCode = studentData.branch === 'AIML' ? 'AIM' : studentData.branch.substring(0, 3).toUpperCase();
-    const cleanRoll = studentData.rollNumber.toString().padStart(3, '0');
-    const username = `${bCode}${cleanRoll}`.toUpperCase(); // Short 6-Char Unique Username: e.g. CSE045, AIM012
+    
+    // Clean roll number and extract ONLY last 3 characters to guarantee strictly 6-char username (e.g. 238U1A0561 -> CSE561)
+    const rawRoll = studentData.rollNumber.toString().trim().replace(/[^a-zA-Z0-9]/g, '');
+    const shortSuffix = rawRoll.length >= 3 ? rawRoll.slice(-3) : rawRoll.padStart(3, '0');
+    const username = `${bCode}${shortSuffix}`.toUpperCase(); // STRICTLY 6 CHARACTERS: e.g. CSE561, AIM012
 
     const usernameExists = users.find(u => u.username === username);
     if (usernameExists) {
-      throw new Error(`Username ${username} is already registered. Please proceed to Login.`);
+      throw new Error(`Generated Username ${username} is already registered. Please proceed to Login.`);
     }
 
     const newStudent = {
@@ -1030,8 +1033,9 @@ export const dbService = {
       throw new Error(`Faculty with Employee ID ${cleanEmpId} or Email is already registered. Please log in.`);
     }
 
-    const empNum = cleanEmpId.replace(/[^0-9]/g, '').padStart(3, '0').slice(-3) || '001';
-    const username = `FAC${empNum}`.toUpperCase(); // Short 6-Char Unique Username: e.g. FAC012
+    const rawEmp = cleanEmpId.replace(/[^a-zA-Z0-9]/g, '');
+    const empNum = rawEmp.length >= 3 ? rawEmp.slice(-3) : rawEmp.padStart(3, '0');
+    const username = `FAC${empNum}`.toUpperCase(); // STRICTLY 6 CHARACTERS: e.g. FAC012
 
     const newFaculty = {
       id: `fac-${Date.now()}`,
@@ -1061,8 +1065,9 @@ export const dbService = {
       throw new Error(`Admin account "${adminData.username}" is already registered. Please log in.`);
     }
 
-    const adminNum = cleanUser.replace(/[^0-9]/g, '').padStart(3, '0').slice(-3) || '001';
-    const username = `ADM${adminNum}`.toUpperCase(); // Short 6-Char Unique Username: e.g. ADM001
+    const rawAdmin = cleanUser.replace(/[^a-zA-Z0-9]/g, '');
+    const adminNum = rawAdmin.length >= 3 ? rawAdmin.slice(-3) : rawAdmin.padStart(3, '0');
+    const username = `ADM${adminNum}`.toUpperCase(); // STRICTLY 6 CHARACTERS: e.g. ADM001
 
     const newAdmin = {
       id: `admin-${Date.now()}`,
