@@ -1,48 +1,49 @@
-# GITAMW Autonomous - AI-Powered College Learning Management System (LMS)
+# GITAMW Autonomous - Digital Learning & Academic Portal
 
-A production-ready, high-performance College Learning Management System (LMS) built with React 18, Vite, Tailwind CSS, Framer Motion, and Firebase.
+[![Live Website](https://img.shields.io/badge/Live_Portal-GITAMW_Autonomous-blue?style=for-the-badge&logo=react)](https://susmithareddy-526.github.io/Gitamw-lms-portal/)
+[![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Active-success?style=for-the-badge&logo=github)](https://susmithareddy-526.github.io/Gitamw-lms-portal/)
 
-## Features
+Official College Learning Management System (LMS) for **GITAMW Autonomous** featuring JNTUA curriculum structure, faculty PDF uploads, offline PWA access, and role-based student & faculty portals.
 
-- 🎓 **Role-Based Portals**: Distinct dashboards for **Students**, **Faculty**, and **Admin**.
-- 🆔 **Auto Username Generation**: Students register with a unique Roll Number, automatically generating an official username in `YEAR-BRANCH-ROLLNUMBER` format (e.g. `23CSE045`).
-- 📚 **Academic Hierarchy**: B.Tech Dashboard $\rightarrow$ Year (1st, 2nd, 3rd, 4th) $\rightarrow$ Branch (AIML, CSE, ECE, EEE, MECH, CIVIL, IT) $\rightarrow$ Subject $\rightarrow$ Units (1-5) $\rightarrow$ Topics.
-- 🧠 **AI Content Generator**: Automatically analyzes syllabus topics and synthesizes ~1500-word educational guides with easy/detailed explanations, key definitions, C++/Pseudocode examples, PYQs, viva questions, and interactive MCQ quizzes.
-- 📐 **Vector SVG Diagram Engine**: Interactive technical diagrams for CPU architecture, OS memory maps, BST tree structures, process states, and logic flowcharts.
-- 👨‍🏫 **Faculty Upload Portal**: Upload syllabus topics per Year $\rightarrow$ Branch $\rightarrow$ Subject $\rightarrow$ Unit to trigger automated AI study guide generation.
-- 🛡️ **Admin Control Panel**: Issue faculty credentials, oversee student accounts, reset passwords, publish campus notices, and monitor system analytics.
-- 📄 **One-Click PDF Export**: Download study guides offline with full PDF formatting.
-- 🌓 **Dark / Light Mode**: Sleek glassmorphism theme with dark mode support.
+## 🌐 Live Website Links
 
-## Getting Started
+- **Official GitHub Live URL**: [https://susmithareddy-526.github.io/Gitamw-lms-portal/](https://susmithareddy-526.github.io/Gitamw-lms-portal/)
+- **Direct Domain URL**: [https://gitamw.surge.sh](https://gitamw.surge.sh)
 
-### Prerequisites
+---
 
-- Node.js v18+
-- npm v9+
+## Key Features
 
-### Installation
+- 🎓 **Role-Based Gateway**: Portal access for **Students**, **Faculty**, and **Admin**.
+- 🆔 **Short Username Format**: Auto-generates short memorable student usernames in `BRANCH+ROLLNUMBER` format (e.g. `CSE045`).
+- 📚 **JNTUA Autonomous Curriculum**: B.Tech Portal $\rightarrow$ Year (1st, 2nd, 3rd, 4th) $\rightarrow$ Branch (CSE, AIML, ECE, EEE) $\rightarrow$ JNTUA Subjects $\rightarrow$ Units (1-5).
+- 📄 **Faculty PDF Notes Upload & Student Download**: Faculty uploads PDF documents and image diagrams directly for students to view and download offline.
+- ⚡ **100% Offline PWA Capability**: Works 100% offline with Service Worker caching and installable app support on mobile and desktop.
+- 🛡️ **Admin Control Panel**: Issue faculty credentials, oversee student accounts, publish announcements, and manage portal data.
+- 🌓 **Dark / Light Mode**: Sleek modern glassmorphism theme with custom dark mode.
+
+---
+
+## Academic Branches (JNTUA R20/R23 Autonomous)
+
+1. **CSE** - Computer Science & Engineering
+2. **AIML** - Artificial Intelligence & Machine Learning
+3. **ECE** - Electronics & Communication Engineering
+4. **EEE** - Electrical & Electronics Engineering
+
+---
+
+## Local Setup & Development
 
 ```bash
-# Clone or navigate to the directory
-cd "clg website"
-
 # Install dependencies
 npm install
 
-# Run dev server
+# Start local server
 npm run dev
-```
 
-### Production Build
-
-```bash
+# Production Build
 npm run build
 ```
 
-## Demo Credentials
-
-- **Admin Login**: Username: `admin` | Password: `admin123`
-- **Faculty Login**: Username: `EMP-CSE-01` | Password: `password123`
-- **Demo Student**: Username: `23CSE045` | Password: `password123`
-- **New Student**: Click *Student Login* $\rightarrow$ *Register New Student Profile* to auto-generate your unique username!
+© 2026 GITAMW Autonomous Learning Management System. All rights reserved.
