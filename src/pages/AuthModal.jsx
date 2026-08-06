@@ -53,9 +53,9 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
     rollNumber: '',
     email: '',
     mobile: '',
-    branch: 'CSE',
-    year: '3rd',
-    semester: 'Sem 5',
+    branch: '',
+    year: '',
+    semester: '',
     password: '',
     confirmPassword: ''
   });
@@ -64,7 +64,7 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
   const [facultyReg, setFacultyReg] = useState({
     fullName: '',
     employeeId: '',
-    department: 'CSE',
+    department: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -101,6 +101,10 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
 
     try {
       if (role === 'student') {
+        if (!studentReg.branch || !studentReg.year || !studentReg.semester) {
+          setError('Please select your Branch, Academic Year, and Semester from the dropdowns.');
+          return;
+        }
         if (studentReg.password !== studentReg.confirmPassword) {
           setError('Passwords do not match.');
           return;
@@ -109,12 +113,15 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
         setRegisteredUserPayload(res);
         triggerConfetti();
       } else if (role === 'faculty') {
+        if (!facultyReg.department) {
+          setError('Please select your Department from the dropdown.');
+          return;
+        }
         if (facultyReg.password !== facultyReg.confirmPassword) {
           setError('Passwords do not match.');
           return;
         }
-        const username = facultyReg.employeeId.toUpperCase();
-        const res = registerFaculty({ ...facultyReg, username });
+        const res = registerFaculty(facultyReg);
         setRegisteredUserPayload(res);
         triggerConfetti();
       } else if (role === 'admin') {
@@ -326,9 +333,11 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         </label>
                         <select
                           value={studentReg.branch}
+                          required
                           onChange={e => setStudentReg({ ...studentReg, branch: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs outline-none"
                         >
+                          <option value="">-- Select Branch --</option>
                           {BRANCHES.map(b => (
                             <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
                           ))}
@@ -343,9 +352,11 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         </label>
                         <select
                           value={studentReg.year}
+                          required
                           onChange={e => setStudentReg({ ...studentReg, year: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs outline-none"
                         >
+                          <option value="">-- Select Academic Year --</option>
                           {YEARS.map(y => (
                             <option key={y.id} value={y.id}>{y.title}</option>
                           ))}
@@ -358,9 +369,11 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         </label>
                         <select
                           value={studentReg.semester}
+                          required
                           onChange={e => setStudentReg({ ...studentReg, semester: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs outline-none"
                         >
+                          <option value="">-- Select Semester --</option>
                           {['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5', 'Sem 6', 'Sem 7', 'Sem 8'].map(s => (
                             <option key={s} value={s}>{s}</option>
                           ))}
@@ -468,9 +481,11 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         </label>
                         <select
                           value={facultyReg.department}
+                          required
                           onChange={e => setFacultyReg({ ...facultyReg, department: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs outline-none"
                         >
+                          <option value="">-- Select Department --</option>
                           {BRANCHES.map(b => (
                             <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
                           ))}
