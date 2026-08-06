@@ -17,11 +17,11 @@ import {
 } from 'lucide-react';
 
 export function FacultyDashboard({ user }) {
-  const [selectedYear, setSelectedYear] = useState('3rd');
-  const [selectedBranch, setSelectedBranch] = useState(user?.department || 'CSE');
-  const [subjectName, setSubjectName] = useState('Data Structures & Algorithms');
-  const [subjectCode, setSubjectCode] = useState('CS301');
-  const [unitTitle, setUnitTitle] = useState('Unit 1: Introduction to Data Structures & Recursion');
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState('');
+  const [subjectName, setSubjectName] = useState('');
+  const [subjectCode, setSubjectCode] = useState('');
+  const [unitTitle, setUnitTitle] = useState('');
   const [materialTitle, setMaterialTitle] = useState('');
   const [materialDesc, setMaterialDesc] = useState('');
   
@@ -181,14 +181,19 @@ export function FacultyDashboard({ user }) {
                 onChange={e => {
                   const y = e.target.value;
                   setSelectedYear(y);
-                  const subs = dbService.getSubjectsForBranchAndYear(y, selectedBranch);
-                  if (subs && subs.length > 0) {
-                    setSubjectName(subs[0].subjectName);
-                    setSubjectCode(subs[0].subjectCode);
+                  setSubjectName('');
+                  setSubjectCode('');
+                  if (y && selectedBranch) {
+                    const subs = dbService.getSubjectsForBranchAndYear(y, selectedBranch);
+                    if (subs && subs.length > 0) {
+                      setSubjectName(subs[0].subjectName);
+                      setSubjectCode(subs[0].subjectCode);
+                    }
                   }
                 }}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
               >
+                <option value="">-- Select Academic Year --</option>
                 {YEARS.map(y => (
                   <option key={y.id} value={y.id}>{y.title}</option>
                 ))}
@@ -200,10 +205,11 @@ export function FacultyDashboard({ user }) {
                 Semester / Academic Term *
               </label>
               <select
-                value={selectedYear === '4th' ? 'Sem 7' : selectedYear === '3rd' ? 'Sem 5' : selectedYear === '2nd' ? 'Sem 3' : 'Sem 1'}
+                value={selectedYear === '4th' ? 'Sem 7' : selectedYear === '3rd' ? 'Sem 5' : selectedYear === '2nd' ? 'Sem 3' : selectedYear === '1st' ? 'Sem 1' : ''}
                 onChange={() => {}}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none font-bold text-brand-600 dark:text-brand-400"
               >
+                <option value="">-- Select Term --</option>
                 {selectedYear === '4th' && <option value="Sem 7">Sem 7 (4th Year Sem 1)</option>}
                 {selectedYear === '4th' && <option value="Sem 8">Sem 8 (4th Year Sem 2)</option>}
                 {selectedYear === '3rd' && <option value="Sem 5">Sem 5 (3rd Year Sem 1)</option>}
@@ -224,14 +230,19 @@ export function FacultyDashboard({ user }) {
                 onChange={e => {
                   const b = e.target.value;
                   setSelectedBranch(b);
-                  const subs = dbService.getSubjectsForBranchAndYear(selectedYear, b);
-                  if (subs && subs.length > 0) {
-                    setSubjectName(subs[0].subjectName);
-                    setSubjectCode(subs[0].subjectCode);
+                  setSubjectName('');
+                  setSubjectCode('');
+                  if (selectedYear && b) {
+                    const subs = dbService.getSubjectsForBranchAndYear(selectedYear, b);
+                    if (subs && subs.length > 0) {
+                      setSubjectName(subs[0].subjectName);
+                      setSubjectCode(subs[0].subjectCode);
+                    }
                   }
                 }}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
               >
+                <option value="">-- Select Engineering Branch --</option>
                 {BRANCHES.map(b => (
                   <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
                 ))}
@@ -243,7 +254,7 @@ export function FacultyDashboard({ user }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Select Course Subject ({selectedYear} Year {selectedBranch}) *
+                Select Course Subject *
               </label>
               <select
                 value={subjectCode}
@@ -258,7 +269,8 @@ export function FacultyDashboard({ user }) {
                 }}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/40 bg-brand-50/20 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none"
               >
-                {dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).map(s => (
+                <option value="">-- Select Course Subject --</option>
+                {selectedYear && selectedBranch && dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).map(s => (
                   <option key={s.subjectCode} value={s.subjectCode}>
                     {s.subjectName} ({s.subjectCode})
                   </option>
@@ -273,13 +285,14 @@ export function FacultyDashboard({ user }) {
               <select
                 value={unitTitle}
                 onChange={e => setUnitTitle(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-brand-600 dark:text-brand-400 focus:ring-2 focus:ring-brand-500 outline-none"
               >
-                <option value="Unit 1: Fundamentals & Basic Architecture">Unit 1: Fundamentals & Core Concepts</option>
-                <option value="Unit 2: Core Data Structures & Systems">Unit 2: Architecture & Algorithms</option>
-                <option value="Unit 3: Advanced Topics & Frameworks">Unit 3: Frameworks & Analysis</option>
-                <option value="Unit 4: Security, Design & Deployment">Unit 4: Design & Protocols</option>
-                <option value="Unit 5: Applications & Lab Practical">Unit 5: Real-World Applications & Labs</option>
+                <option value="">-- Select Target Unit --</option>
+                <option value="Unit-1">Unit-1</option>
+                <option value="Unit-2">Unit-2</option>
+                <option value="Unit-3">Unit-3</option>
+                <option value="Unit-4">Unit-4</option>
+                <option value="Unit-5">Unit-5</option>
               </select>
             </div>
           </div>
