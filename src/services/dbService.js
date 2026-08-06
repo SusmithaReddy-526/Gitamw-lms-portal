@@ -2,14 +2,14 @@
 // Manages Students, Faculty, Admin, Notices, Curriculum (JNTUA Autonomous), Uploaded Files (PDF/Images), and Profiles.
 
 const STORAGE_KEYS = {
-  USERS: 'lms_v5_users_db',
-  FACULTY: 'lms_v5_faculty_db',
-  ADMINS: 'lms_v5_admins_db',
-  NOTICES: 'lms_v5_notices_db',
-  CURRICULUM: 'lms_v6_curriculum_db',
-  UPLOADED_FILES: 'lms_v5_uploaded_files_db',
-  DOWNLOADS: 'lms_v5_user_downloads',
-  REGISTERED_ROLES: 'lms_v5_registered_roles_history'
+  USERS: 'lms_v10_users_db',
+  FACULTY: 'lms_v10_faculty_db',
+  ADMINS: 'lms_v10_admins_db',
+  NOTICES: 'lms_v10_notices_db',
+  CURRICULUM: 'lms_v10_curriculum_db',
+  UPLOADED_FILES: 'lms_v10_uploaded_files_db',
+  DOWNLOADS: 'lms_v10_user_downloads',
+  REGISTERED_ROLES: 'lms_v10_registered_roles_history'
 };
 
 // 4 Active Branches (MECH, CIVIL, IT removed as requested)
