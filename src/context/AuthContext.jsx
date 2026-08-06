@@ -80,27 +80,11 @@ export function AuthProvider({ children }) {
     localStorage.setItem(SESSION_KEY, JSON.stringify(updated));
   };
 
+  // Session persistence handles auto-login on refresh / browser restart
   useEffect(() => {
-    if (!user) return;
-
-    let timer;
-    const resetTimer = () => {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        console.log('Logging out due to 15 minutes of inactivity.');
-        logout();
-      }, INACTIVITY_TIMEOUT_MS);
-    };
-
-    const events = ['mousemove', 'keydown', 'scroll', 'touchstart'];
-    events.forEach(evt => window.addEventListener(evt, resetTimer));
-
-    resetTimer();
-
-    return () => {
-      clearTimeout(timer);
-      events.forEach(evt => window.removeEventListener(evt, resetTimer));
-    };
+    if (user) {
+      localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    }
   }, [user]);
 
   return (

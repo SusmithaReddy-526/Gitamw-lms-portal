@@ -2,15 +2,15 @@
 // Manages Students, Faculty, Admin, Notices, Curriculum (JNTUA Autonomous), Uploaded Files (PDF/Images), and Profiles.
 
 const STORAGE_KEYS = {
-  USERS: 'lms_v35_users_db',
-  FACULTY: 'lms_v35_faculty_db',
-  ADMINS: 'lms_v35_admins_db',
-  NOTICES: 'lms_v35_notices_db',
-  CURRICULUM: 'lms_v35_curriculum_db',
-  UPLOADED_FILES: 'lms_v35_uploaded_files_db',
-  DOWNLOADS: 'lms_v35_user_downloads',
-  ATTENDANCE: 'lms_v35_attendance_db',
-  REGISTERED_ROLES: 'lms_v35_registered_roles_history'
+  USERS: 'gitamw_lms_perm_users_db',
+  FACULTY: 'gitamw_lms_perm_faculty_db',
+  ADMINS: 'gitamw_lms_perm_admins_db',
+  NOTICES: 'gitamw_lms_perm_notices_db',
+  CURRICULUM: 'gitamw_lms_perm_curriculum_db',
+  UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
+  DOWNLOADS: 'gitamw_lms_perm_user_downloads',
+  ATTENDANCE: 'gitamw_lms_perm_attendance_db',
+  REGISTERED_ROLES: 'gitamw_lms_perm_registered_roles_history'
 };
 
 // 4 Active Branches (MECH, CIVIL, IT removed as requested)
@@ -207,7 +207,7 @@ const INITIAL_CURRICULUM = [
 
 const INITIAL_UPLOADED_FILES = [];
 
-// Helper to initialize local storage with clean slate (no pre-existing user credentials)
+// Helper to initialize local storage and migrate legacy registered accounts
 function initStorage() {
   if (!localStorage.getItem(STORAGE_KEYS.FACULTY)) {
     localStorage.setItem(STORAGE_KEYS.FACULTY, JSON.stringify([]));
@@ -226,16 +226,55 @@ function initStorage() {
   if (!localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES)) {
     localStorage.setItem(STORAGE_KEYS.UPLOADED_FILES, JSON.stringify(INITIAL_UPLOADED_FILES));
   }
-}
 
-// Purge any legacy credentials from previous sessions
-try {
-  localStorage.removeItem('lms_users_db');
-  localStorage.removeItem('lms_faculty_db');
-  localStorage.removeItem('lms_admins_db');
-  localStorage.removeItem('lms_registered_roles_history');
-  localStorage.removeItem('lms_user_auth_session');
-} catch {}
+  // ACCOUNT MIGRATION: Ensure no previously registered user account is ever lost
+  try {
+    const legacyUserKeys = ['lms_v35_users_db', 'lms_v30_users_db', 'lms_v25_users_db', 'lms_v10_users_db', 'lms_users_db'];
+    const legacyFacultyKeys = ['lms_v35_faculty_db', 'lms_v30_faculty_db', 'lms_v25_faculty_db', 'lms_v10_faculty_db', 'lms_faculty_db'];
+    const legacyAdminKeys = ['lms_v35_admins_db', 'lms_v30_admins_db', 'lms_v25_admins_db', 'lms_v10_admins_db', 'lms_admins_db'];
+
+    let permUsers = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+    legacyUserKeys.forEach(k => {
+      try {
+        const arr = JSON.parse(localStorage.getItem(k) || '[]');
+        arr.forEach(u => {
+          if (u.username && !permUsers.some(p => p.username.toLowerCase() === u.username.toLowerCase() || p.email.toLowerCase() === u.email.toLowerCase())) {
+            permUsers.push(u);
+          }
+        });
+      } catch {}
+    });
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(permUsers));
+
+    let permFaculty = JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
+    legacyFacultyKeys.forEach(k => {
+      try {
+        const arr = JSON.parse(localStorage.getItem(k) || '[]');
+        arr.forEach(f => {
+          if (f.username && !permFaculty.some(p => p.username.toLowerCase() === f.username.toLowerCase() || p.email.toLowerCase() === f.email.toLowerCase())) {
+            permFaculty.push(f);
+          }
+        });
+      } catch {}
+    });
+    localStorage.setItem(STORAGE_KEYS.FACULTY, JSON.stringify(permFaculty));
+
+    let permAdmins = JSON.parse(localStorage.getItem(STORAGE_KEYS.ADMINS) || '[]');
+    legacyAdminKeys.forEach(k => {
+      try {
+        const arr = JSON.parse(localStorage.getItem(k) || '[]');
+        arr.forEach(a => {
+          if (a.username && !permAdmins.some(p => p.username.toLowerCase() === a.username.toLowerCase() || p.email.toLowerCase() === a.email.toLowerCase())) {
+            permAdmins.push(a);
+          }
+        });
+      } catch {}
+    });
+    localStorage.setItem(STORAGE_KEYS.ADMINS, JSON.stringify(permAdmins));
+  } catch (err) {
+    console.error('Migration error:', err);
+  }
+}
 
 initStorage();
 
