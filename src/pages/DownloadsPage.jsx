@@ -64,24 +64,13 @@ export function DownloadsPage({ user }) {
               </div>
 
               <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setActivePdfModal(item)}
-                    className="py-2.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
-                  >
-                    <Eye className="w-4 h-4" />
-                    Read Offline
-                  </button>
-
-                  <a
-                    href={item.fileData}
-                    download={item.fileName}
-                    className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
-                  >
-                    <Download className="w-4 h-4" />
-                    Download
-                  </a>
-                </div>
+                <button
+                  onClick={() => setActivePdfModal(item)}
+                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
+                >
+                  <Eye className="w-4 h-4" />
+                  Read PDF Offline (In-App)
+                </button>
 
                 <button
                   onClick={() => handleDeleteDownload(item.id)}

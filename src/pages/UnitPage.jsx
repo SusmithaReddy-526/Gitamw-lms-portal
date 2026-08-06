@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { dbService } from '../services/dbService';
 import { 
@@ -6,10 +6,13 @@ import {
   BookOpen, 
   Download, 
   FileType, 
-  UserCheck
+  UserCheck,
+  CheckCircle2
 } from 'lucide-react';
 
-export function UnitPage({ subject, unit, onBack }) {
+export function UnitPage({ subject, unit, user, onBack }) {
+  const [savedMessage, setSavedMessage] = useState('');
+
   // Fetch files uploaded by faculty for this specific subject & unit
   const uploadedFiles = dbService.getUploadedFilesForUnit(
     subject.yearId,
@@ -39,6 +42,18 @@ export function UnitPage({ subject, unit, onBack }) {
         </span>
       </div>
 
+      {/* Toast Notification */}
+      {savedMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+        >
+          <CheckCircle2 className="w-5 h-5 shrink-0" />
+          <span>{savedMessage}</span>
+        </motion.div>
+      )}
+
       {/* Unit Title Banner */}
       <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 text-xs font-semibold">
@@ -49,7 +64,7 @@ export function UnitPage({ subject, unit, onBack }) {
           {displayUnitName}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Faculty Reference Materials & Downloadable PDF Documents for {displayUnitName}.
+          Save faculty uploaded PDF reference materials directly into your website's Downloads Dashboard for 100% offline reading.
         </p>
       </div>
 
@@ -58,7 +73,7 @@ export function UnitPage({ subject, unit, onBack }) {
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
             <Download className="w-5 h-5 text-brand-500" />
-            Faculty Uploaded PDF Documents & Reference Files ({uploadedFiles.length})
+            Faculty Uploaded PDF Documents ({uploadedFiles.length})
           </h3>
         </div>
 
@@ -96,7 +111,7 @@ export function UnitPage({ subject, unit, onBack }) {
                     <span className="font-mono">{file.uploadedAt}</span>
                   </div>
 
-                  {/* PROMINENT DOWNLOAD PDF BUTTON */}
+                  {/* SAVE TO IN-APP DOWNLOADS DASHBOARD BUTTON */}
                   <button
                     onClick={() => {
                       dbService.saveUserDownload(user?.id || 'guest', {
@@ -112,18 +127,13 @@ export function UnitPage({ subject, unit, onBack }) {
                         uploadedBy: file.uploadedBy
                       });
                       
-                      // Trigger browser download
-                      const a = document.createElement('a');
-                      a.href = file.fileData;
-                      a.download = file.fileName;
-                      document.body.appendChild(a);
-                      a.click();
-                      document.body.removeChild(a);
+                      setSavedMessage(`Saved "${file.title}" to your In-App Downloads Dashboard! You can read it offline anytime in the "My Downloads" tab.`);
+                      setTimeout(() => setSavedMessage(''), 5000);
                     }}
                     className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-600 via-blue-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.02] cursor-pointer"
                   >
-                    <Download className="w-4 h-4 animate-bounce" />
-                    Download PDF File ({file.fileName})
+                    <Download className="w-4 h-4" />
+                    Save to Website Downloads Dashboard
                   </button>
                 </div>
               </motion.div>
