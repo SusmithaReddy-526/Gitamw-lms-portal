@@ -200,56 +200,66 @@ export function AttendancePage({ user }) {
               <span className="text-xs font-mono text-slate-400">Read-Only Student Access</span>
             </div>
 
-            <div className="rounded-3xl glass-card border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-[11px] font-extrabold uppercase text-slate-400">
-                      <th className="p-4">Subject Name</th>
-                      <th className="p-4">Subject Code</th>
-                      <th className="p-4 text-center">Conducted</th>
-                      <th className="p-4 text-center">Attended</th>
-                      <th className="p-4 text-center">Percentage</th>
-                      <th className="p-4 text-right">Exam Eligibility</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
-                    {studentRecords.map((item, idx) => {
-                      const badge = getStatusBadge(item.percentage);
-                      const BadgeIcon = badge.icon;
+            {studentRecords.length > 0 ? (
+              <div className="rounded-3xl glass-card border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-[11px] font-extrabold uppercase text-slate-400">
+                        <th className="p-4">Subject Name</th>
+                        <th className="p-4">Subject Code</th>
+                        <th className="p-4 text-center">Conducted</th>
+                        <th className="p-4 text-center">Attended</th>
+                        <th className="p-4 text-center">Percentage</th>
+                        <th className="p-4 text-right">Exam Eligibility</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-xs">
+                      {studentRecords.map((item, idx) => {
+                        const badge = getStatusBadge(item.percentage);
+                        const BadgeIcon = badge.icon;
 
-                      return (
-                        <tr key={idx} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
-                          <td className="p-4 font-bold text-slate-900 dark:text-white">
-                            {item.subjectName}
-                          </td>
-                          <td className="p-4 font-mono text-slate-500 font-bold">
-                            {item.subjectCode}
-                          </td>
-                          <td className="p-4 text-center font-mono font-bold text-slate-700 dark:text-slate-300">
-                            {item.totalClasses}
-                          </td>
-                          <td className="p-4 text-center font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                            {item.attendedClasses}
-                          </td>
-                          <td className="p-4 text-center">
-                            <span className="font-extrabold font-outfit text-sm text-slate-900 dark:text-white">
-                              {item.percentage}%
-                            </span>
-                          </td>
-                          <td className="p-4 text-right">
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border ${badge.color}`}>
-                              <BadgeIcon className="w-3.5 h-3.5" />
-                              {item.percentage >= 75 ? 'Eligible' : item.percentage >= 65 ? 'Condonation' : 'Detained'}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                        return (
+                          <tr key={idx} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors">
+                            <td className="p-4 font-bold text-slate-900 dark:text-white">
+                              {item.subjectName}
+                            </td>
+                            <td className="p-4 font-mono text-slate-500 font-bold">
+                              {item.subjectCode}
+                            </td>
+                            <td className="p-4 text-center font-mono font-bold text-slate-700 dark:text-slate-300">
+                              {item.totalClasses}
+                            </td>
+                            <td className="p-4 text-center font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                              {item.attendedClasses}
+                            </td>
+                            <td className="p-4 text-center">
+                              <span className="font-extrabold font-outfit text-sm text-slate-900 dark:text-white">
+                                {item.percentage}%
+                              </span>
+                            </td>
+                            <td className="p-4 text-right">
+                              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold border ${badge.color}`}>
+                                <BadgeIcon className="w-3.5 h-3.5" />
+                                {item.percentage >= 75 ? 'Eligible' : item.percentage >= 65 ? 'Condonation' : 'Detained'}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="p-12 text-center rounded-3xl glass-card border border-slate-200 dark:border-slate-800 space-y-3">
+                <UserCheck className="w-12 h-12 text-brand-500/40 mx-auto" />
+                <h4 className="font-bold text-slate-800 dark:text-slate-200 text-base">No Attendance Posted Yet</h4>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  Faculty will update subject-wise attendance for your roll number directly from the Faculty Attendance Portal.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
