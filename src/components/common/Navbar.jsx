@@ -15,6 +15,7 @@ import {
   LogOut, 
   Menu, 
   X,
+  UserCheck,
   Sparkles,
   Wifi,
   WifiOff
@@ -41,6 +42,7 @@ export function Navbar({ activeTab, setActiveTab }) {
     { id: 'home', label: 'Home', icon: Home },
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, requiresAuth: true },
     { id: 'subjects', label: 'Subjects', icon: BookOpen, requiresAuth: true },
+    { id: 'attendance', label: 'Attendance', icon: UserCheck, requiresAuth: true },
     { id: 'search', label: 'Search', icon: Search },
     { id: 'downloads', label: 'Downloads', icon: Download, requiresAuth: true },
   ];

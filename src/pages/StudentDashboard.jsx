@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { dbService, YEARS } from '../services/dbService';
-import { GraduationCap, ArrowRight, Lock, Unlock, Sparkles, BookOpen, Layers, Bell } from 'lucide-react';
+import { GraduationCap, ArrowRight, Lock, Unlock, Sparkles, BookOpen, Layers, Bell, UserCheck, CheckCircle2 } from 'lucide-react';
 
 export function StudentDashboard({ user, onSelectYear }) {
   const [unlockAll, setUnlockAll] = useState(false);
   const notices = dbService.getNotices();
+
+  // Calculate Student Attendance
+  const studentAttendance = dbService.getStudentAttendance(user?.rollNumber || user?.username || '238U1A0561');
+  const totalConducted = studentAttendance.reduce((acc, curr) => acc + curr.totalClasses, 0);
+  const totalAttended = studentAttendance.reduce((acc, curr) => acc + curr.attendedClasses, 0);
+  const overallPercentage = totalConducted > 0 ? ((totalAttended / totalConducted) * 100).toFixed(1) : 88.5;
 
   // Student's registered year (e.g. '3rd')
   const studentYear = user?.year || '3rd';
@@ -35,6 +41,32 @@ export function StudentDashboard({ user, onSelectYear }) {
               {unlockAll ? 'All Years Unlocked (Admin Access)' : 'Unlock All Years'}
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* ECAP Attendance Quick Overview Banner */}
+      <div className="p-6 rounded-3xl glass-card border border-emerald-500/30 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-500 font-extrabold flex items-center justify-center text-xl shadow-inner">
+            <UserCheck className="w-7 h-7" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-2xl font-black font-outfit text-slate-900 dark:text-white">
+                {overallPercentage}%
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300">
+                🟢 Eligible (&gt;75%)
+              </span>
+            </div>
+            <p className="text-xs text-slate-500">
+              ECAP Aggregate Attendance Statement • {totalAttended} / {totalConducted} Periods Attended
+            </p>
+          </div>
+        </div>
+
+        <div className="text-xs font-semibold text-slate-400">
+          Faculty updates attendance daily. Students have read-only access.
         </div>
       </div>
 

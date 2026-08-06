@@ -2,14 +2,15 @@
 // Manages Students, Faculty, Admin, Notices, Curriculum (JNTUA Autonomous), Uploaded Files (PDF/Images), and Profiles.
 
 const STORAGE_KEYS = {
-  USERS: 'lms_v25_users_db',
-  FACULTY: 'lms_v25_faculty_db',
-  ADMINS: 'lms_v25_admins_db',
-  NOTICES: 'lms_v25_notices_db',
-  CURRICULUM: 'lms_v25_curriculum_db',
-  UPLOADED_FILES: 'lms_v25_uploaded_files_db',
-  DOWNLOADS: 'lms_v25_user_downloads',
-  REGISTERED_ROLES: 'lms_v25_registered_roles_history'
+  USERS: 'lms_v30_users_db',
+  FACULTY: 'lms_v30_faculty_db',
+  ADMINS: 'lms_v30_admins_db',
+  NOTICES: 'lms_v30_notices_db',
+  CURRICULUM: 'lms_v30_curriculum_db',
+  UPLOADED_FILES: 'lms_v30_uploaded_files_db',
+  DOWNLOADS: 'lms_v30_user_downloads',
+  ATTENDANCE: 'lms_v30_attendance_db',
+  REGISTERED_ROLES: 'lms_v30_registered_roles_history'
 };
 
 // 4 Active Branches (MECH, CIVIL, IT removed as requested)
@@ -662,5 +663,51 @@ export const dbService = {
     } catch (err) {
       console.error('deleteUserDownload error:', err);
     }
+  },
+
+  // --- ATTENDANCE MANAGEMENT ---
+  getAttendanceRecords: () => {
+    try {
+      const records = JSON.parse(localStorage.getItem(STORAGE_KEYS.ATTENDANCE) || '[]');
+      if (records.length > 0) return records;
+
+      const initialList = [
+        { rollNumber: '238U1A0561', studentName: 'CSE Student', yearId: '4th', branchId: 'CSE', subjectCode: '23A30602T', subjectName: 'Deep Learning', totalClasses: 45, attendedClasses: 40, percentage: 88.9 },
+        { rollNumber: '238U1A0561', studentName: 'CSE Student', yearId: '4th', branchId: 'CSE', subjectCode: '23A52701c', subjectName: 'Management Science', totalClasses: 40, attendedClasses: 36, percentage: 90.0 },
+        { rollNumber: '238U1A0561', studentName: 'CSE Student', yearId: '4th', branchId: 'CSE', subjectCode: '23A35501T', subjectName: 'Internet Of Things', totalClasses: 42, attendedClasses: 35, percentage: 83.3 },
+        { rollNumber: '238U1A0561', studentName: 'CSE Student', yearId: '4th', branchId: 'CSE', subjectCode: '23A30604a', subjectName: 'Computer Vision', totalClasses: 38, attendedClasses: 33, percentage: 86.8 },
+        { rollNumber: '238U1A0561', studentName: 'CSE Student', yearId: '4th', branchId: 'CSE', subjectCode: '23A05703', subjectName: 'Prompt Engineering', totalClasses: 35, attendedClasses: 32, percentage: 91.4 },
+        { rollNumber: '238U1A0561', studentName: 'CSE Student', yearId: '4th', branchId: 'CSE', subjectCode: '23A52702', subjectName: 'Gender Sensitization', totalClasses: 30, attendedClasses: 27, percentage: 90.0 },
+        { rollNumber: '238U1A0561', studentName: 'CSE Student', yearId: '4th', branchId: 'CSE', subjectCode: '23A52703', subjectName: 'Employability Skills', totalClasses: 36, attendedClasses: 31, percentage: 86.1 }
+      ];
+
+      localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(initialList));
+      return initialList;
+    } catch {
+      return [];
+    }
+  },
+
+  saveAttendanceRecord: (newRecord) => {
+    let records = dbService.getAttendanceRecords();
+    const existingIdx = records.findIndex(r => 
+      r.rollNumber.toUpperCase() === newRecord.rollNumber.toUpperCase() && 
+      r.subjectCode === newRecord.subjectCode
+    );
+    if (existingIdx !== -1) {
+      records[existingIdx] = { ...records[existingIdx], ...newRecord };
+    } else {
+      records.unshift(newRecord);
+    }
+    localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(records));
+    return newRecord;
+  },
+
+  getStudentAttendance: (rollNumber) => {
+    const records = dbService.getAttendanceRecords();
+    const cleanRoll = (rollNumber || '238U1A0561').toString().toUpperCase().trim();
+    const found = records.filter(r => r.rollNumber.toUpperCase() === cleanRoll || cleanRoll.includes(r.rollNumber.toUpperCase()));
+    if (found.length > 0) return found;
+    return records;
   }
 };

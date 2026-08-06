@@ -16,6 +16,7 @@ import { AdminPanel } from './pages/AdminPanel';
 import { GlobalSearch } from './pages/GlobalSearch';
 import { ProfilePage } from './pages/ProfilePage';
 import { DownloadsPage } from './pages/DownloadsPage';
+import { AttendancePage } from './pages/AttendancePage';
 
 function MainContent() {
   const { user } = useAuth();
@@ -165,6 +166,9 @@ function MainContent() {
 
       case 'downloads':
         return <DownloadsPage user={user} onSelectTopic={handleOpenTopic} />;
+
+      case 'attendance':
+        return <AttendancePage user={user} />;
 
       case 'home':
       default:
