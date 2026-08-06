@@ -171,14 +171,22 @@ export function FacultyDashboard({ user }) {
         <form onSubmit={handleDirectFileUpload} className="space-y-5">
           
           {/* Target Year & Branch */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Target Academic Year *
               </label>
               <select
                 value={selectedYear}
-                onChange={e => setSelectedYear(e.target.value)}
+                onChange={e => {
+                  const y = e.target.value;
+                  setSelectedYear(y);
+                  const subs = dbService.getSubjectsForBranchAndYear(y, selectedBranch);
+                  if (subs && subs.length > 0) {
+                    setSubjectName(subs[0].subjectName);
+                    setSubjectCode(subs[0].subjectCode);
+                  }
+                }}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
               >
                 {YEARS.map(y => (
@@ -189,11 +197,39 @@ export function FacultyDashboard({ user }) {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Semester / Academic Term *
+              </label>
+              <select
+                value={selectedYear === '4th' ? 'Sem 7' : selectedYear === '3rd' ? 'Sem 5' : selectedYear === '2nd' ? 'Sem 3' : 'Sem 1'}
+                onChange={() => {}}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none font-bold text-brand-600 dark:text-brand-400"
+              >
+                {selectedYear === '4th' && <option value="Sem 7">Sem 7 (4th Year Sem 1)</option>}
+                {selectedYear === '4th' && <option value="Sem 8">Sem 8 (4th Year Sem 2)</option>}
+                {selectedYear === '3rd' && <option value="Sem 5">Sem 5 (3rd Year Sem 1)</option>}
+                {selectedYear === '3rd' && <option value="Sem 6">Sem 6 (3rd Year Sem 2)</option>}
+                {selectedYear === '2nd' && <option value="Sem 3">Sem 3 (2nd Year Sem 1)</option>}
+                {selectedYear === '2nd' && <option value="Sem 4">Sem 4 (2nd Year Sem 2)</option>}
+                {selectedYear === '1st' && <option value="Sem 1">Sem 1 (1st Year Sem 1)</option>}
+                {selectedYear === '1st' && <option value="Sem 2">Sem 2 (1st Year Sem 2)</option>}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Engineering Branch *
               </label>
               <select
                 value={selectedBranch}
-                onChange={e => setSelectedBranch(e.target.value)}
+                onChange={e => {
+                  const b = e.target.value;
+                  setSelectedBranch(b);
+                  const subs = dbService.getSubjectsForBranchAndYear(selectedYear, b);
+                  if (subs && subs.length > 0) {
+                    setSubjectName(subs[0].subjectName);
+                    setSubjectCode(subs[0].subjectCode);
+                  }
+                }}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
               >
                 {BRANCHES.map(b => (
@@ -203,53 +239,49 @@ export function FacultyDashboard({ user }) {
             </div>
           </div>
 
-          {/* Subject Name & Code */}
+          {/* Select Subject from Curriculum Dropdown */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Subject Name *
+                Select Course Subject ({selectedYear} Year {selectedBranch}) *
               </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. Data Structures & Algorithms"
-                value={subjectName}
-                onChange={e => setSubjectName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
-              />
+              <select
+                value={subjectCode}
+                onChange={e => {
+                  const code = e.target.value;
+                  setSubjectCode(code);
+                  const subs = dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch);
+                  const found = subs.find(s => s.subjectCode === code);
+                  if (found) {
+                    setSubjectName(found.subjectName);
+                  }
+                }}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/40 bg-brand-50/20 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none"
+              >
+                {dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).map(s => (
+                  <option key={s.subjectCode} value={s.subjectCode}>
+                    {s.subjectName} ({s.subjectCode})
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Subject Code *
+                Target Syllabus Unit *
               </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. CS301"
-                value={subjectCode}
-                onChange={e => setSubjectCode(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs font-mono font-medium focus:ring-2 focus:ring-brand-500 outline-none"
-              />
+              <select
+                value={unitTitle}
+                onChange={e => setUnitTitle(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
+              >
+                <option value="Unit 1: Fundamentals & Basic Architecture">Unit 1: Fundamentals & Core Concepts</option>
+                <option value="Unit 2: Core Data Structures & Systems">Unit 2: Architecture & Algorithms</option>
+                <option value="Unit 3: Advanced Topics & Frameworks">Unit 3: Frameworks & Analysis</option>
+                <option value="Unit 4: Security, Design & Deployment">Unit 4: Design & Protocols</option>
+                <option value="Unit 5: Applications & Lab Practical">Unit 5: Real-World Applications & Labs</option>
+              </select>
             </div>
-          </div>
-
-          {/* Unit Title */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-              Unit Title *
-            </label>
-            <select
-              value={unitTitle}
-              onChange={e => setUnitTitle(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
-            >
-              <option value="Unit 1: Introduction to Data Structures & Recursion">Unit 1: Fundamentals & Basic Architecture</option>
-              <option value="Unit 2: Linked Lists & Trees">Unit 2: Core Data Structures & Lists</option>
-              <option value="Unit 3: Advanced Topics & Algorithms">Unit 3: Algorithmic Paradigms</option>
-              <option value="Unit 4: System Architecture & Design">Unit 4: Architecture & Design</option>
-              <option value="Unit 5: Applications & PYQ Solutions">Unit 5: Exam Solutions & Applications</option>
-            </select>
           </div>
 
           {/* Material Title & Description */}
