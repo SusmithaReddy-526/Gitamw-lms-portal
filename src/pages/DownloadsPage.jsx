@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { dbService } from '../services/dbService';
 import { Download, BookOpen, FileText, ArrowRight, Bookmark, Trash2, Eye, CheckCircle2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -7,6 +7,10 @@ export function DownloadsPage({ user }) {
   const userId = user?.id || 'guest';
   const [downloadsList, setDownloadsList] = useState(() => dbService.getUserDownloads(userId));
   const [activePdfModal, setActivePdfModal] = useState(null);
+
+  useEffect(() => {
+    setDownloadsList(dbService.getUserDownloads(userId));
+  }, [user]);
 
   const handleDeleteDownload = (fileId) => {
     dbService.deleteUserDownload(userId, fileId);

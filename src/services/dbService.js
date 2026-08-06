@@ -1337,28 +1337,46 @@ export const dbService = {
 
   // --- DOWNLOADS & SAVED TOPICS ---
   getUserDownloads: (userId) => {
-    const downloads = JSON.parse(localStorage.getItem(STORAGE_KEYS.DOWNLOADS) || '{}');
-    return downloads[userId] || [];
+    try {
+      const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.DOWNLOADS) || '[]');
+      if (Array.isArray(data)) return data;
+      const allList = [];
+      Object.values(data).forEach(arr => {
+        if (Array.isArray(arr)) allList.push(...arr);
+      });
+      return allList;
+    } catch {
+      return [];
+    }
   },
 
   saveUserDownload: (userId, itemRecord) => {
-    const downloads = JSON.parse(localStorage.getItem(STORAGE_KEYS.DOWNLOADS) || '{}');
-    if (!downloads[userId]) downloads[userId] = [];
-    
-    if (!downloads[userId].some(item => item.id === itemRecord.id || item.fileName === itemRecord.fileName)) {
-      downloads[userId].unshift({
+    try {
+      let downloads = dbService.getUserDownloads(userId);
+      const existingIdx = downloads.findIndex(item => item.id === itemRecord.id || item.fileName === itemRecord.fileName);
+      const recordToSave = {
         ...itemRecord,
+        userId: userId || 'guest',
         savedAt: new Date().toISOString()
-      });
+      };
+      if (existingIdx === -1) {
+        downloads.unshift(recordToSave);
+      } else {
+        downloads[existingIdx] = recordToSave;
+      }
       localStorage.setItem(STORAGE_KEYS.DOWNLOADS, JSON.stringify(downloads));
+    } catch (err) {
+      console.error('saveUserDownload error:', err);
     }
   },
 
   deleteUserDownload: (userId, fileId) => {
-    const downloads = JSON.parse(localStorage.getItem(STORAGE_KEYS.DOWNLOADS) || '{}');
-    if (downloads[userId]) {
-      downloads[userId] = downloads[userId].filter(item => item.id !== fileId);
+    try {
+      let downloads = dbService.getUserDownloads(userId);
+      downloads = downloads.filter(item => item.id !== fileId);
       localStorage.setItem(STORAGE_KEYS.DOWNLOADS, JSON.stringify(downloads));
+    } catch (err) {
+      console.error('deleteUserDownload error:', err);
     }
   }
 };
