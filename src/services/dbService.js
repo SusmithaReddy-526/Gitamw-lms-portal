@@ -994,8 +994,9 @@ export const dbService = {
       throw new Error(`Roll Number "${studentData.rollNumber}" is already registered in ${studentData.branch} branch. Please proceed to Login.`);
     }
 
+    const bCode = studentData.branch === 'AIML' ? 'AIM' : studentData.branch.substring(0, 3).toUpperCase();
     const cleanRoll = studentData.rollNumber.toString().padStart(3, '0');
-    const username = `${studentData.branch}${cleanRoll}`.toUpperCase(); // Short Username: e.g. CSE045
+    const username = `${bCode}${cleanRoll}`.toUpperCase(); // Short 6-Char Unique Username: e.g. CSE045, AIM012
 
     const usernameExists = users.find(u => u.username === username);
     if (usernameExists) {
@@ -1029,7 +1030,8 @@ export const dbService = {
       throw new Error(`Faculty with Employee ID ${cleanEmpId} or Email is already registered. Please log in.`);
     }
 
-    const username = facultyData.username?.trim() || cleanEmpId;
+    const empNum = cleanEmpId.replace(/[^0-9]/g, '').padStart(3, '0').slice(-3) || '001';
+    const username = `FAC${empNum}`.toUpperCase(); // Short 6-Char Unique Username: e.g. FAC012
 
     const newFaculty = {
       id: `fac-${Date.now()}`,
@@ -1059,10 +1061,13 @@ export const dbService = {
       throw new Error(`Admin account "${adminData.username}" is already registered. Please log in.`);
     }
 
+    const adminNum = cleanUser.replace(/[^0-9]/g, '').padStart(3, '0').slice(-3) || '001';
+    const username = `ADM${adminNum}`.toUpperCase(); // Short 6-Char Unique Username: e.g. ADM001
+
     const newAdmin = {
       id: `admin-${Date.now()}`,
       fullName: adminData.fullName,
-      username: adminData.username.trim(),
+      username: username,
       email: adminData.email,
       password: adminData.password,
       role: 'admin',
