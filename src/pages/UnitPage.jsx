@@ -17,10 +17,12 @@ import {
 export function UnitPage({ subject, unit, onOpenTopic, onBack }) {
   // Fetch files uploaded by faculty for this specific subject & unit
   const uploadedFiles = dbService.getUploadedFilesForUnit(
-    subject.yearId || '3rd',
-    subject.branchId || 'CSE',
+    subject.yearId,
+    subject.branchId,
     subject.subjectId,
-    unit.unitId
+    unit.unitId,
+    subject.subjectCode,
+    unit.title
   );
 
   return (

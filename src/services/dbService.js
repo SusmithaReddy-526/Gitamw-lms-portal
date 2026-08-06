@@ -802,14 +802,31 @@ export const dbService = {
     return JSON.parse(localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES) || '[]');
   },
 
-  getUploadedFilesForUnit: (yearId, branchId, subjectId, unitId) => {
+  getUploadedFilesForUnit: (yearId, branchId, subjectId, unitId, subjectCode, unitTitle) => {
     const files = JSON.parse(localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES) || '[]');
-    return files.filter(f => 
-      f.yearId === yearId && 
-      f.branchId === branchId && 
-      (f.subjectId === subjectId || f.subjectCode?.toLowerCase() === subjectId?.toLowerCase()) && 
-      f.unitId === unitId
-    );
+    const cleanSubId = (subjectId || '').toLowerCase().trim();
+    const cleanSubCode = (subjectCode || '').toLowerCase().trim();
+    const cleanUnitId = (unitId || '').toLowerCase().trim();
+    const cleanUnitTitle = (unitTitle || '').toLowerCase().trim();
+
+    return files.filter(f => {
+      // Subject Match (by subjectId or subjectCode)
+      const subMatch = 
+        (!cleanSubId && !cleanSubCode) ? true :
+        (f.subjectId && f.subjectId.toLowerCase().trim() === cleanSubId) ||
+        (f.subjectCode && f.subjectCode.toLowerCase().trim() === cleanSubCode) ||
+        (f.subjectCode && cleanSubId && f.subjectCode.toLowerCase().trim() === cleanSubId) ||
+        (f.subjectId && cleanSubCode && f.subjectId.toLowerCase().trim() === cleanSubCode);
+
+      // Unit Match (by unitId or unit title)
+      const unitMatch = 
+        (!cleanUnitId && !cleanUnitTitle) ? true :
+        (f.unitId && f.unitId.toLowerCase().trim() === cleanUnitId) ||
+        (f.unitTitle && cleanUnitTitle && f.unitTitle.toLowerCase().trim() === cleanUnitTitle) ||
+        (f.title && cleanUnitTitle && f.title.toLowerCase().includes(cleanUnitTitle));
+
+      return subMatch && unitMatch;
+    });
   },
 
   saveFacultyUploadedFile: (fileRecord) => {
