@@ -28,53 +28,14 @@ export const YEARS = [
   { id: '4th', title: '4th Year', description: 'Deep Electives, IoT, Major Capstone Project & Internship', sem: ['Sem 7', 'Sem 8'] }
 ];
 
-// Pre-seeded Faculty Accounts
-const INITIAL_FACULTY = [
-  {
-    id: 'fac-101',
-    fullName: 'Dr. Vikram Sharma',
-    employeeId: 'EMP-CSE-01',
-    department: 'CSE',
-    email: 'vikram.sharma@gitamw.edu.in',
-    username: 'EMP-CSE-01',
-    password: 'password123',
-    role: 'faculty',
-    subjects: ['Data Structures & Algorithms', 'Operating Systems', 'Computer Networks']
-  },
-  {
-    id: 'fac-102',
-    fullName: 'Prof. Ananya Roy',
-    employeeId: 'EMP-AIML-02',
-    department: 'AIML',
-    email: 'ananya.roy@gitamw.edu.in',
-    username: 'EMP-AIML-02',
-    password: 'password123',
-    role: 'faculty',
-    subjects: ['Artificial Intelligence', 'Machine Learning', 'Deep Learning']
-  },
-  {
-    id: 'fac-103',
-    fullName: 'Dr. K. Srinivas',
-    employeeId: 'EMP-ECE-03',
-    department: 'ECE',
-    email: 'srinivas.k@gitamw.edu.in',
-    username: 'EMP-ECE-03',
-    password: 'password123',
-    role: 'faculty',
-    subjects: ['Digital Logic Design', 'VLSI Design', 'Signals & Systems']
-  },
-  {
-    id: 'fac-104',
-    fullName: 'Prof. M. Ramesh',
-    employeeId: 'EMP-EEE-04',
-    department: 'EEE',
-    email: 'ramesh.m@gitamw.edu.in',
-    username: 'EMP-EEE-04',
-    password: 'password123',
-    role: 'faculty',
-    subjects: ['Power Electronics', 'Control Systems', 'Electrical Machines']
-  }
-];
+// Pre-seeded Faculty Accounts (Empty by default - Users register via Registration page)
+const INITIAL_FACULTY = [];
+
+// Pre-seeded Student Accounts (Empty by default - Users register via Registration page)
+const INITIAL_STUDENTS = [];
+
+// Pre-seeded Attendance Records (Empty by default - Faculty post attendance)
+const INITIAL_ATTENDANCE = [];
 
 // Pre-seeded Campus Announcements
 const INITIAL_NOTICES = [
@@ -96,8 +57,123 @@ const INITIAL_NOTICES = [
   }
 ];
 
-// Official Curriculum Database - Contains strictly the user-provided 4th Year CSE Sem 7 subjects
+// Official Curriculum Database - Strictly 3rd Year CSE Sem 5 & 4th Year CSE Sem 7 subjects
 const INITIAL_CURRICULUM = [
+  // --- 3RD YEAR CSE (SEM 5) STRICT USER SUBJECTS ---
+  {
+    yearId: '3rd',
+    branchId: 'CSE',
+    subjectId: '23a05501t',
+    subjectName: 'Computer Networks & Internet Protocols',
+    subjectCode: '23A05501T',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '3rd',
+    branchId: 'CSE',
+    subjectId: '23a05504a',
+    subjectName: 'Object Oriented Analysis & Design',
+    subjectCode: '23A05504a',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '3rd',
+    branchId: 'CSE',
+    subjectId: '23a05502',
+    subjectName: 'Automata Theory & Compiler Design',
+    subjectCode: '23A05502',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '3rd',
+    branchId: 'CSE',
+    subjectId: '23a52502a',
+    subjectName: 'English For Competitive Examinations',
+    subjectCode: '23A52502a',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '3rd',
+    branchId: 'CSE',
+    subjectId: '23a05503',
+    subjectName: 'Introduction To Quantum Technologies & Applications',
+    subjectCode: '23A05503',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '3rd',
+    branchId: 'CSE',
+    subjectId: '23a05506',
+    subjectName: 'Full Stack Development II',
+    subjectCode: '23A05506',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '3rd',
+    branchId: 'CSE',
+    subjectId: '23a31301t',
+    subjectName: 'Artificial Intelligence',
+    subjectCode: '23A31301T',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+
+  // --- 4TH YEAR CSE (SEM 7) SUBJECTS ---
   {
     yearId: '4th',
     branchId: 'CSE',
@@ -105,6 +181,7 @@ const INITIAL_CURRICULUM = [
     subjectName: 'Deep Learning',
     subjectCode: '23A30602T',
     sem: 'Sem 7',
+    semester: 'Sem 7',
     units: [
       { unitId: 'unit-1', title: 'Unit-1' },
       { unitId: 'unit-2', title: 'Unit-2' },
@@ -120,6 +197,7 @@ const INITIAL_CURRICULUM = [
     subjectName: 'Management Science',
     subjectCode: '23A52701c',
     sem: 'Sem 7',
+    semester: 'Sem 7',
     units: [
       { unitId: 'unit-1', title: 'Unit-1' },
       { unitId: 'unit-2', title: 'Unit-2' },
@@ -135,6 +213,7 @@ const INITIAL_CURRICULUM = [
     subjectName: 'Internet Of Things',
     subjectCode: '23A35501T',
     sem: 'Sem 7',
+    semester: 'Sem 7',
     units: [
       { unitId: 'unit-1', title: 'Unit-1' },
       { unitId: 'unit-2', title: 'Unit-2' },
@@ -150,6 +229,7 @@ const INITIAL_CURRICULUM = [
     subjectName: 'Computer Vision',
     subjectCode: '23A30604a',
     sem: 'Sem 7',
+    semester: 'Sem 7',
     units: [
       { unitId: 'unit-1', title: 'Unit-1' },
       { unitId: 'unit-2', title: 'Unit-2' },
@@ -165,6 +245,7 @@ const INITIAL_CURRICULUM = [
     subjectName: 'Prompt Engineering',
     subjectCode: '23A05703',
     sem: 'Sem 7',
+    semester: 'Sem 7',
     units: [
       { unitId: 'unit-1', title: 'Unit-1' },
       { unitId: 'unit-2', title: 'Unit-2' },
@@ -180,6 +261,7 @@ const INITIAL_CURRICULUM = [
     subjectName: 'Gender Sensitization',
     subjectCode: '23A52702',
     sem: 'Sem 7',
+    semester: 'Sem 7',
     units: [
       { unitId: 'unit-1', title: 'Unit-1' },
       { unitId: 'unit-2', title: 'Unit-2' },
@@ -195,6 +277,7 @@ const INITIAL_CURRICULUM = [
     subjectName: 'Employability Skills',
     subjectCode: '23A52703',
     sem: 'Sem 7',
+    semester: 'Sem 7',
     units: [
       { unitId: 'unit-1', title: 'Unit-1' },
       { unitId: 'unit-2', title: 'Unit-2' },
@@ -209,12 +292,16 @@ const INITIAL_UPLOADED_FILES = [];
 
 // Helper to initialize local storage and migrate legacy registered accounts
 function initStorage() {
-  if (!localStorage.getItem(STORAGE_KEYS.FACULTY)) {
-    localStorage.setItem(STORAGE_KEYS.FACULTY, JSON.stringify([]));
-  }
-  if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([]));
-  }
+  // Initialize Faculty (Filter out pre-seeded accounts)
+  let faculty = JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
+  faculty = faculty.filter(f => !['FAC001', 'FAC002', 'FAC003', 'FAC004', 'EMP-CSE-01', 'EMP-CSE-02', 'EMP-CSE-03', 'EMP-CSE-04', 'EMP-AIML-02', 'EMP-ECE-03', 'EMP-EEE-04'].includes(f.username) && !['EMP-CSE-01', 'EMP-CSE-02', 'EMP-CSE-03', 'EMP-CSE-04'].includes(f.employeeId));
+  localStorage.setItem(STORAGE_KEYS.FACULTY, JSON.stringify(faculty));
+
+  // Initialize Students (Filter out pre-seeded accounts)
+  let users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+  users = users.filter(u => !['CSE561', 'CSE562', 'CSE563', 'CSE564', 'CSE565'].includes(u.username) && !['238U1A0561', '238U1A0562', '238U1A0563', '238U1A0564', '238U1A0565'].includes(u.rollNumber));
+  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+
   if (!localStorage.getItem(STORAGE_KEYS.ADMINS)) {
     localStorage.setItem(STORAGE_KEYS.ADMINS, JSON.stringify([]));
   }
@@ -222,7 +309,30 @@ function initStorage() {
     localStorage.setItem(STORAGE_KEYS.REGISTERED_ROLES, JSON.stringify({}));
   }
   localStorage.setItem(STORAGE_KEYS.NOTICES, JSON.stringify(INITIAL_NOTICES));
-  localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(INITIAL_CURRICULUM));
+  
+  // Curriculum Sync: Force INITIAL_CURRICULUM into localStorage so 3rd Year CSE & 4th Year CSE subjects are 100% guaranteed
+  let curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
+  INITIAL_CURRICULUM.forEach(item => {
+    const existingIdx = curriculum.findIndex(c => c.subjectCode.toUpperCase() === item.subjectCode.toUpperCase() && c.yearId === item.yearId && c.branchId === item.branchId);
+    if (existingIdx !== -1) {
+      curriculum[existingIdx] = { ...item, ...curriculum[existingIdx] };
+    } else {
+      curriculum.push(item);
+    }
+  });
+  // Ensure 3rd Year CSE has all 7 subjects
+  INITIAL_CURRICULUM.filter(i => i.yearId === '3rd' && i.branchId === 'CSE').forEach(sub => {
+    if (!curriculum.some(c => c.subjectCode.toUpperCase() === sub.subjectCode.toUpperCase() && c.yearId === '3rd' && c.branchId === 'CSE')) {
+      curriculum.push(sub);
+    }
+  });
+  localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(curriculum));
+
+  // Attendance Sync (Filter out sample pre-seeded records)
+  let attendance = JSON.parse(localStorage.getItem(STORAGE_KEYS.ATTENDANCE) || '[]');
+  attendance = attendance.filter(a => !['238U1A0561', '238U1A0562', '238U1A0563', '238U1A0564', '238U1A0565'].includes(a.rollNumber));
+  localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(attendance));
+
   if (!localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES)) {
     localStorage.setItem(STORAGE_KEYS.UPLOADED_FILES, JSON.stringify(INITIAL_UPLOADED_FILES));
   }
@@ -611,11 +721,53 @@ export const dbService = {
   },
 
   getSubjectsForBranchAndYear: (yearId, branchId) => {
-    const curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
-    if (!yearId && !branchId) return curriculum;
-    if (!yearId) return curriculum.filter(item => item.branchId === branchId);
-    if (!branchId) return curriculum.filter(item => item.yearId === yearId);
-    return curriculum.filter(item => item.yearId === yearId && item.branchId === branchId);
+    let curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
+    
+    // Flexible year normalizer (e.g., '3rd', '3rd Year', '3' -> '3rd')
+    const normYear = (y) => {
+      if (!y) return '';
+      const str = y.toString().toLowerCase();
+      if (str.includes('1')) return '1st';
+      if (str.includes('2')) return '2nd';
+      if (str.includes('3') || str.includes('5') || str.includes('6')) return '3rd';
+      if (str.includes('4') || str.includes('7') || str.includes('8')) return '4th';
+      return str;
+    };
+
+    const targetYr = normYear(yearId || '3rd');
+    const targetBr = (branchId || 'CSE').toString().trim().toUpperCase();
+
+    let results = curriculum.filter(item => {
+      const matchYr = !targetYr || normYear(item.yearId) === targetYr;
+      const matchBr = !targetBr || (item.branchId || '').toString().trim().toUpperCase() === targetBr;
+      return matchYr && matchBr;
+    });
+
+    // AUTO-RECOVERY FALLBACK: If results are 0, populate from INITIAL_CURRICULUM immediately
+    if (results.length === 0) {
+      const initialMatches = INITIAL_CURRICULUM.filter(item => {
+        const matchYr = !targetYr || normYear(item.yearId) === targetYr;
+        const matchBr = !targetBr || (item.branchId || '').toString().trim().toUpperCase() === targetBr;
+        return matchYr && matchBr;
+      });
+
+      if (initialMatches.length > 0) {
+        initialMatches.forEach(sub => {
+          if (!curriculum.some(c => c.subjectCode.toUpperCase() === sub.subjectCode.toUpperCase() && c.yearId === sub.yearId && c.branchId === sub.branchId)) {
+            curriculum.push(sub);
+          }
+        });
+        localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(curriculum));
+        return initialMatches;
+      }
+    }
+
+    return results;
+  },
+
+  resetCurriculumToDefault: () => {
+    localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(INITIAL_CURRICULUM));
+    return INITIAL_CURRICULUM.filter(i => i.yearId === '3rd' && i.branchId === 'CSE');
   },
 
   addSubjectToCurriculum: (subjectData) => {

@@ -1,17 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { dbService, BRANCHES, YEARS } from '../services/dbService';
-import { ArrowLeft, BookOpen, ArrowRight, FileText, Trash2, Filter } from 'lucide-react';
+import { ArrowLeft, BookOpen, ArrowRight, FileText, Trash2, Filter, RefreshCw } from 'lucide-react';
 
 export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, onBack, user }) {
-  const [activeYear, setActiveYear] = useState(selectedYear || '');
+  const [activeYear, setActiveYear] = useState(selectedYear || '3rd');
   const [activeBranch, setActiveBranch] = useState(selectedBranch || 'CSE');
   const [selectedSubject, setSelectedSubject] = useState(null);
   
   // Refreshable subjects state
   const [subjectsList, setSubjectsList] = useState(() => 
-    dbService.getSubjectsForBranchAndYear(activeYear, activeBranch)
+    dbService.getSubjectsForBranchAndYear(selectedYear || '3rd', selectedBranch || 'CSE')
   );
+
+  useEffect(() => {
+    const yr = activeYear || selectedYear || '3rd';
+    const br = activeBranch || selectedBranch || 'CSE';
+    setSubjectsList(dbService.getSubjectsForBranchAndYear(yr, br));
+  }, [activeYear, activeBranch, selectedYear, selectedBranch]);
 
   const handleYearChange = (year) => {
     setActiveYear(year);
@@ -149,10 +155,21 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
               ))}
 
               {subjectsList.length === 0 && (
-                <div className="col-span-full p-12 rounded-3xl glass-card text-center space-y-3">
-                  <BookOpen className="w-12 h-12 text-brand-500 mx-auto opacity-40" />
-                  <h4 className="font-bold text-slate-900 dark:text-white">No Subjects Available for {activeYear} Year {activeBranch}</h4>
-                  <p className="text-xs text-slate-500">Faculty can add new course subjects for this branch from the Faculty Portal.</p>
+                <div className="col-span-full p-12 rounded-3xl glass-card text-center space-y-4 border border-brand-500/30">
+                  <BookOpen className="w-12 h-12 text-brand-500 mx-auto opacity-60" />
+                  <h4 className="font-bold text-slate-900 dark:text-white text-lg">No Subjects Loaded for {activeYear} Year {activeBranch}</h4>
+                  <p className="text-xs text-slate-500 max-w-md mx-auto">
+                    Click the button below to instantly load and restore the official 3rd Year CSE (5th Sem) subjects!
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSubjectsList(dbService.resetCurriculumToDefault());
+                    }}
+                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg inline-flex items-center gap-2 transition-all cursor-pointer hover:scale-105"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Load & Restore 3rd Year CSE Subjects
+                  </button>
                 </div>
               )}
             </div>

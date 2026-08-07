@@ -22,6 +22,7 @@ export function AttendancePage({ user }) {
   const [selectedSubjectCode, setSelectedSubjectCode] = useState('');
   
   const [inputRollNumber, setInputRollNumber] = useState('');
+  const [isManualRollInput, setIsManualRollInput] = useState(false);
   const [totalClassesInput, setTotalClassesInput] = useState('');
   const [attendedClassesInput, setAttendedClassesInput] = useState('');
   
@@ -30,6 +31,25 @@ export function AttendancePage({ user }) {
 
   // Attendance Records State
   const [attendanceRecords, setAttendanceRecords] = useState(() => dbService.getAttendanceRecords());
+
+  // Registered Students Filtered by Selected Year & Branch
+  const allStudents = dbService.getStudentsList();
+
+  const normYear = (y) => {
+    if (!y) return '';
+    const str = y.toString().toLowerCase();
+    if (str.includes('1')) return '1st';
+    if (str.includes('2')) return '2nd';
+    if (str.includes('3') || str.includes('5') || str.includes('6')) return '3rd';
+    if (str.includes('4') || str.includes('7') || str.includes('8')) return '4th';
+    return str;
+  };
+
+  const filteredStudents = allStudents.filter(s => {
+    const matchYr = !selectedYear || normYear(s.year) === normYear(selectedYear);
+    const matchBr = !selectedBranch || (s.branch || '').toString().trim().toUpperCase() === selectedBranch.trim().toUpperCase();
+    return matchYr && matchBr;
+  });
 
   const handlePostAttendance = (e) => {
     e.preventDefault();
@@ -371,20 +391,68 @@ export function AttendancePage({ user }) {
                 </div>
               </div>
 
-              {/* Class Inputs - Student Name REMOVED */}
+              {/* Class Inputs */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Student Roll Number *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. 238U1A0561"
-                    value={inputRollNumber}
-                    onChange={e => setInputRollNumber(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold font-mono focus:ring-2 focus:ring-brand-500 outline-none"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                      Student Roll Number *
+                    </label>
+                    {filteredStudents.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsManualRollInput(!isManualRollInput);
+                          setInputRollNumber('');
+                        }}
+                        className="text-[10px] font-bold text-brand-500 hover:underline cursor-pointer"
+                      >
+                        {isManualRollInput ? '📋 Use Registered Dropdown' : '✏️ Type Manually'}
+                      </button>
+                    )}
+                  </div>
+
+                  {!isManualRollInput && filteredStudents.length > 0 ? (
+                    <select
+                      value={inputRollNumber}
+                      onChange={e => {
+                        if (e.target.value === '__MANUAL__') {
+                          setIsManualRollInput(true);
+                          setInputRollNumber('');
+                        } else {
+                          setInputRollNumber(e.target.value);
+                        }
+                      }}
+                      required
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/60 bg-white dark:bg-slate-900 text-xs font-mono font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer"
+                    >
+                      <option value="">
+                        -- Select Registered Student ({filteredStudents.length} Available in {selectedYear || 'All'} Year {selectedBranch}) --
+                      </option>
+                      {filteredStudents.map(s => (
+                        <option key={s.id || s.rollNumber} value={s.rollNumber}>
+                          {s.rollNumber} - {s.fullName} ({s.year || selectedYear} Year {s.branch || selectedBranch})
+                        </option>
+                      ))}
+                      <option value="__MANUAL__">✏️ Type Custom Roll Number manually...</option>
+                    </select>
+                  ) : (
+                    <div className="space-y-1">
+                      <input
+                        type="text"
+                        required
+                        placeholder={selectedYear && selectedBranch ? `Type Student Roll No (e.g. 238U1A0561)` : 'Select Year & Branch above to view registered students'}
+                        value={inputRollNumber}
+                        onChange={e => setInputRollNumber(e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold font-mono focus:ring-2 focus:ring-brand-500 outline-none"
+                      />
+                      {selectedYear && selectedBranch && filteredStudents.length === 0 && (
+                        <p className="text-[10px] text-amber-500 font-medium">
+                          💡 No registered students found for {selectedYear} Year {selectedBranch} yet. Students registered under this Year & Branch will automatically populate here!
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div>

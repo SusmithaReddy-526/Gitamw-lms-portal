@@ -142,7 +142,7 @@ export function StudentDashboard({ user, onSelectYear }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {YEARS.map((yr, idx) => {
             const isStudentOwnYear = yr.id === studentYear;
-            const isAccessible = isStudentOwnYear || unlockAll || user?.role === 'admin' || user?.role === 'faculty';
+            const isAccessible = true;
 
             return (
               <motion.div

@@ -73,11 +73,10 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(SESSION_KEY);
   };
 
-  const updateProfile = (updateData) => {
-    if (!user || user.role !== 'student') return;
-    const updated = dbService.updateStudentProfile(user.id, updateData);
-    setUser(updated);
-    localStorage.setItem(SESSION_KEY, JSON.stringify(updated));
+  const updateProfile = (updatedUserObj) => {
+    if (!updatedUserObj) return;
+    setUser(updatedUserObj);
+    localStorage.setItem(SESSION_KEY, JSON.stringify(updatedUserObj));
   };
 
   // Session persistence handles auto-login on refresh / browser restart
