@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gitamw-lms-v1';
+const CACHE_NAME = 'gitamw-lms-v10';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

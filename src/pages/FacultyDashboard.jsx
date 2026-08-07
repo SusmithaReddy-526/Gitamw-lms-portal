@@ -207,45 +207,63 @@ export function FacultyDashboard({ user }) {
             Welcome, <span className="font-bold text-white">{user?.fullName || 'Faculty Member'}</span>! Add new course subjects, upload unit study materials, and manage department syllabus.
           </p>
 
-          {/* Mode Switcher Tabs */}
-          <div className="pt-4 flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => setActiveTabMode('upload-material')}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer ${
-                activeTabMode === 'upload-material'
-                  ? 'bg-white text-slate-900 shadow-md scale-105'
-                  : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700'
-              }`}
-            >
-              <Upload className="w-4 h-4 text-brand-500" />
-              Upload Unit Study Material
-            </button>
-
-            <button
-              onClick={() => setActiveTabMode('add-subject')}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer ${
-                activeTabMode === 'add-subject'
-                  ? 'bg-white text-slate-900 shadow-md scale-105'
-                  : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700'
-              }`}
-            >
-              <Plus className="w-4 h-4 text-emerald-500" />
-              Add New Course Subject
-            </button>
-
-            <button
-              onClick={() => setActiveTabMode('manage-syllabus')}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer ${
-                activeTabMode === 'manage-syllabus'
-                  ? 'bg-white text-slate-900 shadow-md scale-105'
-                  : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700'
-              }`}
-            >
-              <BookOpen className="w-4 h-4 text-indigo-500" />
-              Manage Department Syllabus
-            </button>
-          </div>
         </div>
+      </div>
+
+      {/* Standalone High-Visibility Action Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <button
+          onClick={() => setActiveTabMode('upload-material')}
+          className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
+            activeTabMode === 'upload-material'
+              ? 'bg-brand-600 text-white border-brand-500 shadow-xl ring-2 ring-brand-400 scale-[1.02]'
+              : 'glass-card border-slate-200 dark:border-slate-800 hover:border-brand-500/50 text-slate-800 dark:text-slate-200'
+          }`}
+        >
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl shrink-0 ${activeTabMode === 'upload-material' ? 'bg-white/20 text-white' : 'bg-brand-500/10 text-brand-500'}`}>
+            <Upload className="w-6 h-6" />
+          </div>
+          <div>
+            <h4 className="font-extrabold text-sm">Upload Study Material</h4>
+            <p className={`text-[11px] ${activeTabMode === 'upload-material' ? 'text-brand-100' : 'text-slate-500'}`}>Attach PDF notes for Unit 1-5</p>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setActiveTabMode('add-subject')}
+          className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
+            activeTabMode === 'add-subject'
+              ? 'bg-emerald-600 text-white border-emerald-500 shadow-xl ring-2 ring-emerald-400 scale-[1.02]'
+              : 'glass-card border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 text-slate-800 dark:text-slate-200'
+          }`}
+        >
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl shrink-0 ${activeTabMode === 'add-subject' ? 'bg-white/20 text-white' : 'bg-emerald-500/10 text-emerald-500'}`}>
+            <Plus className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h4 className="font-extrabold text-sm flex items-center gap-1">
+              ➕ Add New Course Subject
+            </h4>
+            <p className={`text-[11px] ${activeTabMode === 'add-subject' ? 'text-emerald-100' : 'text-slate-500'}`}>Create new subject in curriculum</p>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setActiveTabMode('manage-syllabus')}
+          className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
+            activeTabMode === 'manage-syllabus'
+              ? 'bg-indigo-600 text-white border-indigo-500 shadow-xl ring-2 ring-indigo-400 scale-[1.02]'
+              : 'glass-card border-slate-200 dark:border-slate-800 hover:border-indigo-500/50 text-slate-800 dark:text-slate-200'
+          }`}
+        >
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl shrink-0 ${activeTabMode === 'manage-syllabus' ? 'bg-white/20 text-white' : 'bg-indigo-500/10 text-indigo-500'}`}>
+            <BookOpen className="w-6 h-6" />
+          </div>
+          <div>
+            <h4 className="font-extrabold text-sm">Manage Department Syllabus</h4>
+            <p className={`text-[11px] ${activeTabMode === 'manage-syllabus' ? 'text-indigo-100' : 'text-slate-500'}`}>View & upload syllabus PDF</p>
+          </div>
+        </button>
       </div>
 
       {/* --- MODE 1: UPLOAD UNIT STUDY MATERIAL --- */}
