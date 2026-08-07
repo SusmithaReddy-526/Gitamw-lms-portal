@@ -118,6 +118,7 @@ function MainContent() {
             selectedBranch={selectedBranch}
             onSelectUnitTopic={handleSelectUnitTopic}
             onBack={() => setActiveTab('year-view')}
+            user={user}
           />
         );
 
@@ -149,6 +150,7 @@ function MainContent() {
             selectedBranch={user?.branch || ''}
             onSelectUnitTopic={handleSelectUnitTopic}
             onBack={() => setActiveTab('dashboard')}
+            user={user}
           />
         );
 
