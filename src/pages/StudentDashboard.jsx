@@ -13,8 +13,8 @@ export function StudentDashboard({ user, onSelectYear }) {
   const totalAttended = studentAttendance.reduce((acc, curr) => acc + curr.attendedClasses, 0);
   const overallPercentage = totalConducted > 0 ? ((totalAttended / totalConducted) * 100).toFixed(1) : 88.5;
 
-  // Student's registered year (e.g. '3rd')
-  const studentYear = user?.year || '3rd';
+  // Student's registered year
+  const studentYear = user?.year || '';
 
   return (
     <div className="space-y-10 pb-12">
@@ -29,7 +29,7 @@ export function StudentDashboard({ user, onSelectYear }) {
             B.Tech Student Portal
           </h1>
           <p className="text-sm text-slate-300">
-            Welcome back, <span className="font-bold text-white">{user?.fullName || user?.username}</span>! ({user?.branch || 'CSE'} Branch • {user?.year || '3rd'} Year • {user?.semester || 'Sem 5'})
+            Welcome back, <span className="font-bold text-white">{user?.fullName || user?.username}</span>! {user?.branch ? `(${user.branch} Branch • ${user.year || ''} Year)` : ''}
           </p>
 
           <div className="pt-2 flex items-center gap-4">

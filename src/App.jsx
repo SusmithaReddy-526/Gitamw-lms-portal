@@ -25,8 +25,8 @@ function MainContent() {
   const [activeTab, setActiveTab] = useState('home');
 
   // Hierarchy Selection State
-  const [selectedYear, setSelectedYear] = useState('3rd');
-  const [selectedBranch, setSelectedBranch] = useState('CSE');
+  const [selectedYear, setSelectedYear] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState('');
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -145,8 +145,8 @@ function MainContent() {
       case 'subjects':
         return (
           <BranchPage 
-            selectedYear={user?.year || '3rd'} 
-            selectedBranch={user?.branch || 'CSE'}
+            selectedYear={user?.year || ''} 
+            selectedBranch={user?.branch || ''}
             onSelectUnitTopic={handleSelectUnitTopic}
             onBack={() => setActiveTab('dashboard')}
           />
