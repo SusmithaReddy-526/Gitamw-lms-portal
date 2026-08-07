@@ -173,13 +173,143 @@ const INITIAL_CURRICULUM = [
     ]
   },
 
-  // --- 4TH YEAR CSE (SEM 7) SUBJECTS ---
+  // --- 4TH YEAR AIML & CSE (SEM 7) STRICT USER SUBJECTS ---
+  {
+    yearId: '4th',
+    branchId: 'AIML',
+    subjectId: '23a30701',
+    subjectName: 'Generative AI',
+    subjectCode: '23A30701',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'AIML',
+    subjectId: '23a52701c_aiml',
+    subjectName: 'Management Science',
+    subjectCode: '23A52701c',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'AIML',
+    subjectId: '23a31702c',
+    subjectName: 'AI in CyberSecurity',
+    subjectCode: '23A31702c',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'AIML',
+    subjectId: '23a30703a',
+    subjectName: 'Data Wrangling',
+    subjectCode: '23A30703a',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'AIML',
+    subjectId: '23a52704',
+    subjectName: 'Literacy Vibes',
+    subjectCode: '23A52704',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'AIML',
+    subjectId: '23a52703_aiml',
+    subjectName: 'Employability Skills',
+    subjectCode: '23A52703',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'AIML',
+    subjectId: '25g52702_aiml',
+    subjectName: 'Gender Sensitization',
+    subjectCode: '25G52702',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'AIML',
+    subjectId: '23a52703_lab',
+    subjectName: 'Prompt Engineering Lab',
+    subjectCode: '23A52703L',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+
+  // Also include for 4th Year CSE (Sem 7)
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: '23a30602t',
-    subjectName: 'Deep Learning',
-    subjectCode: '23A30602T',
+    subjectId: '23a30701_cse',
+    subjectName: 'Generative AI',
+    subjectCode: '23A30701',
     sem: 'Sem 7',
     semester: 'Sem 7',
     units: [
@@ -193,7 +323,7 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: '23a52701c',
+    subjectId: '23a52701c_cse',
     subjectName: 'Management Science',
     subjectCode: '23A52701c',
     sem: 'Sem 7',
@@ -209,9 +339,9 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: '23a35501t',
-    subjectName: 'Internet Of Things',
-    subjectCode: '23A35501T',
+    subjectId: '23a31702c_cse',
+    subjectName: 'AI in CyberSecurity',
+    subjectCode: '23A31702c',
     sem: 'Sem 7',
     semester: 'Sem 7',
     units: [
@@ -225,9 +355,9 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: '23a30604a',
-    subjectName: 'Computer Vision',
-    subjectCode: '23A30604a',
+    subjectId: '23a30703a_cse',
+    subjectName: 'Data Wrangling',
+    subjectCode: '23A30703a',
     sem: 'Sem 7',
     semester: 'Sem 7',
     units: [
@@ -241,9 +371,9 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: '23a05703',
-    subjectName: 'Prompt Engineering',
-    subjectCode: '23A05703',
+    subjectId: '23a52704_cse',
+    subjectName: 'Literacy Vibes',
+    subjectCode: '23A52704',
     sem: 'Sem 7',
     semester: 'Sem 7',
     units: [
@@ -257,25 +387,41 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '4th',
     branchId: 'CSE',
-    subjectId: '23a52702',
-    subjectName: 'Gender Sensitization',
-    subjectCode: '23A52702',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: '23a52703',
+    subjectId: '23a52703_cse',
     subjectName: 'Employability Skills',
     subjectCode: '23A52703',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '25g52702_cse',
+    subjectName: 'Gender Sensitization',
+    subjectCode: '25G52702',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a52703_lab_cse',
+    subjectName: 'Prompt Engineering Lab',
+    subjectCode: '23A52703L',
     sem: 'Sem 7',
     semester: 'Sem 7',
     units: [
@@ -331,6 +477,12 @@ function initStorage() {
   // Ensure 3rd Year CSE has all 7 subjects
   INITIAL_CURRICULUM.filter(i => i.yearId === '3rd' && i.branchId === 'CSE').forEach(sub => {
     if (!curriculum.some(c => c.subjectCode.toUpperCase() === sub.subjectCode.toUpperCase() && c.yearId === '3rd' && c.branchId === 'CSE')) {
+      curriculum.push(sub);
+    }
+  });
+  // Ensure 4th Year AIML & CSE have all 8 subjects
+  INITIAL_CURRICULUM.filter(i => i.yearId === '4th').forEach(sub => {
+    if (!curriculum.some(c => c.subjectCode.toUpperCase() === sub.subjectCode.toUpperCase() && c.yearId === '4th' && c.branchId === sub.branchId)) {
       curriculum.push(sub);
     }
   });
