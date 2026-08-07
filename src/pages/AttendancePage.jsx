@@ -412,7 +412,7 @@ export function AttendancePage({ user }) {
                     )}
                   </div>
 
-                  {!isManualRollInput && filteredStudents.length > 0 ? (
+                  {!isManualRollInput ? (
                     <select
                       value={inputRollNumber}
                       onChange={e => {
@@ -427,7 +427,10 @@ export function AttendancePage({ user }) {
                       className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/60 bg-white dark:bg-slate-900 text-xs font-mono font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer"
                     >
                       <option value="">
-                        -- Select Registered Student ({filteredStudents.length} Available in {selectedYear || 'All'} Year {selectedBranch}) --
+                        {filteredStudents.length > 0 
+                          ? `-- Select Registered Student Roll Number (${filteredStudents.length} Available) --`
+                          : `-- No Registered Students in ${selectedYear || 'Select'} Year ${selectedBranch || 'Branch'} --`
+                        }
                       </option>
                       {filteredStudents.map(s => (
                         <option key={s.id || s.rollNumber} value={s.rollNumber}>
@@ -441,16 +444,11 @@ export function AttendancePage({ user }) {
                       <input
                         type="text"
                         required
-                        placeholder={selectedYear && selectedBranch ? `Type Student Roll No (e.g. 238U1A0561)` : 'Select Year & Branch above to view registered students'}
+                        placeholder="Type Student Roll No (e.g. 238U1A0561)"
                         value={inputRollNumber}
                         onChange={e => setInputRollNumber(e.target.value)}
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold font-mono focus:ring-2 focus:ring-brand-500 outline-none"
                       />
-                      {selectedYear && selectedBranch && filteredStudents.length === 0 && (
-                        <p className="text-[10px] text-amber-500 font-medium">
-                          💡 No registered students found for {selectedYear} Year {selectedBranch} yet. Students registered under this Year & Branch will automatically populate here!
-                        </p>
-                      )}
                     </div>
                   )}
                 </div>
