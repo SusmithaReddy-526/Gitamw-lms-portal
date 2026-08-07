@@ -14,9 +14,22 @@ import {
   Download,
   FileUp,
   Sparkles,
-  Layers,
-  Award
+  ArrowRight,
+  ArrowLeft,
+  GraduationCap,
+  Code,
+  Cpu,
+  Radio,
+  Zap,
+  FolderPlus
 } from 'lucide-react';
+
+const BRANCH_ICONS = {
+  CSE: Code,
+  AIML: Cpu,
+  ECE: Radio,
+  EEE: Zap
+};
 
 export function FacultyDashboard({ user }) {
   const [activeTabMode, setActiveTabMode] = useState('upload-material'); // 'upload-material' | 'add-subject' | 'manage-syllabus'
@@ -46,7 +59,13 @@ export function FacultyDashboard({ user }) {
   const [subSuccessMsg, setSubSuccessMsg] = useState('');
   const [subErrorMsg, setSubErrorMsg] = useState('');
 
-  // Uploaded Files list
+  // --- 3. MANAGE SYLLABUS DRILLDOWN STATE (YEAR CARDS -> BRANCH CARDS -> SUBJECTS LIST) ---
+  const [sylSelectedYear, setSylSelectedYear] = useState(null); // '1st', '2nd', '3rd', '4th'
+  const [sylSelectedBranch, setSylSelectedBranch] = useState(null); // 'CSE', 'AIML', 'ECE', 'EEE'
+  const [syllabusUploadSubjectCode, setSyllabusUploadSubjectCode] = useState(null);
+  const [singleSyllabusFile, setSingleSyllabusFile] = useState(null);
+
+  // Uploaded Files & Curriculum list
   const [uploadedFilesList, setUploadedFilesList] = useState(() => dbService.getUploadedFiles());
   const [curriculumList, setCurriculumList] = useState(() => dbService.getCurriculum());
 
@@ -198,6 +217,24 @@ export function FacultyDashboard({ user }) {
     }
   };
 
+  // Upload/replace syllabus PDF for existing subject
+  const handleUploadSyllabusPDF = (subjectCode, file) => {
+    if (!file) return;
+    if (file.size > 15 * 1024 * 1024) {
+      alert('Syllabus PDF file size must be under 15MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      dbService.updateSubjectSyllabus(subjectCode, reader.result, file.name);
+      setCurriculumList(dbService.getCurriculum());
+      setSyllabusUploadSubjectCode(null);
+      setSingleSyllabusFile(null);
+      alert(`Syllabus PDF updated successfully for ${subjectCode}!`);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-16">
       {/* Header Banner */}
@@ -211,9 +248,8 @@ export function FacultyDashboard({ user }) {
             Faculty Curriculum & Material Management
           </h1>
           <p className="text-sm text-slate-300">
-            Welcome, <span className="font-bold text-white">{user?.fullName || 'Faculty Member'}</span>! Add new course subjects, upload unit study materials, and manage department syllabus.
+            Welcome, <span className="font-bold text-white">{user?.fullName || 'Faculty Member'}</span>! Full access to manage 4 years curriculum cards, upload syllabus PDFs, attach unit notes, and delete subjects.
           </p>
-
         </div>
       </div>
 
@@ -256,7 +292,11 @@ export function FacultyDashboard({ user }) {
         </button>
 
         <button
-          onClick={() => setActiveTabMode('manage-syllabus')}
+          onClick={() => {
+            setActiveTabMode('manage-syllabus');
+            setSylSelectedYear(null);
+            setSylSelectedBranch(null);
+          }}
           className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
             activeTabMode === 'manage-syllabus'
               ? 'bg-indigo-600 text-white border-indigo-500 shadow-xl ring-2 ring-indigo-400 scale-[1.02]'
@@ -268,7 +308,7 @@ export function FacultyDashboard({ user }) {
           </div>
           <div>
             <h4 className="font-extrabold text-sm">Manage Department Syllabus</h4>
-            <p className={`text-[11px] ${activeTabMode === 'manage-syllabus' ? 'text-indigo-100' : 'text-slate-500'}`}>View & upload syllabus PDF</p>
+            <p className={`text-[11px] ${activeTabMode === 'manage-syllabus' ? 'text-indigo-100' : 'text-slate-500'}`}>4 Years Cards &amp; Branch Hierarchy</p>
           </div>
         </button>
       </div>
@@ -616,68 +656,290 @@ export function FacultyDashboard({ user }) {
         </div>
       )}
 
-      {/* --- MODE 3: MANAGE DEPARTMENT SYLLABUS --- */}
+      {/* --- MODE 3: MANAGE DEPARTMENT SYLLABUS (DRILLDOWN: 4 YEAR CARDS -> BRANCH CARDS -> SUBJECTS) --- */}
       {activeTabMode === 'manage-syllabus' && (
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-indigo-500" />
-              Department Course Curriculum & Syllabus ({curriculumList.length} Subjects)
-            </h3>
+          {/* Breadcrumb Navigation Header */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800">
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
+                <BookOpen className="w-6 h-6 text-indigo-500" />
+                Department Syllabus & Curriculum Manager
+              </h3>
+              <p className="text-xs text-slate-500">
+                {!sylSelectedYear 
+                  ? 'Select an Academic Year card below to manage department subjects.' 
+                  : !sylSelectedBranch 
+                  ? `Selected: ${sylSelectedYear} Year • Now select an Engineering Branch card below.`
+                  : `Selected: ${sylSelectedYear} Year ${sylSelectedBranch} • Manage subjects, upload syllabus PDFs, or delete subjects.`
+                }
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {sylSelectedBranch && (
+                <button
+                  onClick={() => setSylSelectedBranch(null)}
+                  className="px-3.5 py-2 rounded-xl glass-card text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center gap-1.5 cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Back to Branches
+                </button>
+              )}
+
+              {sylSelectedYear && (
+                <button
+                  onClick={() => {
+                    setSylSelectedYear(null);
+                    setSylSelectedBranch(null);
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 font-bold text-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  Back to 4 Years Cards
+                </button>
+              )}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {curriculumList.map((sub, idx) => (
-              <div key={idx} className="p-6 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 space-y-4">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 border border-indigo-200">
-                      {sub.yearId} Year • {sub.branchId} • {sub.semester || 'Sem 7'}
-                    </span>
-                    <h4 className="text-lg font-bold text-slate-900 dark:text-white mt-2">
-                      {sub.subjectName}
+          {/* STEP 1: 4 ACADEMIC YEAR CARDS (1st, 2nd, 3rd, 4th Year) */}
+          {!sylSelectedYear && (
+            <div className="space-y-4">
+              <h4 className="text-sm font-extrabold uppercase text-slate-400 tracking-wider">
+                Select Academic Year (4 Years Cards)
+              </h4>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {YEARS.map(yItem => (
+                  <motion.div
+                    key={yItem.id}
+                    whileHover={{ y: -6, scale: 1.02 }}
+                    onClick={() => setSylSelectedYear(yItem.id)}
+                    className="p-7 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 hover:border-indigo-500 shadow-xl transition-all cursor-pointer flex flex-col justify-between group"
+                  >
+                    <div className="space-y-4">
+                      <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-500 font-extrabold flex items-center justify-center text-xl shadow-inner group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                        <GraduationCap className="w-7 h-7" />
+                      </div>
+                      <div>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300">
+                          {yItem.sem.join(' & ')}
+                        </span>
+                        <h3 className="text-2xl font-black text-slate-900 dark:text-white font-outfit mt-2">
+                          {yItem.title}
+                        </h3>
+                        <p className="text-xs text-slate-500 mt-2 leading-relaxed">
+                          {yItem.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-indigo-500 group-hover:translate-x-1 transition-transform">
+                      <span>Select Branch Cards</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* STEP 2: ENGINEERING BRANCH CARDS (CSE, AIML, ECE, EEE) FOR SELECTED YEAR */}
+          {sylSelectedYear && !sylSelectedBranch && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-extrabold uppercase text-slate-400 tracking-wider">
+                  Select Engineering Branch for {sylSelectedYear} Year
+                </h4>
+                <span className="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 text-xs font-bold">
+                  {sylSelectedYear} Year Selected
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {BRANCHES.map(bItem => {
+                  const BIcon = BRANCH_ICONS[bItem.code] || Code;
+
+                  return (
+                    <motion.div
+                      key={bItem.id}
+                      whileHover={{ y: -6, scale: 1.02 }}
+                      onClick={() => setSylSelectedBranch(bItem.id)}
+                      className="p-7 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 hover:border-indigo-500 shadow-xl transition-all cursor-pointer flex flex-col justify-between group"
+                    >
+                      <div className="space-y-4">
+                        <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 text-indigo-500 font-extrabold flex items-center justify-center text-xl shadow-inner group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                          <BIcon className="w-7 h-7" />
+                        </div>
+                        <div>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-300">
+                            {bItem.code} Department
+                          </span>
+                          <h3 className="text-xl font-black text-slate-900 dark:text-white font-outfit mt-2">
+                            {bItem.name}
+                          </h3>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-indigo-500 group-hover:translate-x-1 transition-transform">
+                        <span>Manage {bItem.code} Subjects</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* STEP 3: SUBJECT CARDS LIST FOR SELECTED YEAR & BRANCH (FULL FACULTY EDIT/DELETE ACCESS) */}
+          {sylSelectedYear && sylSelectedBranch && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-2xl font-black text-slate-900 dark:text-white font-outfit">
+                    {sylSelectedYear} Year {sylSelectedBranch} Course Subjects
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Faculty access: Upload Syllabus PDF, attach unit materials, or delete subjects from curriculum.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setActiveTabMode('add-subject');
+                    setNewSubYear(sylSelectedYear);
+                    setNewSubBranch(sylSelectedBranch);
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-md cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add New Subject to {sylSelectedYear} Year {sylSelectedBranch}
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {curriculumList
+                  .filter(sub => sub.yearId === sylSelectedYear && sub.branchId === sylSelectedBranch)
+                  .map((sub, idx) => (
+                    <div key={idx} className="p-6 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 space-y-5 shadow-lg">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-extrabold uppercase bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 border border-indigo-200">
+                              {sub.subjectCode}
+                            </span>
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500">
+                              {sub.semester || 'Sem 7'} • Credits: {sub.credits || 3}
+                            </span>
+                          </div>
+
+                          <h4 className="text-xl font-bold text-slate-900 dark:text-white mt-2">
+                            {sub.subjectName}
+                          </h4>
+                        </div>
+
+                        {/* Faculty Delete Subject Button */}
+                        <button
+                          onClick={() => handleDeleteSubject(sub.subjectCode, sub.subjectName)}
+                          className="p-2 rounded-xl text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                          title="Delete Subject from Curriculum"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </button>
+                      </div>
+
+                      {/* Syllabus PDF & Unit Material Action Bar */}
+                      <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                          <div className="flex items-center gap-2 text-slate-500 font-semibold">
+                            <FileText className="w-4 h-4 text-indigo-500" />
+                            <span>Syllabus PDF: <strong>{sub.syllabusFileName || 'Not Uploaded'}</strong></span>
+                          </div>
+
+                          {sub.syllabusPdfUrl && (
+                            <a
+                              href={sub.syllabusPdfUrl}
+                              download={sub.syllabusFileName || `${sub.subjectCode}_Syllabus.pdf`}
+                              className="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-bold border border-indigo-200 flex items-center gap-1.5 hover:bg-indigo-100"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                              View Syllabus PDF
+                            </a>
+                          )}
+                        </div>
+
+                        {/* Upload / Replace Syllabus PDF */}
+                        {syllabusUploadSubjectCode === sub.subjectCode ? (
+                          <div className="p-3 rounded-2xl bg-indigo-50/50 dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 space-y-2">
+                            <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                              Select New Syllabus Document PDF (Max 15MB):
+                            </label>
+                            <input
+                              type="file"
+                              accept=".pdf"
+                              onChange={e => setSingleSyllabusFile(e.target.files[0])}
+                              className="w-full text-xs text-slate-500 cursor-pointer"
+                            />
+                            <div className="flex items-center gap-2 pt-1">
+                              <button
+                                onClick={() => handleUploadSyllabusPDF(sub.subjectCode, singleSyllabusFile)}
+                                disabled={!singleSyllabusFile}
+                                className="px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-500 disabled:opacity-50 cursor-pointer"
+                              >
+                                Save &amp; Upload PDF
+                              </button>
+                              <button
+                                onClick={() => setSyllabusUploadSubjectCode(null)}
+                                className="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs cursor-pointer"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => setSyllabusUploadSubjectCode(sub.subjectCode)}
+                              className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                            >
+                              <Upload className="w-3.5 h-3.5 text-indigo-500" />
+                              {sub.syllabusPdfUrl ? 'Replace Syllabus PDF' : 'Upload Syllabus PDF'}
+                            </button>
+
+                            <button
+                              onClick={() => {
+                                setActiveTabMode('upload-material');
+                                setSelectedYear(sub.yearId);
+                                setSelectedBranch(sub.branchId);
+                                setSubjectCode(sub.subjectCode);
+                                setSubjectName(sub.subjectName);
+                              }}
+                              className="px-3 py-1.5 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-300 text-xs font-bold flex items-center gap-1.5 cursor-pointer border border-brand-200"
+                            >
+                              <FolderPlus className="w-3.5 h-3.5" />
+                              Upload Unit Notes
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                {curriculumList.filter(sub => sub.yearId === sylSelectedYear && sub.branchId === sylSelectedBranch).length === 0 && (
+                  <div className="p-12 text-center rounded-3xl glass-card text-slate-500 col-span-2 space-y-3">
+                    <BookOpen className="w-12 h-12 text-slate-300 mx-auto" />
+                    <h4 className="font-bold text-slate-800 dark:text-slate-200 text-base">
+                      No Subjects Registered for {sylSelectedYear} Year {sylSelectedBranch}
                     </h4>
-                    <p className="text-xs font-mono font-bold text-slate-400">
-                      Code: {sub.subjectCode} • Credits: {sub.credits || 3}
+                    <p className="text-xs text-slate-500 max-w-md mx-auto">
+                      Click the green "Add New Subject" button above to add subjects for this department.
                     </p>
                   </div>
-
-                  <button
-                    onClick={() => handleDeleteSubject(sub.subjectCode, sub.subjectName)}
-                    className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
-                    title="Delete Subject from Curriculum"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* Syllabus PDF Action */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 text-slate-500 font-semibold">
-                    <FileText className="w-4 h-4 text-brand-500" />
-                    <span>Syllabus PDF: {sub.syllabusFileName || 'Not Uploaded Yet'}</span>
-                  </div>
-
-                  {sub.syllabusPdfUrl && (
-                    <a
-                      href={sub.syllabusPdfUrl}
-                      download={sub.syllabusFileName || `${sub.subjectCode}_Syllabus.pdf`}
-                      className="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-bold border border-indigo-200 flex items-center gap-1.5 hover:bg-indigo-100"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      View Syllabus
-                    </a>
-                  )}
-                </div>
+                )}
               </div>
-            ))}
-
-            {curriculumList.length === 0 && (
-              <div className="p-12 text-center rounded-3xl glass-card text-slate-500 col-span-2">
-                <p className="font-bold">No subjects registered yet in curriculum.</p>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       )}
     </div>
