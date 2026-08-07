@@ -241,9 +241,9 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '2nd',
     branchId: 'CSE',
-    subjectId: '25g31301t_cse',
-    subjectName: 'Artificial Intelligence',
-    subjectCode: '25G31301T',
+    subjectId: '25g50402_cse',
+    subjectName: 'Digital Logic and Computer Organization',
+    subjectCode: '25G50402',
     sem: 'Sem 3',
     semester: 'Sem 3',
     units: [
