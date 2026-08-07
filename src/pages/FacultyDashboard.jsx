@@ -191,6 +191,13 @@ export function FacultyDashboard({ user }) {
     }
   };
 
+  const handleDeleteSubject = (subjectCode, subjectName) => {
+    if (window.confirm(`Are you sure you want to delete "${subjectName} (${subjectCode})" from department curriculum?`)) {
+      dbService.deleteSubjectFromCurriculum(subjectCode);
+      setCurriculumList(dbService.getCurriculum());
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-16">
       {/* Header Banner */}
@@ -634,6 +641,14 @@ export function FacultyDashboard({ user }) {
                       Code: {sub.subjectCode} • Credits: {sub.credits || 3}
                     </p>
                   </div>
+
+                  <button
+                    onClick={() => handleDeleteSubject(sub.subjectCode, sub.subjectName)}
+                    className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
+                    title="Delete Subject from Curriculum"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
                 </div>
 
                 {/* Syllabus PDF Action */}

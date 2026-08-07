@@ -657,6 +657,14 @@ export const dbService = {
     return newSubObj;
   },
 
+  deleteSubjectFromCurriculum: (subjectCode) => {
+    let curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
+    const cleanCode = (subjectCode || '').trim().toUpperCase();
+    curriculum = curriculum.filter(s => s.subjectCode.toUpperCase() !== cleanCode);
+    localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(curriculum));
+    return curriculum;
+  },
+
   updateSubjectSyllabus: (subjectCode, syllabusPdfUrl, syllabusFileName) => {
     const curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
     const cleanCode = (subjectCode || '').trim().toUpperCase();
