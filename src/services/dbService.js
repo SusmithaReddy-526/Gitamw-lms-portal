@@ -2,15 +2,15 @@
 // Manages Students, Faculty, Admin, Notices, Curriculum (JNTUA Autonomous), Uploaded Files (PDF/Images), and Profiles.
 
 const STORAGE_KEYS = {
-  USERS: 'gitamw_lms_perm_users_db',
-  FACULTY: 'gitamw_lms_perm_faculty_db',
-  ADMINS: 'gitamw_lms_perm_admins_db',
+  USERS: 'gitamw_lms_fresh_users_db',
+  FACULTY: 'gitamw_lms_fresh_faculty_db',
+  ADMINS: 'gitamw_lms_fresh_admins_db',
   NOTICES: 'gitamw_lms_perm_notices_db',
   CURRICULUM: 'gitamw_lms_perm_curriculum_db',
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
-  REGISTERED_ROLES: 'gitamw_lms_perm_registered_roles_history'
+  REGISTERED_ROLES: 'gitamw_lms_fresh_registered_roles_history'
 };
 
 // 4 Active Branches (MECH, CIVIL, IT removed as requested)
@@ -292,16 +292,24 @@ const INITIAL_UPLOADED_FILES = [];
 
 // Helper to initialize local storage and migrate legacy registered accounts
 function initStorage() {
-  // Initialize Faculty (Filter out pre-seeded accounts)
-  let faculty = JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
-  faculty = faculty.filter(f => !['FAC001', 'FAC002', 'FAC003', 'FAC004', 'EMP-CSE-01', 'EMP-CSE-02', 'EMP-CSE-03', 'EMP-CSE-04', 'EMP-AIML-02', 'EMP-ECE-03', 'EMP-EEE-04'].includes(f.username) && !['EMP-CSE-01', 'EMP-CSE-02', 'EMP-CSE-03', 'EMP-CSE-04'].includes(f.employeeId));
-  localStorage.setItem(STORAGE_KEYS.FACULTY, JSON.stringify(faculty));
+  // Clear legacy and previous credentials database keys completely
+  const oldKeys = [
+    'gitamw_lms_perm_users_db', 
+    'gitamw_lms_perm_faculty_db', 
+    'gitamw_lms_perm_admins_db', 
+    'gitamw_lms_perm_registered_roles_history',
+    'lms_v35_users', 
+    'lms_v30_users', 
+    'lms_users_db'
+  ];
+  oldKeys.forEach(k => localStorage.removeItem(k));
 
-  // Initialize Students (Filter out pre-seeded accounts)
-  let users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
-  users = users.filter(u => !['CSE561', 'CSE562', 'CSE563', 'CSE564', 'CSE565'].includes(u.username) && !['238U1A0561', '238U1A0562', '238U1A0563', '238U1A0564', '238U1A0565'].includes(u.rollNumber));
-  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-
+  if (!localStorage.getItem(STORAGE_KEYS.FACULTY)) {
+    localStorage.setItem(STORAGE_KEYS.FACULTY, JSON.stringify([]));
+  }
+  if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([]));
+  }
   if (!localStorage.getItem(STORAGE_KEYS.ADMINS)) {
     localStorage.setItem(STORAGE_KEYS.ADMINS, JSON.stringify([]));
   }

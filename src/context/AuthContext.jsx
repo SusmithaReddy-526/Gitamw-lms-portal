@@ -4,7 +4,6 @@ import { dbService } from '../services/dbService';
 const AuthContext = createContext();
 
 const SESSION_KEY = 'lms_current_session';
-const INACTIVITY_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes auto-logout
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -17,6 +16,24 @@ export function AuthProvider({ children }) {
   });
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Validate session user against current database - clear stale sessions if database wiped
+    if (user && user.role !== 'admin') {
+      try {
+        const students = dbService.getStudentsList();
+        const faculty = dbService.getFacultyList();
+        const exists = students.some(s => s.username === user.username) || faculty.some(f => f.username === user.username);
+        if (!exists) {
+          setUser(null);
+          localStorage.removeItem(SESSION_KEY);
+        }
+      } catch {
+        setUser(null);
+        localStorage.removeItem(SESSION_KEY);
+      }
+    }
+  }, []);
 
   const login = (username, password) => {
     setLoading(true);
