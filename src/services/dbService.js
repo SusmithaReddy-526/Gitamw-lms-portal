@@ -57,8 +57,299 @@ const INITIAL_NOTICES = [
   }
 ];
 
-// Official Curriculum Database - Strictly 3rd Year CSE Sem 5 & 4th Year CSE Sem 7 subjects
+// Official Curriculum Database - Strictly 2nd Year AIML Sem 3, 3rd Year CSE Sem 5 & 4th Year Sem 7 subjects
 const INITIAL_CURRICULUM = [
+  // --- 2ND YEAR AIML & CSE (SEM 3) STRICT USER SUBJECTS ---
+  {
+    yearId: '2nd',
+    branchId: 'AIML',
+    subjectId: '25g54301_aiml',
+    subjectName: 'Discrete Mathematics & Graph Theory',
+    subjectCode: '25G54301',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'AIML',
+    subjectId: '25g52301_aiml',
+    subjectName: 'Universal Human Values',
+    subjectCode: '25G52301',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'AIML',
+    subjectId: '25g31301t_aiml',
+    subjectName: 'Artificial Intelligence',
+    subjectCode: '25G31301T',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'AIML',
+    subjectId: '25g05302t_aiml',
+    subjectName: 'Advanced Data Structures & Algorithm Analysis',
+    subjectCode: '25G05302T',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'AIML',
+    subjectId: '25g05303t_aiml',
+    subjectName: 'Object Oriented Programming Through JAVA',
+    subjectCode: '25G05303T',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'AIML',
+    subjectId: '25g05304_aiml',
+    subjectName: 'Python Programming',
+    subjectCode: '25G05304',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'AIML',
+    subjectId: '25g99301_aiml',
+    subjectName: 'Environmental Science',
+    subjectCode: '25G99301',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'AIML',
+    subjectId: '25g05302p_aiml',
+    subjectName: 'Advanced Data Structures & Algorithm Analysis Lab',
+    subjectCode: '25G05302P',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'AIML',
+    subjectId: '25g05303p_aiml',
+    subjectName: 'Object Oriented Programming Through JAVA Lab',
+    subjectCode: '25G05303P',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+
+  // Also include for 2nd Year CSE (Sem 3)
+  {
+    yearId: '2nd',
+    branchId: 'CSE',
+    subjectId: '25g54301_cse',
+    subjectName: 'Discrete Mathematics & Graph Theory',
+    subjectCode: '25G54301',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'CSE',
+    subjectId: '25g52301_cse',
+    subjectName: 'Universal Human Values',
+    subjectCode: '25G52301',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'CSE',
+    subjectId: '25g31301t_cse',
+    subjectName: 'Artificial Intelligence',
+    subjectCode: '25G31301T',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'CSE',
+    subjectId: '25g05302t_cse',
+    subjectName: 'Advanced Data Structures & Algorithm Analysis',
+    subjectCode: '25G05302T',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'CSE',
+    subjectId: '25g05303t_cse',
+    subjectName: 'Object Oriented Programming Through JAVA',
+    subjectCode: '25G05303T',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'CSE',
+    subjectId: '25g05304_cse',
+    subjectName: 'Python Programming',
+    subjectCode: '25G05304',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'CSE',
+    subjectId: '25g99301_cse',
+    subjectName: 'Environmental Science',
+    subjectCode: '25G99301',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'CSE',
+    subjectId: '25g05302p_cse',
+    subjectName: 'Advanced Data Structures & Algorithm Analysis Lab',
+    subjectCode: '25G05302P',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
+  {
+    yearId: '2nd',
+    branchId: 'CSE',
+    subjectId: '25g05303p_cse',
+    subjectName: 'Object Oriented Programming Through JAVA Lab',
+    subjectCode: '25G05303P',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: [
+      { unitId: 'unit-1', title: 'Unit-1' },
+      { unitId: 'unit-2', title: 'Unit-2' },
+      { unitId: 'unit-3', title: 'Unit-3' },
+      { unitId: 'unit-4', title: 'Unit-4' },
+      { unitId: 'unit-5', title: 'Unit-5' }
+    ]
+  },
   // --- 3RD YEAR CSE (SEM 5) STRICT USER SUBJECTS ---
   {
     yearId: '3rd',
@@ -472,6 +763,12 @@ function initStorage() {
       curriculum[existingIdx] = { ...item, ...curriculum[existingIdx] };
     } else {
       curriculum.push(item);
+    }
+  });
+  // Ensure 2nd Year AIML & CSE have all 9 subjects
+  INITIAL_CURRICULUM.filter(i => i.yearId === '2nd').forEach(sub => {
+    if (!curriculum.some(c => c.subjectCode.toUpperCase() === sub.subjectCode.toUpperCase() && c.yearId === '2nd' && c.branchId === sub.branchId)) {
+      curriculum.push(sub);
     }
   });
   // Ensure 3rd Year CSE has all 7 subjects
