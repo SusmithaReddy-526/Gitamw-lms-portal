@@ -612,7 +612,63 @@ export const dbService = {
 
   getSubjectsForBranchAndYear: (yearId, branchId) => {
     const curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
+    if (!yearId && !branchId) return curriculum;
+    if (!yearId) return curriculum.filter(item => item.branchId === branchId);
+    if (!branchId) return curriculum.filter(item => item.yearId === yearId);
     return curriculum.filter(item => item.yearId === yearId && item.branchId === branchId);
+  },
+
+  addSubjectToCurriculum: (subjectData) => {
+    const curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
+    const cleanCode = (subjectData.subjectCode || '').trim().toUpperCase();
+    
+    if (!cleanCode) throw new Error('Subject Code is required.');
+    if (!subjectData.subjectName) throw new Error('Subject Name is required.');
+    if (!subjectData.yearId || !subjectData.branchId) throw new Error('Please select Academic Year and Branch.');
+
+    const existing = curriculum.find(s => s.subjectCode.toUpperCase() === cleanCode);
+    if (existing) {
+      throw new Error(`Subject with code "${cleanCode}" already exists in curriculum.`);
+    }
+
+    const newSubObj = {
+      subjectId: cleanCode.toLowerCase().replace(/[^a-z0-9]/g, ''),
+      subjectName: subjectData.subjectName.trim(),
+      subjectCode: cleanCode,
+      yearId: subjectData.yearId,
+      branchId: subjectData.branchId,
+      semester: subjectData.semester || (subjectData.yearId === '4th' ? 'Sem 7' : subjectData.yearId === '3rd' ? 'Sem 5' : subjectData.yearId === '2nd' ? 'Sem 3' : 'Sem 1'),
+      credits: subjectData.credits || 3,
+      syllabusPdfUrl: subjectData.syllabusPdfUrl || null,
+      syllabusFileName: subjectData.syllabusFileName || null,
+      units: [
+        { unitId: 'unit-1', title: 'Unit-1' },
+        { unitId: 'unit-2', title: 'Unit-2' },
+        { unitId: 'unit-3', title: 'Unit-3' },
+        { unitId: 'unit-4', title: 'Unit-4' },
+        { unitId: 'unit-5', title: 'Unit-5' }
+      ],
+      addedBy: subjectData.addedBy || 'Faculty',
+      createdAt: new Date().toISOString()
+    };
+
+    curriculum.push(newSubObj);
+    localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(curriculum));
+    return newSubObj;
+  },
+
+  updateSubjectSyllabus: (subjectCode, syllabusPdfUrl, syllabusFileName) => {
+    const curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
+    const cleanCode = (subjectCode || '').trim().toUpperCase();
+    const idx = curriculum.findIndex(s => s.subjectCode.toUpperCase() === cleanCode);
+    
+    if (idx !== -1) {
+      curriculum[idx].syllabusPdfUrl = syllabusPdfUrl;
+      curriculum[idx].syllabusFileName = syllabusFileName;
+      localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(curriculum));
+      return curriculum[idx];
+    }
+    throw new Error('Subject record not found.');
   },
 
   saveSubjectUnits: (yearId, branchId, subjectName, subjectCode, unitsData) => {

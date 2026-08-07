@@ -9,36 +9,52 @@ import {
   Trash2, 
   CheckCircle2, 
   AlertCircle,
-  FileUp,
-  Image as ImageIcon,
   FileType,
+  ImageIcon,
   Download,
-  Eye
+  FileUp,
+  Sparkles,
+  Layers,
+  Award
 } from 'lucide-react';
 
 export function FacultyDashboard({ user }) {
+  const [activeTabMode, setActiveTabMode] = useState('upload-material'); // 'upload-material' | 'add-subject' | 'manage-syllabus'
+
+  // Common selection state
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
+
+  // --- 1. UNIT MATERIAL UPLOAD STATE ---
   const [subjectName, setSubjectName] = useState('');
   const [subjectCode, setSubjectCode] = useState('');
   const [unitTitle, setUnitTitle] = useState('');
   const [materialTitle, setMaterialTitle] = useState('');
   const [materialDesc, setMaterialDesc] = useState('');
-  
-  // File state
   const [fileObject, setFileObject] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
-  // List of uploaded files
-  const [uploadedFilesList, setUploadedFilesList] = useState(dbService.getUploadedFiles());
+  // --- 2. ADD NEW SUBJECT STATE ---
+  const [newSubName, setNewSubName] = useState('');
+  const [newSubCode, setNewSubCode] = useState('');
+  const [newSubYear, setNewSubYear] = useState('');
+  const [newSubBranch, setNewSubBranch] = useState('');
+  const [newSubCredits, setNewSubCredits] = useState('3');
+  const [syllabusFileObject, setSyllabusFileObject] = useState(null);
+  const [subSuccessMsg, setSubSuccessMsg] = useState('');
+  const [subErrorMsg, setSubErrorMsg] = useState('');
+
+  // Uploaded Files list
+  const [uploadedFilesList, setUploadedFilesList] = useState(() => dbService.getUploadedFiles());
+  const [curriculumList, setCurriculumList] = useState(() => dbService.getCurriculum());
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 15 * 1024 * 1024) { // 15MB limit check for Base64 storage
-        setError('File size must be under 15MB for local storage.');
+      if (file.size > 15 * 1024 * 1024) {
+        setError('File size must be under 15MB.');
         setFileObject(null);
         return;
       }
@@ -47,13 +63,31 @@ export function FacultyDashboard({ user }) {
     }
   };
 
+  const handleSyllabusFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 15 * 1024 * 1024) {
+        setSubErrorMsg('Syllabus PDF file size must be under 15MB.');
+        setSyllabusFileObject(null);
+        return;
+      }
+      setSyllabusFileObject(file);
+      setSubErrorMsg('');
+    }
+  };
+
   const handleDirectFileUpload = (e) => {
     e.preventDefault();
     setError('');
     setMessage('');
 
-    if (!subjectName.trim() || !subjectCode.trim() || !materialTitle.trim() || !fileObject) {
-      setError('Please provide Subject Name, Code, Material Title, and select a PDF/Image file.');
+    if (!selectedYear || !selectedBranch) {
+      setError('Please select Academic Year and Engineering Branch.');
+      return;
+    }
+
+    if (!subjectName.trim() || !subjectCode.trim() || !unitTitle || !materialTitle.trim() || !fileObject) {
+      setError('Please fill out Subject Name, Subject Code, Target Unit, Title, and select a file.');
       return;
     }
 
@@ -61,356 +95,558 @@ export function FacultyDashboard({ user }) {
 
     const reader = new FileReader();
     reader.onload = () => {
-      const base64Data = reader.result;
-      
-      // Calculate file size string
-      const sizeKB = Math.round(fileObject.size / 1024);
-      const formattedSize = sizeKB > 1024 ? `${(sizeKB / 1024).toFixed(1)} MB` : `${sizeKB} KB`;
+      try {
+        const fileBase64 = reader.result;
 
-      // Format unit ID cleanly (e.g. Unit-1 -> unit-1, Unit-2 -> unit-2)
-      const cleanUnitStr = unitTitle.toLowerCase().trim();
-      const unitId = cleanUnitStr.includes('unit-1') || cleanUnitStr.includes('unit 1') ? 'unit-1' 
-        : cleanUnitStr.includes('unit-2') || cleanUnitStr.includes('unit 2') ? 'unit-2'
-        : cleanUnitStr.includes('unit-3') || cleanUnitStr.includes('unit 3') ? 'unit-3'
-        : cleanUnitStr.includes('unit-4') || cleanUnitStr.includes('unit 4') ? 'unit-4'
-        : 'unit-5';
+        const newFileRecord = {
+          title: materialTitle.trim(),
+          description: materialDesc.trim(),
+          yearId: selectedYear,
+          branchId: selectedBranch,
+          subjectName: subjectName.trim(),
+          subjectCode: subjectCode.trim().toUpperCase(),
+          unitTitle: unitTitle,
+          unitId: unitTitle.toLowerCase().replace(/[^a-z0-9]/g, ''),
+          fileName: fileObject.name,
+          fileType: fileObject.type,
+          fileSize: (fileObject.size / 1024 / 1024).toFixed(2) + ' MB',
+          fileData: fileBase64,
+          uploadedBy: user?.fullName ? `${user.fullName} (${user.employeeId || 'Faculty'})` : 'Faculty'
+        };
 
-      const subjectId = subjectCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+        dbService.saveFacultyUploadedFile(newFileRecord);
+        setUploadedFilesList(dbService.getUploadedFiles());
 
-      // First ensure subject and unit exist in curriculum structure
-      dbService.saveSubjectUnits(selectedYear, selectedBranch, subjectName, subjectCode, [
-        {
-          unitId,
-          title: unitTitle,
-          description: materialDesc || `Curriculum Unit for ${subjectName}`,
-          topics: [{ id: `top-${Date.now()}`, name: materialTitle }]
-        }
-      ]);
-
-      // Save file record
-      const fileRecord = {
-        yearId: selectedYear,
-        branchId: selectedBranch,
-        subjectId,
-        subjectName,
-        subjectCode,
-        unitId,
-        title: materialTitle,
-        description: materialDesc || 'Official faculty reference material.',
-        fileName: fileObject.name,
-        fileType: fileObject.type || 'application/pdf',
-        fileSize: formattedSize,
-        fileData: base64Data,
-        uploadedBy: user?.fullName ? `${user.fullName} (${user.employeeId || 'Faculty'})` : 'Department Faculty'
-      };
-
-      dbService.saveFacultyUploadedFile(fileRecord);
-
-      setUploading(false);
-      setMessage(`Successfully uploaded "${fileObject.name}" for ${subjectName} (${unitTitle})!`);
-      setFileObject(null);
-      setMaterialTitle('');
-      setMaterialDesc('');
-      setUploadedFilesList(dbService.getUploadedFiles());
+        setMessage(`Successfully uploaded "${materialTitle}" for ${unitTitle}!`);
+        setMaterialTitle('');
+        setMaterialDesc('');
+        setFileObject(null);
+      } catch (err) {
+        console.error(err);
+        setError('Error reading file. Please try again.');
+      } finally {
+        setUploading(false);
+      }
     };
 
     reader.onerror = () => {
+      setError('Failed to read file.');
       setUploading(false);
-      setError('Failed to read file. Please try again.');
     };
 
     reader.readAsDataURL(fileObject);
   };
 
-  const handleDeleteFile = (fileId) => {
+  // --- HANDLE ADDING NEW COURSE SUBJECT ---
+  const handleAddNewSubjectSubmit = (e) => {
+    e.preventDefault();
+    setSubSuccessMsg('');
+    setSubErrorMsg('');
+
+    if (!newSubYear || !newSubBranch || !newSubName.trim() || !newSubCode.trim()) {
+      setSubErrorMsg('Please fill in Academic Year, Branch, Subject Name, and Subject Code.');
+      return;
+    }
+
+    const saveSubject = (syllabusDataUrl = null, syllabusName = null) => {
+      try {
+        const addedSub = dbService.addSubjectToCurriculum({
+          subjectName: newSubName.trim(),
+          subjectCode: newSubCode.trim().toUpperCase(),
+          yearId: newSubYear,
+          branchId: newSubBranch,
+          credits: parseInt(newSubCredits, 10) || 3,
+          syllabusPdfUrl: syllabusDataUrl,
+          syllabusFileName: syllabusName,
+          addedBy: user?.fullName ? `${user.fullName} (${user.employeeId || 'Faculty'})` : 'Faculty'
+        });
+
+        setCurriculumList(dbService.getCurriculum());
+        setSubSuccessMsg(`Successfully added "${addedSub.subjectName} (${addedSub.subjectCode})" to ${addedSub.yearId} Year ${addedSub.branchId} Curriculum!`);
+        
+        // Reset form
+        setNewSubName('');
+        setNewSubCode('');
+        setSyllabusFileObject(null);
+      } catch (err) {
+        setSubErrorMsg(err.message || 'Failed to add new subject.');
+      }
+    };
+
+    if (syllabusFileObject) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        saveSubject(reader.result, syllabusFileObject.name);
+      };
+      reader.readAsDataURL(syllabusFileObject);
+    } else {
+      saveSubject();
+    }
+  };
+
+  const handleDeleteFile = (id) => {
     if (window.confirm('Are you sure you want to delete this uploaded file?')) {
-      dbService.deleteUploadedFile(fileId);
+      dbService.deleteFacultyUploadedFile(id);
       setUploadedFilesList(dbService.getUploadedFiles());
-      setMessage('File removed successfully.');
     }
   };
 
   return (
-    <div className="space-y-10 pb-16">
-      {/* Faculty Portal Banner */}
-      <div className="p-8 rounded-3xl bg-gradient-to-r from-navy-900 via-brand-900 to-indigo-950 text-white shadow-xl relative overflow-hidden border border-brand-500/20">
-        <div className="relative z-10 max-w-3xl space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-semibold">
-            <FileUp className="w-4 h-4 text-brand-400" />
-            GITAMW Faculty Direct Material Upload Portal
+    <div className="max-w-6xl mx-auto space-y-8 pb-16">
+      {/* Header Banner */}
+      <div className="p-8 rounded-3xl bg-gradient-to-r from-brand-900 via-indigo-900 to-slate-950 text-white shadow-xl relative overflow-hidden border border-brand-500/20">
+        <div className="relative z-10 max-w-4xl space-y-3">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-bold border border-brand-400/30">
+            <Sparkles className="w-4 h-4 text-brand-400" />
+            GITAMW Autonomous Faculty Portal
           </div>
-          <h1 className="text-3xl font-extrabold font-outfit">
-            Upload PDF Notes, Images & Learning Files
+          <h1 className="text-4xl font-extrabold font-outfit tracking-tight">
+            Faculty Curriculum & Material Management
           </h1>
-          <p className="text-xs text-slate-300">
-            Welcome, <span className="font-bold text-white">{user?.fullName || 'Faculty Member'}</span>! Select your class parameters and upload PDF documents or image diagrams directly. Students can view and download your uploaded files immediately.
+          <p className="text-sm text-slate-300">
+            Welcome, <span className="font-bold text-white">{user?.fullName || 'Faculty Member'}</span>! Add new course subjects, upload unit study materials, and manage department syllabus.
           </p>
+
+          {/* Mode Switcher Tabs */}
+          <div className="pt-4 flex flex-wrap items-center gap-3">
+            <button
+              onClick={() => setActiveTabMode('upload-material')}
+              className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTabMode === 'upload-material'
+                  ? 'bg-white text-slate-900 shadow-md scale-105'
+                  : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700'
+              }`}
+            >
+              <Upload className="w-4 h-4 text-brand-500" />
+              Upload Unit Study Material
+            </button>
+
+            <button
+              onClick={() => setActiveTabMode('add-subject')}
+              className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTabMode === 'add-subject'
+                  ? 'bg-white text-slate-900 shadow-md scale-105'
+                  : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700'
+              }`}
+            >
+              <Plus className="w-4 h-4 text-emerald-500" />
+              Add New Course Subject
+            </button>
+
+            <button
+              onClick={() => setActiveTabMode('manage-syllabus')}
+              className={`px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer ${
+                activeTabMode === 'manage-syllabus'
+                  ? 'bg-white text-slate-900 shadow-md scale-105'
+                  : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700'
+              }`}
+            >
+              <BookOpen className="w-4 h-4 text-indigo-500" />
+              Manage Department Syllabus
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Messages */}
-      {message && (
-        <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>{message}</span>
+      {/* --- MODE 1: UPLOAD UNIT STUDY MATERIAL --- */}
+      {activeTabMode === 'upload-material' && (
+        <div className="space-y-8">
+          <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
+            <div className="flex items-center gap-3">
+              <span className="w-10 h-10 rounded-2xl bg-brand-500/10 text-brand-500 font-bold flex items-center justify-center">
+                <FileUp className="w-5 h-5" />
+              </span>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
+                  Upload PDF / Material for Specific Unit
+                </h3>
+                <p className="text-xs text-slate-500">Files uploaded here appear strictly inside the student's selected Unit page.</p>
+              </div>
+            </div>
+
+            {message && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+              >
+                <CheckCircle2 className="w-5 h-5 shrink-0" />
+                <span>{message}</span>
+              </motion.div>
+            )}
+
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-2xl bg-rose-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+              >
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span>{error}</span>
+              </motion.div>
+            )}
+
+            <form onSubmit={handleDirectFileUpload} className="space-y-6">
+              {/* Year, Semester & Branch */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Academic Year *
+                  </label>
+                  <select
+                    value={selectedYear}
+                    onChange={e => {
+                      setSelectedYear(e.target.value);
+                      setSubjectName('');
+                      setSubjectCode('');
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
+                  >
+                    <option value="">-- Select Academic Year --</option>
+                    {YEARS.map(y => (
+                      <option key={y.id} value={y.id}>{y.title}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Engineering Branch *
+                  </label>
+                  <select
+                    value={selectedBranch}
+                    onChange={e => {
+                      setSelectedBranch(e.target.value);
+                      setSubjectName('');
+                      setSubjectCode('');
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
+                  >
+                    <option value="">-- Select Engineering Branch --</option>
+                    {BRANCHES.map(b => (
+                      <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Course Subject *
+                  </label>
+                  <select
+                    value={subjectCode}
+                    onChange={e => {
+                      const code = e.target.value;
+                      setSubjectCode(code);
+                      const found = dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).find(s => s.subjectCode === code);
+                      if (found) setSubjectName(found.subjectName);
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/40 bg-brand-50/20 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none"
+                  >
+                    <option value="">-- Select Course Subject --</option>
+                    {selectedYear && selectedBranch && dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).map(s => (
+                      <option key={s.subjectCode} value={s.subjectCode}>
+                        {s.subjectName} ({s.subjectCode})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Target Unit & Title */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Target Syllabus Unit *
+                  </label>
+                  <select
+                    value={unitTitle}
+                    onChange={e => setUnitTitle(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-brand-600 focus:ring-2 focus:ring-brand-500 outline-none"
+                  >
+                    <option value="">-- Select Target Unit --</option>
+                    <option value="Unit-1">Unit-1</option>
+                    <option value="Unit-2">Unit-2</option>
+                    <option value="Unit-3">Unit-3</option>
+                    <option value="Unit-4">Unit-4</option>
+                    <option value="Unit-5">Unit-5</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Material / Document Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Unit-1 Detailed Lecture Notes PDF"
+                    value={materialTitle}
+                    onChange={e => setMaterialTitle(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold focus:ring-2 focus:ring-brand-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* File Attachment */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Select Document File (PDF / Images, Max 15MB) *
+                </label>
+                <input
+                  type="file"
+                  required
+                  accept=".pdf,.png,.jpg,.jpeg"
+                  onChange={handleFileChange}
+                  className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-500 cursor-pointer"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={uploading}
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer disabled:opacity-50"
+              >
+                <Upload className="w-4 h-4" />
+                {uploading ? 'Uploading Document...' : 'Upload & Attach Document to Selected Unit'}
+              </button>
+            </form>
+          </div>
+
+          {/* Uploaded Files Management List */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
+              Your Uploaded Files ({uploadedFilesList.length})
+            </h3>
+
+            <div className="space-y-4">
+              {uploadedFilesList.map((file) => (
+                <div key={file.id} className="p-5 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-500 font-bold flex items-center justify-center shrink-0">
+                      {file.fileType?.includes('pdf') ? <FileType className="w-6 h-6 text-red-500" /> : <ImageIcon className="w-6 h-6 text-blue-500" />}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400">
+                          {file.yearId} Year • {file.branchId} • {file.subjectCode} • {file.unitTitle}
+                        </span>
+                        <span className="text-xs text-slate-400 font-mono">{file.fileSize}</span>
+                      </div>
+                      <h4 className="font-bold text-slate-900 dark:text-white text-base">
+                        {file.title}
+                      </h4>
+                      <p className="text-xs text-slate-500">
+                        File: <span className="font-mono text-slate-700 dark:text-slate-300">{file.fileName}</span> • Uploaded: {file.uploadedAt}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => handleDeleteFile(file.id)}
+                      className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors cursor-pointer"
+                      title="Delete File"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {uploadedFilesList.length === 0 && (
+                <div className="p-8 rounded-2xl glass-card text-center text-slate-500 space-y-2">
+                  <BookOpen className="w-10 h-10 text-slate-300 mx-auto" />
+                  <p className="font-bold text-slate-700 dark:text-slate-300">No uploaded files found.</p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
-      {error && (
-        <div className="p-4 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 text-xs flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-red-500 shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
 
-      {/* Upload Form */}
-      <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
-          <Upload className="w-5 h-5 text-brand-500" />
-          Upload New PDF Document or Image File
-        </h3>
-
-        <form onSubmit={handleDirectFileUpload} className="space-y-5">
-          
-          {/* Target Year & Branch */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* --- MODE 2: ADD NEW COURSE SUBJECT --- */}
+      {activeTabMode === 'add-subject' && (
+        <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
+          <div className="flex items-center gap-3">
+            <span className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-500 font-bold flex items-center justify-center">
+              <Plus className="w-5 h-5" />
+            </span>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Target Academic Year *
-              </label>
-              <select
-                value={selectedYear}
-                onChange={e => {
-                  setSelectedYear(e.target.value);
-                  setSubjectName('');
-                  setSubjectCode('');
-                }}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
-              >
-                <option value="">-- Select Academic Year --</option>
-                {YEARS.map(y => (
-                  <option key={y.id} value={y.id}>{y.title}</option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Semester / Academic Term *
-              </label>
-              <select
-                value={selectedYear === '4th' ? 'Sem 7' : selectedYear === '3rd' ? 'Sem 5' : selectedYear === '2nd' ? 'Sem 3' : selectedYear === '1st' ? 'Sem 1' : ''}
-                onChange={() => {}}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none font-bold text-brand-600 dark:text-brand-400"
-              >
-                <option value="">-- Select Term --</option>
-                {selectedYear === '4th' && <option value="Sem 7">Sem 7 (4th Year Sem 1)</option>}
-                {selectedYear === '4th' && <option value="Sem 8">Sem 8 (4th Year Sem 2)</option>}
-                {selectedYear === '3rd' && <option value="Sem 5">Sem 5 (3rd Year Sem 1)</option>}
-                {selectedYear === '3rd' && <option value="Sem 6">Sem 6 (3rd Year Sem 2)</option>}
-                {selectedYear === '2nd' && <option value="Sem 3">Sem 3 (2nd Year Sem 1)</option>}
-                {selectedYear === '2nd' && <option value="Sem 4">Sem 4 (2nd Year Sem 2)</option>}
-                {selectedYear === '1st' && <option value="Sem 1">Sem 1 (1st Year Sem 1)</option>}
-                {selectedYear === '1st' && <option value="Sem 2">Sem 2 (1st Year Sem 2)</option>}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Engineering Branch *
-              </label>
-              <select
-                value={selectedBranch}
-                onChange={e => {
-                  setSelectedBranch(e.target.value);
-                  setSubjectName('');
-                  setSubjectCode('');
-                }}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
-              >
-                <option value="">-- Select Engineering Branch --</option>
-                {BRANCHES.map(b => (
-                  <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
-                ))}
-              </select>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
+                Add New Course Subject to Curriculum
+              </h3>
+              <p className="text-xs text-slate-500">Add a new official subject with course code, credits, and syllabus document.</p>
             </div>
           </div>
 
-          {/* Select Subject from Curriculum Dropdown */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Select Course Subject *
-              </label>
-              <select
-                value={subjectCode}
-                onChange={e => {
-                  const code = e.target.value;
-                  setSubjectCode(code);
-                  const subs = dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch);
-                  const found = subs.find(s => s.subjectCode === code);
-                  if (found) {
-                    setSubjectName(found.subjectName);
-                  }
-                }}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/40 bg-brand-50/20 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none"
-              >
-                <option value="">-- Select Course Subject --</option>
-                {selectedYear && selectedBranch && dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).map(s => (
-                  <option key={s.subjectCode} value={s.subjectCode}>
-                    {s.subjectName} ({s.subjectCode})
-                  </option>
-                ))}
-              </select>
+          {subSuccessMsg && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+            >
+              <CheckCircle2 className="w-5 h-5 shrink-0" />
+              <span>{subSuccessMsg}</span>
+            </motion.div>
+          )}
+
+          {subErrorMsg && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 rounded-2xl bg-rose-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+            >
+              <AlertCircle className="w-5 h-5 shrink-0" />
+              <span>{subErrorMsg}</span>
+            </motion.div>
+          )}
+
+          <form onSubmit={handleAddNewSubjectSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Academic Year *
+                </label>
+                <select
+                  value={newSubYear}
+                  onChange={e => setNewSubYear(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
+                >
+                  <option value="">-- Select Academic Year --</option>
+                  {YEARS.map(y => (
+                    <option key={y.id} value={y.id}>{y.title}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Engineering Branch *
+                </label>
+                <select
+                  value={newSubBranch}
+                  onChange={e => setNewSubBranch(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-emerald-500 outline-none"
+                >
+                  <option value="">-- Select Engineering Branch --</option>
+                  {BRANCHES.map(b => (
+                    <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Target Syllabus Unit *
-              </label>
-              <select
-                value={unitTitle}
-                onChange={e => setUnitTitle(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-brand-600 dark:text-brand-400 focus:ring-2 focus:ring-brand-500 outline-none"
-              >
-                <option value="">-- Select Target Unit --</option>
-                <option value="Unit-1">Unit-1</option>
-                <option value="Unit-2">Unit-2</option>
-                <option value="Unit-3">Unit-3</option>
-                <option value="Unit-4">Unit-4</option>
-                <option value="Unit-5">Unit-5</option>
-              </select>
-            </div>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Subject Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Generative AI & Large Language Models"
+                  value={newSubName}
+                  onChange={e => setNewSubName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold focus:ring-2 focus:ring-emerald-500 outline-none"
+                />
+              </div>
 
-          {/* Material Title & Description */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Subject Code *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. 23A30605T"
+                  value={newSubCode}
+                  onChange={e => setNewSubCode(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold font-mono uppercase focus:ring-2 focus:ring-emerald-500 outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Syllabus PDF Attachment */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Document / Material Title *
+                Official Syllabus Document PDF (Optional)
               </label>
               <input
-                type="text"
-                required
-                placeholder="e.g. Unit-1 Hand-written Lecture Notes & Formulas"
-                value={materialTitle}
-                onChange={e => setMaterialTitle(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Short Description
-              </label>
-              <input
-                type="text"
-                placeholder="e.g. Includes solved PYQs and architecture diagrams"
-                value={materialDesc}
-                onChange={e => setMaterialDesc(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
-              />
-            </div>
-          </div>
-
-          {/* File Input Box */}
-          <div className="p-6 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-500 mx-auto flex items-center justify-center">
-              <FileUp className="w-6 h-6" />
-            </div>
-            <div>
-              <label htmlFor="file-upload" className="cursor-pointer text-sm font-bold text-brand-600 dark:text-brand-400 hover:underline">
-                Click to Choose File (PDF, Images, DOCX, PPT)
-              </label>
-              <input
-                id="file-upload"
                 type="file"
-                accept=".pdf,.png,.jpg,.jpeg,.docx,.pptx"
-                onChange={handleFileChange}
-                className="hidden"
+                accept=".pdf"
+                onChange={handleSyllabusFileChange}
+                className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-500 cursor-pointer"
               />
-              <p className="text-xs text-slate-400 mt-1">Supports PDF, PNG, JPG, DOCX up to 15MB</p>
             </div>
 
-            {fileObject && (
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 text-xs font-bold border border-emerald-300 dark:border-emerald-800">
-                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                <span>Selected: {fileObject.name} ({(fileObject.size / 1024).toFixed(0)} KB)</span>
+            <button
+              type="submit"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              Add Subject to Department Curriculum
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* --- MODE 3: MANAGE DEPARTMENT SYLLABUS --- */}
+      {activeTabMode === 'manage-syllabus' && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
+              <BookOpen className="w-6 h-6 text-indigo-500" />
+              Department Course Curriculum & Syllabus ({curriculumList.length} Subjects)
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {curriculumList.map((sub, idx) => (
+              <div key={idx} className="p-6 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 space-y-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 border border-indigo-200">
+                      {sub.yearId} Year • {sub.branchId} • {sub.semester || 'Sem 7'}
+                    </span>
+                    <h4 className="text-lg font-bold text-slate-900 dark:text-white mt-2">
+                      {sub.subjectName}
+                    </h4>
+                    <p className="text-xs font-mono font-bold text-slate-400">
+                      Code: {sub.subjectCode} • Credits: {sub.credits || 3}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Syllabus PDF Action */}
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2 text-slate-500 font-semibold">
+                    <FileText className="w-4 h-4 text-brand-500" />
+                    <span>Syllabus PDF: {sub.syllabusFileName || 'Not Uploaded Yet'}</span>
+                  </div>
+
+                  {sub.syllabusPdfUrl && (
+                    <a
+                      href={sub.syllabusPdfUrl}
+                      download={sub.syllabusFileName || `${sub.subjectCode}_Syllabus.pdf`}
+                      className="px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-300 font-bold border border-indigo-200 flex items-center gap-1.5 hover:bg-indigo-100"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      View Syllabus
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {curriculumList.length === 0 && (
+              <div className="p-12 text-center rounded-3xl glass-card text-slate-500 col-span-2">
+                <p className="font-bold">No subjects registered yet in curriculum.</p>
               </div>
             )}
           </div>
-
-          <button
-            type="submit"
-            disabled={uploading || !fileObject}
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            <Upload className="w-5 h-5" />
-            {uploading ? 'Uploading PDF Document...' : 'Upload File for Students'}
-          </button>
-
-        </form>
-      </div>
-
-      {/* Uploaded Files Management List */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
-          Your Uploaded Files & Documents ({uploadedFilesList.length})
-        </h3>
-
-        <div className="space-y-4">
-          {uploadedFilesList.map((file) => (
-            <div key={file.id} className="p-5 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-500 font-bold flex items-center justify-center shrink-0">
-                  {file.fileType?.includes('pdf') ? <FileType className="w-6 h-6 text-red-500" /> : <ImageIcon className="w-6 h-6 text-blue-500" />}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400">
-                      {file.yearId} Year • {file.branchId} • {file.subjectCode}
-                    </span>
-                    <span className="text-xs text-slate-400 font-mono">{file.fileSize}</span>
-                  </div>
-                  <h4 className="font-bold text-slate-900 dark:text-white text-base">
-                    {file.title}
-                  </h4>
-                  <p className="text-xs text-slate-500">
-                    File: <span className="font-mono text-slate-700 dark:text-slate-300">{file.fileName}</span> • Uploaded: {file.uploadedAt}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <a
-                  href={file.fileData}
-                  download={file.fileName}
-                  className="px-3.5 py-2 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-300 border border-brand-200 text-xs font-bold flex items-center gap-1.5 hover:bg-brand-100"
-                >
-                  <Download className="w-4 h-4" />
-                  Download
-                </a>
-
-                <button
-                  onClick={() => handleDeleteFile(file.id)}
-                  className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
-                  title="Delete File"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {uploadedFilesList.length === 0 && (
-            <div className="p-8 rounded-2xl glass-card text-center text-slate-500 space-y-2">
-              <BookOpen className="w-10 h-10 text-slate-300 mx-auto" />
-              <p className="font-bold text-slate-700 dark:text-slate-300">No uploaded files found.</p>
-              <p className="text-xs">Use the upload form above to attach PDF documents for students.</p>
-            </div>
-          )}
         </div>
-      </div>
-
+      )}
     </div>
   );
 }
