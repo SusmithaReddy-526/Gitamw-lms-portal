@@ -37,6 +37,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
     setAuthMode(hasReg ? 'login' : 'register');
     setError('');
     setRegisteredUserPayload(null);
+    setLoginUsername('');
+    setLoginPassword('');
   }, [isOpen, initialRole]);
 
   // Role tab switch handler
@@ -44,6 +46,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
     setRole(newRole);
     setError('');
     setRegisteredUserPayload(null);
+    setLoginUsername('');
+    setLoginPassword('');
     const checkFn = dbService.hasRoleRegistered || dbService.hasRegisteredRole;
     const hasReg = checkFn ? checkFn(newRole) : false;
     setAuthMode(hasReg ? 'login' : 'register');
@@ -643,17 +647,22 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
               </form>
             ) : (
               /* LOGIN FORM */
-              <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <form onSubmit={handleLoginSubmit} autoComplete="off" className="space-y-4">
+                {/* Hidden dummy inputs to capture browser autofill and keep visible fields 100% empty */}
+                <input type="text" style={{ display: 'none' }} tabIndex={-1} name="prevent_autofill_username" />
+                <input type="password" style={{ display: 'none' }} tabIndex={-1} name="prevent_autofill_password" />
+
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    {role === 'student' ? 'Student Username (e.g. 23CSE045)' : role === 'faculty' ? 'Faculty Employee ID / Username (e.g. EMP-CSE-01)' : 'Admin Username'}
+                    {role === 'student' ? 'Student Username' : role === 'faculty' ? 'Faculty Employee ID' : 'Admin Username'}
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
                       type="text"
                       required
-                      placeholder={role === 'student' ? '23CSE045' : role === 'faculty' ? 'EMP-CSE-01' : 'admin'}
+                      placeholder=""
+                      autoComplete="off"
                       value={loginUsername}
                       onChange={e => setLoginUsername(e.target.value)}
                       className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs focus:ring-2 focus:ring-brand-500 outline-none font-mono"
@@ -671,7 +680,7 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                       type="password"
                       required
                       placeholder=""
-                      autoComplete="current-password"
+                      autoComplete="new-password"
                       value={loginPassword}
                       onChange={e => setLoginPassword(e.target.value)}
                       className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs focus:ring-2 focus:ring-brand-500 outline-none"
