@@ -1,8 +1,8 @@
-const CACHE_NAME = 'gitamw-lms-v10';
+const CACHE_NAME = 'gitamw-lms-v25';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './favicon.ico',
+  './200.html',
   './manifest.json'
 ];
 
