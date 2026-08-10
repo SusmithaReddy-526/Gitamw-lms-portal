@@ -400,6 +400,17 @@ const INITIAL_CURRICULUM = [
 
 const INITIAL_UPLOADED_FILES = [];
 
+function safeParse(key, fallback = []) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error(`Error parsing localStorage key "${key}":`, e);
+    return fallback;
+  }
+}
+
 // Helper to initialize local storage
 function initStorage() {
   // Clear legacy database keys completely
@@ -413,7 +424,9 @@ function initStorage() {
     'lms_v30_users', 
     'lms_users_db'
   ];
-  oldKeys.forEach(k => localStorage.removeItem(k));
+  oldKeys.forEach(k => {
+    try { localStorage.removeItem(k); } catch (e) {}
+  });
 
   if (!localStorage.getItem(STORAGE_KEYS.FACULTY)) {
     localStorage.setItem(STORAGE_KEYS.FACULTY, JSON.stringify([]));
@@ -433,7 +446,7 @@ function initStorage() {
   localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(INITIAL_CURRICULUM));
 
   // Attendance Sync
-  let attendance = JSON.parse(localStorage.getItem(STORAGE_KEYS.ATTENDANCE) || '[]');
+  let attendance = safeParse(STORAGE_KEYS.ATTENDANCE, []);
   localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(attendance));
 
   if (!localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES)) {
