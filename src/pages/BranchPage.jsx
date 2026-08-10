@@ -4,22 +4,20 @@ import { dbService, BRANCHES, YEARS } from '../services/dbService';
 import { ArrowLeft, BookOpen, ArrowRight, FileText, Trash2, Filter, RefreshCw } from 'lucide-react';
 
 export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, onBack, user }) {
-  const [activeYear, setActiveYear] = useState(selectedYear || '');
-  const [activeBranch, setActiveBranch] = useState(selectedBranch || '');
+  const [activeYear, setActiveYear] = useState(selectedYear || user?.year || '2nd');
+  const [activeBranch, setActiveBranch] = useState(selectedBranch || user?.branch || 'CSE');
   const [selectedSubject, setSelectedSubject] = useState(null);
   
   // Refreshable subjects state
   const [subjectsList, setSubjectsList] = useState(() => 
-    (selectedYear && selectedBranch) ? dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch) : []
+    dbService.getSubjectsForBranchAndYear(selectedYear || user?.year || '2nd', selectedBranch || user?.branch || 'CSE')
   );
 
   useEffect(() => {
-    if (activeYear && activeBranch) {
-      setSubjectsList(dbService.getSubjectsForBranchAndYear(activeYear, activeBranch));
-    } else {
-      setSubjectsList([]);
-    }
-  }, [activeYear, activeBranch]);
+    const yr = activeYear || selectedYear || user?.year || '2nd';
+    const br = activeBranch || selectedBranch || user?.branch || 'CSE';
+    setSubjectsList(dbService.getSubjectsForBranchAndYear(yr, br));
+  }, [activeYear, activeBranch, selectedYear, selectedBranch, user]);
 
   const handleYearChange = (year) => {
     setActiveYear(year);
