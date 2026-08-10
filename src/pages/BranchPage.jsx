@@ -109,11 +109,10 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
           {activeYear ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {subjectsList.map((sub) => (
-                <motion.div
+                <div
                   key={sub.subjectCode}
-                  whileHover={{ y: -6, scale: 1.02 }}
                   onClick={() => setSelectedSubject(sub)}
-                  className="p-7 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 hover:border-brand-500 shadow-xl transition-all cursor-pointer group flex flex-col justify-between relative overflow-hidden"
+                  className="p-7 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 hover:border-brand-500 shadow-xl hover:-translate-y-1 hover:scale-[1.01] transition-all cursor-pointer group flex flex-col justify-between relative overflow-hidden"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
@@ -151,7 +150,7 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
                     <span>Open Unit-1 to Unit-5</span>
                     <ArrowRight className="w-4 h-4" />
                   </div>
-                </motion.div>
+                </div>
               ))}
 
               {subjectsList.length === 0 && (
@@ -205,10 +204,9 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
               ) || { unitId: uItem.unitId, title: uItem.name, topics: [] };
 
               return (
-                <motion.div
+                <div
                   key={uItem.unitId}
-                  whileHover={{ y: -6, scale: 1.03 }}
-                  className="p-6 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 hover:border-brand-500 shadow-md transition-all cursor-pointer flex flex-col justify-between text-center group"
+                  className="p-6 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 hover:border-brand-500 shadow-md hover:-translate-y-1 hover:scale-[1.02] transition-all cursor-pointer flex flex-col justify-between text-center group"
                   onClick={() => onSelectUnitTopic(selectedSubject, matchingUnit)}
                 >
                   <div className="space-y-4">
@@ -229,7 +227,7 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
                     <span>Open PDF Notes</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>

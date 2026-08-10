@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { 
   GraduationCap, 
   UserCheck, 
@@ -19,41 +18,22 @@ export function LandingPage({ onOpenAuth }) {
         <div className="max-w-5xl mx-auto text-center relative z-10 space-y-6">
           
           {/* Top Badge */}
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-400/30 text-brand-300 text-xs font-semibold uppercase tracking-wider backdrop-blur-md"
-          >
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-400/30 text-brand-300 text-xs font-semibold uppercase tracking-wider backdrop-blur-md">
             <Sparkles className="w-4 h-4 text-brand-400" />
             GITAMW Autonomous Academic Gateway
-          </motion.div>
+          </div>
 
           {/* Main Title */}
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-6xl font-extrabold font-outfit leading-tight tracking-tight"
-          >
+          <h1 className="text-4xl sm:text-6xl font-extrabold font-outfit leading-tight tracking-tight">
             GITAMW Autonomous Portal Login
-          </motion.h1>
+          </h1>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-base sm:text-lg text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed"
-          >
+          <p className="text-base sm:text-lg text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed">
             Please select your portal role below to log in or register. Access to academic curriculum, subjects, and study materials is granted upon successful authentication.
-          </motion.p>
+          </p>
 
           {/* 3 Portal Login Cards (Student, Faculty, Admin) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="pt-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-left"
-          >
+          <div className="pt-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
             {/* Student Login Card */}
             <div 
               className="p-6 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-brand-500/40 hover:border-brand-400 shadow-xl transition-all cursor-pointer group flex flex-col justify-between"
@@ -131,17 +111,12 @@ export function LandingPage({ onOpenAuth }) {
                 <ArrowRight className="w-4 h-4" />
               </div>
             </div>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="inline-flex items-center gap-2 text-xs text-slate-400 bg-slate-900/60 px-4 py-2 rounded-xl border border-slate-800"
-          >
+          <div className="inline-flex items-center gap-2 text-xs text-slate-400 bg-slate-900/60 px-4 py-2 rounded-xl border border-slate-800">
             <ShieldAlert className="w-4 h-4 text-amber-400" />
             <span>Students: First-time login requires registration. Login using short username (e.g. CSE045) or Roll Number.</span>
-          </motion.div>
+          </div>
 
         </div>
       </section>
