@@ -237,18 +237,21 @@ export function FacultyDashboard({ user }) {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-16">
-      {/* Header Banner */}
-      <div className="p-8 rounded-3xl bg-gradient-to-r from-brand-900 via-indigo-900 to-slate-950 text-white shadow-xl relative overflow-hidden border border-brand-500/20">
+      {/* Aurora Banner Header */}
+      <div className="p-8 rounded-3xl aurora-glass-panel text-white shadow-2xl relative overflow-hidden border border-fuchsia-500/30">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-fuchsia-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-600/15 rounded-full blur-3xl pointer-events-none" />
+
         <div className="relative z-10 max-w-4xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-500/20 text-brand-300 text-xs font-bold border border-brand-400/30">
-            <Sparkles className="w-4 h-4 text-brand-400" />
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-fuchsia-500/20 text-fuchsia-200 text-xs font-black uppercase tracking-wider border border-fuchsia-400/40 shadow-lg shadow-fuchsia-500/20">
+            <Sparkles className="w-4 h-4 text-fuchsia-300" />
             GITAMW Autonomous Faculty Portal
           </div>
-          <h1 className="text-4xl font-extrabold font-outfit tracking-tight">
-            Faculty Curriculum & Material Management
+          <h1 className="text-4xl sm:text-5xl font-black font-outfit tracking-tight">
+            Faculty Curriculum & <span className="aurora-text">Material Control</span>
           </h1>
-          <p className="text-sm text-slate-300">
-            Welcome, <span className="font-bold text-white">{user?.fullName || 'Faculty Member'}</span>! Full access to manage 4 years curriculum cards, upload syllabus PDFs, attach unit notes, and delete subjects.
+          <p className="text-sm text-slate-200">
+            Welcome, <span className="font-bold text-cyan-300">{user?.fullName || 'Faculty Member'}</span>! Full access to manage 4 years curriculum cards, upload syllabus PDFs, attach unit notes, and delete subjects.
           </p>
         </div>
       </div>

@@ -106,16 +106,17 @@ export function AdminPanel() {
   return (
     <div className="space-y-8 pb-16">
       {/* Banner */}
-      <div className="p-8 rounded-3xl bg-slate-900 text-white shadow-xl border border-slate-800 flex items-center justify-between">
-        <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800 text-brand-400 text-xs font-semibold">
-            <ShieldCheck className="w-4 h-4" />
+      <div className="p-8 rounded-3xl aurora-glass-panel text-white shadow-2xl relative overflow-hidden border border-amber-500/30">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="space-y-2 relative z-10">
+          <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-amber-500/20 text-amber-200 text-xs font-black uppercase tracking-wider border border-amber-400/40 shadow-lg shadow-amber-500/20">
+            <ShieldCheck className="w-4 h-4 text-amber-300" />
             University Admin Control Center
           </div>
-          <h1 className="text-3xl font-extrabold font-outfit">
-            System Administration
+          <h1 className="text-4xl font-black font-outfit">
+            System <span className="gold-luxury-text">Administration Control</span>
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-200 font-medium">
             Create faculty accounts, manage student registrations, publish campus notices, and monitor portal analytics.
           </p>
         </div>
