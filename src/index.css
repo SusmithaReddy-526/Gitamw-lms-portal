@@ -4,8 +4,13 @@
 
 @layer base {
   body {
-    @apply antialiased text-slate-800 dark:text-slate-100 bg-slate-900 dark:bg-[#070c1e] transition-colors duration-300;
+    @apply antialiased text-slate-100 bg-[#040612] selection:bg-indigo-500 selection:text-white transition-colors duration-300;
     font-family: 'Inter', sans-serif;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(217, 70, 239, 0.12) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
+    background-attachment: fixed;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -13,68 +18,76 @@
   }
 }
 
-/* Premium Royal Design System */
-.royal-glass-panel {
-  background: rgba(13, 20, 44, 0.85);
+/* UNIQUE ULTRA-PREMIUM AURORA GLASS DESIGN SYSTEM */
+.aurora-glass-panel {
+  background: rgba(10, 15, 36, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.aurora-card {
+  background: linear-gradient(135deg, rgba(16, 23, 53, 0.85) 0%, rgba(8, 12, 30, 0.95) 100%);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 20px rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.aurora-card:hover {
+  transform: translateY(-8px) scale(1.015);
+  border-color: rgba(217, 70, 239, 0.5);
+  box-shadow: 
+    0 30px 60px -15px rgba(99, 102, 241, 0.3),
+    0 0 30px rgba(217, 70, 239, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .glass-panel {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: rgba(12, 18, 42, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .glass-card {
-  background: rgba(20, 29, 58, 0.75);
-  backdrop-filter: blur(12px);
+  background: rgba(17, 25, 58, 0.7);
+  backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
   transform: translateY(-5px);
-  border-color: rgba(129, 140, 248, 0.4);
-  box-shadow: 0 15px 30px -10px rgba(79, 70, 229, 0.3), 0 0 15px rgba(245, 158, 11, 0.15);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.25);
 }
 
-.royal-card {
-  background: linear-gradient(145deg, rgba(17, 24, 54, 0.9), rgba(11, 16, 38, 0.95));
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(99, 102, 241, 0.15);
-  backdrop-filter: blur(16px);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+/* Unique Aurora Text Gradients */
+.aurora-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-fuchsia-300 to-cyan-300 font-extrabold;
 }
 
-.royal-card:hover {
-  transform: translateY(-6px) scale(1.01);
-  border-color: rgba(245, 158, 11, 0.5);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 35px rgba(245, 158, 11, 0.25);
+.gold-luxury-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 font-extrabold;
 }
 
-.gradient-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-indigo-300 to-purple-300;
+.cyan-neon-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 via-teal-200 to-emerald-300 font-extrabold;
 }
 
-.royal-gold-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-300 font-extrabold;
+/* Unique Aurora Glowing Buttons */
+.aurora-button {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 25px -5px rgba(168, 85, 247, 0.4);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.royal-button {
-  background: linear-gradient(135deg, #4f46e5 0%, #3730a3 50%, #1e1b4b 100%);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  box-shadow: 0 8px 20px rgba(79, 70, 229, 0.35);
-  transition: all 0.3s ease;
-}
-
-.royal-button:hover {
-  background: linear-gradient(135deg, #6366f1 0%, #4338ca 50%, #312e81 100%);
-  border-color: rgba(245, 158, 11, 0.6);
-  box-shadow: 0 12px 28px rgba(79, 70, 229, 0.5), 0 0 15px rgba(245, 158, 11, 0.3);
+.aurora-button:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #9333ea 50%, #db2777 100%);
+  box-shadow: 0 15px 35px -5px rgba(217, 70, 239, 0.6), 0 0 20px rgba(99, 102, 241, 0.4);
   transform: translateY(-2px);
 }
 
@@ -85,14 +98,14 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #070c1e;
+  background: #040612;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(99, 102, 241, 0.4);
+  background: rgba(168, 85, 247, 0.4);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(245, 158, 11, 0.6);
+  background: rgba(217, 70, 239, 0.7);
 }

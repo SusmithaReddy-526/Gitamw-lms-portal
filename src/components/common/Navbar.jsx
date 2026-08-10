@@ -56,7 +56,7 @@ export function Navbar({ activeTab, setActiveTab }) {
   }
 
   return (
-    <header className="sticky top-0 z-50 royal-glass-panel transition-colors">
+    <header className="sticky top-0 z-50 aurora-glass-panel transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
@@ -65,14 +65,14 @@ export function Navbar({ activeTab, setActiveTab }) {
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => setActiveTab('home')}
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-indigo-600 to-indigo-700 flex items-center justify-center text-white shadow-lg shadow-indigo-600/30 border border-amber-400/40 group-hover:scale-105 transition-transform">
-              <GraduationCap className="w-6 h-6 text-amber-200" />
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-fuchsia-600 to-amber-500 flex items-center justify-center text-white shadow-xl shadow-fuchsia-500/30 border border-fuchsia-300/40 group-hover:scale-105 transition-transform">
+              <GraduationCap className="w-6 h-6 text-white" />
             </div>
             <div>
-              <span className="font-extrabold text-xl tracking-tight text-white font-outfit flex items-center gap-1.5">
-                GITAMW <span className="royal-gold-text">AUTONOMOUS</span>
+              <span className="font-black text-xl tracking-tight text-white font-outfit flex items-center gap-1.5">
+                GITAMW <span className="aurora-text">AUTONOMOUS</span>
               </span>
-              <span className="block text-[10px] uppercase font-bold tracking-widest text-amber-400/80 -mt-1 font-mono">
+              <span className="block text-[10px] uppercase font-black tracking-widest text-cyan-300 -mt-1 font-mono">
                 Digital Academic Portal
               </span>
             </div>
