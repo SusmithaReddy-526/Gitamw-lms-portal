@@ -32,7 +32,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
   // Auto-detect whether first-time registration or future login should be shown
   useEffect(() => {
     setRole(initialRole);
-    const hasReg = dbService.hasRegisteredRole(initialRole);
+    const checkFn = dbService.hasRoleRegistered || dbService.hasRegisteredRole;
+    const hasReg = checkFn ? checkFn(initialRole) : false;
     setAuthMode(hasReg ? 'login' : 'register');
     setError('');
     setRegisteredUserPayload(null);
@@ -43,7 +44,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
     setRole(newRole);
     setError('');
     setRegisteredUserPayload(null);
-    const hasReg = dbService.hasRegisteredRole(newRole);
+    const checkFn = dbService.hasRoleRegistered || dbService.hasRegisteredRole;
+    const hasReg = checkFn ? checkFn(newRole) : false;
     setAuthMode(hasReg ? 'login' : 'register');
   };
 
@@ -169,10 +171,7 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md overflow-y-auto">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+      <div 
         className="w-full max-w-lg rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8 my-8 relative overflow-hidden"
       >
         {/* Close Button */}
@@ -696,7 +695,7 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
           </div>
         )}
 
-      </motion.div>
+      </div>
     </div>
   );
 }

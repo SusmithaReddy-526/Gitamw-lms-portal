@@ -494,7 +494,12 @@ export const dbService = {
   },
 
   hasRoleRegistered: (role) => {
-    const roles = JSON.parse(localStorage.getItem(STORAGE_KEYS.REGISTERED_ROLES) || '{}');
+    const roles = safeParse(STORAGE_KEYS.REGISTERED_ROLES, {});
+    return !!roles[role];
+  },
+
+  hasRegisteredRole: (role) => {
+    const roles = safeParse(STORAGE_KEYS.REGISTERED_ROLES, {});
     return !!roles[role];
   },
 
