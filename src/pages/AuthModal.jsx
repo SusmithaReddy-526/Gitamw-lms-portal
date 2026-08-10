@@ -418,7 +418,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         <input
                           type="password"
                           required
-                          placeholder="••••••••"
+                          placeholder=""
+                          autoComplete="new-password"
                           value={studentReg.password}
                           onChange={e => setStudentReg({ ...studentReg, password: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs outline-none"
@@ -432,7 +433,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         <input
                           type="password"
                           required
-                          placeholder="••••••••"
+                          placeholder=""
+                          autoComplete="new-password"
                           value={studentReg.confirmPassword}
                           onChange={e => setStudentReg({ ...studentReg, confirmPassword: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs outline-none"
@@ -514,7 +516,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         <input
                           type="password"
                           required
-                          placeholder="••••••••"
+                          placeholder=""
+                          autoComplete="new-password"
                           value={facultyReg.password}
                           onChange={e => setFacultyReg({ ...facultyReg, password: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs outline-none"
@@ -528,7 +531,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         <input
                           type="password"
                           required
-                          placeholder="••••••••"
+                          placeholder=""
+                          autoComplete="new-password"
                           value={facultyReg.confirmPassword}
                           onChange={e => setFacultyReg({ ...facultyReg, confirmPassword: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs outline-none"
@@ -593,7 +597,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         <input
                           type="password"
                           required
-                          placeholder="••••••••"
+                          placeholder=""
+                          autoComplete="new-password"
                           value={adminReg.password}
                           onChange={e => setAdminReg({ ...adminReg, password: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs outline-none"
@@ -607,7 +612,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         <input
                           type="password"
                           required
-                          placeholder="••••••••"
+                          placeholder=""
+                          autoComplete="new-password"
                           value={adminReg.confirmPassword}
                           onChange={e => setAdminReg({ ...adminReg, confirmPassword: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs outline-none"
@@ -664,7 +670,8 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                     <input
                       type="password"
                       required
-                      placeholder="••••••••"
+                      placeholder=""
+                      autoComplete="current-password"
                       value={loginPassword}
                       onChange={e => setLoginPassword(e.target.value)}
                       className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs focus:ring-2 focus:ring-brand-500 outline-none"
