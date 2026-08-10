@@ -8,7 +8,10 @@ const SESSION_KEY = 'lms_current_session';
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
-      const saved = localStorage.getItem(SESSION_KEY);
+      // Clear legacy permanent localStorage session key to prevent persistent login on tab reopen
+      localStorage.removeItem(SESSION_KEY);
+      
+      const saved = sessionStorage.getItem(SESSION_KEY);
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
@@ -26,11 +29,11 @@ export function AuthProvider({ children }) {
         const exists = students.some(s => s.username === user.username) || faculty.some(f => f.username === user.username);
         if (!exists) {
           setUser(null);
-          localStorage.removeItem(SESSION_KEY);
+          sessionStorage.removeItem(SESSION_KEY);
         }
       } catch {
         setUser(null);
-        localStorage.removeItem(SESSION_KEY);
+        sessionStorage.removeItem(SESSION_KEY);
       }
     }
   }, []);
@@ -40,7 +43,7 @@ export function AuthProvider({ children }) {
     try {
       const loggedUser = dbService.loginUser(username, password);
       setUser(loggedUser);
-      localStorage.setItem(SESSION_KEY, JSON.stringify(loggedUser));
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(loggedUser));
       setLoading(false);
       return loggedUser;
     } catch (err) {
@@ -87,19 +90,26 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem(SESSION_KEY);
+    try {
+      sessionStorage.removeItem(SESSION_KEY);
+      localStorage.removeItem(SESSION_KEY);
+    } catch (e) {}
   };
 
   const updateProfile = (updatedUserObj) => {
     if (!updatedUserObj) return;
     setUser(updatedUserObj);
-    localStorage.setItem(SESSION_KEY, JSON.stringify(updatedUserObj));
+    try {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify(updatedUserObj));
+    } catch (e) {}
   };
 
-  // Session persistence handles auto-login on refresh / browser restart
+  // Session persistence within current tab session only
   useEffect(() => {
     if (user) {
-      localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+      try {
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(user));
+      } catch (e) {}
     }
   }, [user]);
 
