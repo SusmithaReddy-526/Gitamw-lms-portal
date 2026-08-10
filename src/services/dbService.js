@@ -6,14 +6,14 @@ const STORAGE_KEYS = {
   FACULTY: 'gitamw_lms_fresh_faculty_db',
   ADMINS: 'gitamw_lms_fresh_admins_db',
   NOTICES: 'gitamw_lms_perm_notices_db',
-  CURRICULUM: 'gitamw_lms_perm_curriculum_db',
+  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v60',
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
   REGISTERED_ROLES: 'gitamw_lms_fresh_registered_roles_history'
 };
 
-// 4 Active Branches (MECH, CIVIL, IT removed as requested)
+// 4 Active Branches
 export const BRANCHES = [
   { id: 'CSE', name: 'Computer Science & Engineering', code: 'CSE', icon: 'Code', color: 'from-blue-500 to-indigo-600' },
   { id: 'AIML', name: 'Artificial Intelligence & Machine Learning', code: 'AIML', icon: 'Cpu', color: 'from-purple-500 to-pink-600' },
@@ -28,14 +28,14 @@ export const YEARS = [
   { id: '4th', title: '4th Year', description: 'Deep Electives, IoT, Major Capstone Project & Internship', sem: ['Sem 7', 'Sem 8'] }
 ];
 
-// Pre-seeded Faculty Accounts (Empty by default - Users register via Registration page)
-const INITIAL_FACULTY = [];
-
-// Pre-seeded Student Accounts (Empty by default - Users register via Registration page)
-const INITIAL_STUDENTS = [];
-
-// Pre-seeded Attendance Records (Empty by default - Faculty post attendance)
-const INITIAL_ATTENDANCE = [];
+// Standard 5 Units helper
+const standardUnits = [
+  { unitId: 'unit-1', title: 'Unit-1' },
+  { unitId: 'unit-2', title: 'Unit-2' },
+  { unitId: 'unit-3', title: 'Unit-3' },
+  { unitId: 'unit-4', title: 'Unit-4' },
+  { unitId: 'unit-5', title: 'Unit-5' }
+];
 
 // Pre-seeded Campus Announcements
 const INITIAL_NOTICES = [
@@ -43,9 +43,9 @@ const INITIAL_NOTICES = [
     id: 'not-1',
     title: 'JNTUA Autonomous Mid-Semester Examination Schedule 2026',
     date: '2026-08-01',
-    category: 'Exam',
-    author: 'Academic Registrar',
-    content: 'The B.Tech Mid-Semester examinations for 1st, 2nd, 3rd, and 4th Year CSE, AIML, ECE, and EEE students will commence from September 10th, 2026. Hall tickets will be issued on the portal.'
+    category: 'Academic',
+    author: 'GITAMW Examination Cell',
+    content: 'Mid-semester examinations for B.Tech 2nd, 3rd, and 4th Year will commence as per JNTUA Autonomous academic schedule. Students must bring official hall tickets.'
   },
   {
     id: 'not-2',
@@ -57,9 +57,9 @@ const INITIAL_NOTICES = [
   }
 ];
 
-// Official Curriculum Database - Strictly 2nd Year AIML Sem 3, 3rd Year CSE Sem 5 & 4th Year Sem 7 subjects
+// Official Curriculum Database - STRICTLY USER-PROVIDED SUBJECTS PER YEAR & BRANCH
 const INITIAL_CURRICULUM = [
-  // --- 2ND YEAR AIML & CSE (SEM 3) STRICT USER SUBJECTS ---
+  // --- 1. 2ND YEAR AIML (SEM 3) STRICT USER SUBJECTS ---
   {
     yearId: '2nd',
     branchId: 'AIML',
@@ -68,13 +68,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G54301',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -84,13 +78,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G52301',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -100,13 +88,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G31301T',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -116,13 +98,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G05302T',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -132,13 +108,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G05303T',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -148,13 +118,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G05304',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -164,13 +128,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G99301',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -180,13 +138,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G05302P',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -196,16 +148,10 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G05303P',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
 
-  // Also include for 2nd Year CSE (Sem 3)
+  // --- 2. 2ND YEAR CSE (SEM 3) STRICT USER SUBJECTS ---
   {
     yearId: '2nd',
     branchId: 'CSE',
@@ -214,13 +160,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G54301',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -230,13 +170,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G52301',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -246,13 +180,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G50402',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -262,13 +190,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G05302T',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -278,13 +200,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G05303T',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -294,13 +210,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G05304',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -310,13 +220,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G99301',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -326,13 +230,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G05302P',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '2nd',
@@ -342,15 +240,10 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G05303P',
     sem: 'Sem 3',
     semester: 'Sem 3',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
-  // --- 3RD YEAR CSE (SEM 5) STRICT USER SUBJECTS ---
+
+  // --- 3. 3RD YEAR CSE (SEM 5) STRICT USER SUBJECTS ---
   {
     yearId: '3rd',
     branchId: 'CSE',
@@ -359,13 +252,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A05501T',
     sem: 'Sem 5',
     semester: 'Sem 5',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '3rd',
@@ -375,13 +262,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A05504a',
     sem: 'Sem 5',
     semester: 'Sem 5',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '3rd',
@@ -391,13 +272,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A05502',
     sem: 'Sem 5',
     semester: 'Sem 5',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '3rd',
@@ -407,13 +282,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A52502a',
     sem: 'Sem 5',
     semester: 'Sem 5',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '3rd',
@@ -423,13 +292,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A05503',
     sem: 'Sem 5',
     semester: 'Sem 5',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '3rd',
@@ -439,13 +302,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A05506',
     sem: 'Sem 5',
     semester: 'Sem 5',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '3rd',
@@ -455,16 +312,10 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A31301T',
     sem: 'Sem 5',
     semester: 'Sem 5',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
 
-  // --- 4TH YEAR AIML & CSE (SEM 7) STRICT USER SUBJECTS ---
+  // --- 4. 4TH YEAR AIML (SEM 7) STRICT USER SUBJECTS ---
   {
     yearId: '4th',
     branchId: 'AIML',
@@ -473,13 +324,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A30701',
     sem: 'Sem 7',
     semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '4th',
@@ -489,13 +334,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A52701c',
     sem: 'Sem 7',
     semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '4th',
@@ -505,13 +344,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A31702c',
     sem: 'Sem 7',
     semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '4th',
@@ -521,13 +354,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A30703a',
     sem: 'Sem 7',
     semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '4th',
@@ -537,13 +364,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A52704',
     sem: 'Sem 7',
     semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '4th',
@@ -553,13 +374,7 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A52703',
     sem: 'Sem 7',
     semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '4th',
@@ -569,171 +384,30 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G52702',
     sem: 'Sem 7',
     semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   },
   {
     yearId: '4th',
     branchId: 'AIML',
     subjectId: '23a52703_lab',
     subjectName: 'Prompt Engineering Lab',
-    subjectCode: '23A52703L',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
-  },
-
-  // Also include for 4th Year CSE (Sem 7)
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: '23a30701_cse',
-    subjectName: 'Generative AI',
-    subjectCode: '23A30701',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: '23a52701c_cse',
-    subjectName: 'Management Science',
-    subjectCode: '23A52701c',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: '23a31702c_cse',
-    subjectName: 'AI in CyberSecurity',
-    subjectCode: '23A31702c',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: '23a30703a_cse',
-    subjectName: 'Data Wrangling',
-    subjectCode: '23A30703a',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: '23a52704_cse',
-    subjectName: 'Literacy Vibes',
-    subjectCode: '23A52704',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: '23a52703_cse',
-    subjectName: 'Employability Skills',
     subjectCode: '23A52703',
     sem: 'Sem 7',
     semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: '25g52702_cse',
-    subjectName: 'Gender Sensitization',
-    subjectCode: '25G52702',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
-  },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: '23a52703_lab_cse',
-    subjectName: 'Prompt Engineering Lab',
-    subjectCode: '23A52703L',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: [
-      { unitId: 'unit-1', title: 'Unit-1' },
-      { unitId: 'unit-2', title: 'Unit-2' },
-      { unitId: 'unit-3', title: 'Unit-3' },
-      { unitId: 'unit-4', title: 'Unit-4' },
-      { unitId: 'unit-5', title: 'Unit-5' }
-    ]
+    units: standardUnits
   }
 ];
 
 const INITIAL_UPLOADED_FILES = [];
 
-// Helper to initialize local storage and migrate legacy registered accounts
+// Helper to initialize local storage
 function initStorage() {
-  // Clear legacy and previous credentials database keys completely
+  // Clear legacy database keys completely
   const oldKeys = [
     'gitamw_lms_perm_users_db', 
     'gitamw_lms_perm_faculty_db', 
     'gitamw_lms_perm_admins_db', 
+    'gitamw_lms_perm_curriculum_db',
     'gitamw_lms_perm_registered_roles_history',
     'lms_v35_users', 
     'lms_v30_users', 
@@ -755,98 +429,21 @@ function initStorage() {
   }
   localStorage.setItem(STORAGE_KEYS.NOTICES, JSON.stringify(INITIAL_NOTICES));
   
-  // Curriculum Sync: Force INITIAL_CURRICULUM into localStorage so 3rd Year CSE & 4th Year CSE subjects are 100% guaranteed
-  let curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
-  INITIAL_CURRICULUM.forEach(item => {
-    const existingIdx = curriculum.findIndex(c => c.subjectCode.toUpperCase() === item.subjectCode.toUpperCase() && c.yearId === item.yearId && c.branchId === item.branchId);
-    if (existingIdx !== -1) {
-      curriculum[existingIdx] = { ...item, ...curriculum[existingIdx] };
-    } else {
-      curriculum.push(item);
-    }
-  });
-  // Ensure 2nd Year AIML & CSE have all 9 subjects
-  INITIAL_CURRICULUM.filter(i => i.yearId === '2nd').forEach(sub => {
-    if (!curriculum.some(c => c.subjectCode.toUpperCase() === sub.subjectCode.toUpperCase() && c.yearId === '2nd' && c.branchId === sub.branchId)) {
-      curriculum.push(sub);
-    }
-  });
-  // Ensure 3rd Year CSE has all 7 subjects
-  INITIAL_CURRICULUM.filter(i => i.yearId === '3rd' && i.branchId === 'CSE').forEach(sub => {
-    if (!curriculum.some(c => c.subjectCode.toUpperCase() === sub.subjectCode.toUpperCase() && c.yearId === '3rd' && c.branchId === 'CSE')) {
-      curriculum.push(sub);
-    }
-  });
-  // Ensure 4th Year AIML & CSE have all 8 subjects
-  INITIAL_CURRICULUM.filter(i => i.yearId === '4th').forEach(sub => {
-    if (!curriculum.some(c => c.subjectCode.toUpperCase() === sub.subjectCode.toUpperCase() && c.yearId === '4th' && c.branchId === sub.branchId)) {
-      curriculum.push(sub);
-    }
-  });
-  localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(curriculum));
+  // Curriculum initialization strictly with INITIAL_CURRICULUM
+  localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(INITIAL_CURRICULUM));
 
-  // Attendance Sync (Filter out sample pre-seeded records)
+  // Attendance Sync
   let attendance = JSON.parse(localStorage.getItem(STORAGE_KEYS.ATTENDANCE) || '[]');
-  attendance = attendance.filter(a => !['238U1A0561', '238U1A0562', '238U1A0563', '238U1A0564', '238U1A0565'].includes(a.rollNumber));
   localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(attendance));
 
   if (!localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES)) {
     localStorage.setItem(STORAGE_KEYS.UPLOADED_FILES, JSON.stringify(INITIAL_UPLOADED_FILES));
-  }
-
-  // ACCOUNT MIGRATION: Ensure no previously registered user account is ever lost
-  try {
-    const legacyUserKeys = ['lms_v35_users_db', 'lms_v30_users_db', 'lms_v25_users_db', 'lms_v10_users_db', 'lms_users_db'];
-    const legacyFacultyKeys = ['lms_v35_faculty_db', 'lms_v30_faculty_db', 'lms_v25_faculty_db', 'lms_v10_faculty_db', 'lms_faculty_db'];
-    const legacyAdminKeys = ['lms_v35_admins_db', 'lms_v30_admins_db', 'lms_v25_admins_db', 'lms_v10_admins_db', 'lms_admins_db'];
-
-    let permUsers = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
-    legacyUserKeys.forEach(k => {
-      try {
-        const arr = JSON.parse(localStorage.getItem(k) || '[]');
-        arr.forEach(u => {
-          if (u.username && !permUsers.some(p => p.username.toLowerCase() === u.username.toLowerCase() || p.email.toLowerCase() === u.email.toLowerCase())) {
-            permUsers.push(u);
-          }
-        });
-      } catch {}
-    });
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(permUsers));
-
-    let permFaculty = JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
-    legacyFacultyKeys.forEach(k => {
-      try {
-        const arr = JSON.parse(localStorage.getItem(k) || '[]');
-        arr.forEach(f => {
-          if (f.username && !permFaculty.some(p => p.username.toLowerCase() === f.username.toLowerCase() || p.email.toLowerCase() === f.email.toLowerCase())) {
-            permFaculty.push(f);
-          }
-        });
-      } catch {}
-    });
-    localStorage.setItem(STORAGE_KEYS.FACULTY, JSON.stringify(permFaculty));
-
-    let permAdmins = JSON.parse(localStorage.getItem(STORAGE_KEYS.ADMINS) || '[]');
-    legacyAdminKeys.forEach(k => {
-      try {
-        const arr = JSON.parse(localStorage.getItem(k) || '[]');
-        arr.forEach(a => {
-          if (a.username && !permAdmins.some(p => p.username.toLowerCase() === a.username.toLowerCase() || p.email.toLowerCase() === a.email.toLowerCase())) {
-            permAdmins.push(a);
-          }
-        });
-      } catch {}
-    });
-    localStorage.setItem(STORAGE_KEYS.ADMINS, JSON.stringify(permAdmins));
-  } catch (err) {
-    console.error('Migration error:', err);
   }
 }
 
 initStorage();
 
 export const dbService = {
-  // Clear all stored accounts and reset system to 1st-time registration state
   clearAllDataAndReset: () => {
     localStorage.removeItem(STORAGE_KEYS.USERS);
     localStorage.removeItem(STORAGE_KEYS.FACULTY);
@@ -857,20 +454,23 @@ export const dbService = {
     initStorage();
   },
 
-  // Check if role has registered accounts stored
-  hasRegisteredRole: (role) => {
-    try {
-      const history = JSON.parse(localStorage.getItem(STORAGE_KEYS.REGISTERED_ROLES) || '{}');
-      return !!history[role];
-    } catch {
-      return false;
-    }
+  markRoleRegistered: (role) => {
+    const roles = JSON.parse(localStorage.getItem(STORAGE_KEYS.REGISTERED_ROLES) || '{}');
+    roles[role] = true;
+    localStorage.setItem(STORAGE_KEYS.REGISTERED_ROLES, JSON.stringify(roles));
   },
 
-  markRoleRegistered: (role) => {
-    const history = JSON.parse(localStorage.getItem(STORAGE_KEYS.REGISTERED_ROLES) || '{}');
-    history[role] = true;
-    localStorage.setItem(STORAGE_KEYS.REGISTERED_ROLES, JSON.stringify(history));
+  hasRoleRegistered: (role) => {
+    const roles = JSON.parse(localStorage.getItem(STORAGE_KEYS.REGISTERED_ROLES) || '{}');
+    return !!roles[role];
+  },
+
+  getStudentsList: () => {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+  },
+
+  getFacultyList: () => {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
   },
 
   // --- STUDENT REGISTRATION ---
@@ -886,11 +486,9 @@ export const dbService = {
     }
 
     const bCode = studentData.branch === 'AIML' ? 'AIM' : studentData.branch.substring(0, 3).toUpperCase();
-    
-    // Clean roll number and extract ONLY last 3 characters to guarantee strictly 6-char username (e.g. 238U1A0561 -> CSE561)
     const rawRoll = studentData.rollNumber.toString().trim().replace(/[^a-zA-Z0-9]/g, '');
     const shortSuffix = rawRoll.length >= 3 ? rawRoll.slice(-3) : rawRoll.padStart(3, '0');
-    const username = `${bCode}${shortSuffix}`.toUpperCase(); // STRICTLY 6 CHARACTERS: e.g. CSE561, AIM012
+    const username = `${bCode}${shortSuffix}`.toUpperCase();
 
     const usernameExists = users.find(u => u.username === username);
     if (usernameExists) {
@@ -916,28 +514,18 @@ export const dbService = {
     const faculty = JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
     const cleanEmpId = facultyData.employeeId.trim().toUpperCase();
 
-    const existing = faculty.find(f => 
-      f.employeeId.toUpperCase() === cleanEmpId || 
-      f.email.toLowerCase() === facultyData.email.trim().toLowerCase()
-    );
+    const existing = faculty.find(f => f.employeeId.toUpperCase() === cleanEmpId);
     if (existing) {
-      throw new Error(`Faculty with Employee ID ${cleanEmpId} or Email is already registered. Please log in.`);
+      throw new Error(`Faculty Employee ID "${cleanEmpId}" is already registered. Please proceed to Login.`);
     }
-
-    const rawEmp = cleanEmpId.replace(/[^a-zA-Z0-9]/g, '');
-    const empNum = rawEmp.length >= 3 ? rawEmp.slice(-3) : rawEmp.padStart(3, '0');
-    const username = `FAC${empNum}`.toUpperCase(); // STRICTLY 6 CHARACTERS: e.g. FAC012
 
     const newFaculty = {
       id: `fac-${Date.now()}`,
-      fullName: facultyData.fullName || facultyData.name,
+      ...facultyData,
       employeeId: cleanEmpId,
-      department: facultyData.department,
-      email: facultyData.email,
-      username: username,
-      password: facultyData.password,
+      username: cleanEmpId,
       role: 'faculty',
-      createdAt: new Date().toISOString()
+      registeredAt: new Date().toISOString()
     };
 
     faculty.push(newFaculty);
@@ -949,26 +537,19 @@ export const dbService = {
   // --- ADMIN REGISTRATION ---
   registerAdmin: (adminData) => {
     const admins = JSON.parse(localStorage.getItem(STORAGE_KEYS.ADMINS) || '[]');
-    const cleanUser = adminData.username.trim().toLowerCase();
+    const cleanEmail = adminData.email.trim().toLowerCase();
 
-    const existing = admins.find(a => a.username.toLowerCase() === cleanUser || a.email.toLowerCase() === adminData.email.trim().toLowerCase());
+    const existing = admins.find(a => a.email.toLowerCase() === cleanEmail);
     if (existing) {
-      throw new Error(`Admin account "${adminData.username}" is already registered. Please log in.`);
+      throw new Error(`Admin with Email "${cleanEmail}" is already registered.`);
     }
-
-    const rawAdmin = cleanUser.replace(/[^a-zA-Z0-9]/g, '');
-    const adminNum = rawAdmin.length >= 3 ? rawAdmin.slice(-3) : rawAdmin.padStart(3, '0');
-    const username = `ADM${adminNum}`.toUpperCase(); // STRICTLY 6 CHARACTERS: e.g. ADM001
 
     const newAdmin = {
       id: `admin-${Date.now()}`,
-      fullName: adminData.fullName,
-      username: username,
-      email: adminData.email,
-      password: adminData.password,
+      ...adminData,
+      username: cleanEmail.split('@')[0],
       role: 'admin',
-      department: 'Academic Administration',
-      createdAt: new Date().toISOString()
+      registeredAt: new Date().toISOString()
     };
 
     admins.push(newAdmin);
@@ -977,10 +558,10 @@ export const dbService = {
     return newAdmin;
   },
 
-  // --- LOGIN ---
+  // --- USER LOGIN ---
   loginUser: (username, password) => {
-    const cleanUser = username.trim().toLowerCase();
-    const cleanPass = password.trim();
+    const cleanUser = (username || '').trim().toLowerCase();
+    const cleanPass = (password || '').trim();
 
     // Check Admins
     const admins = JSON.parse(localStorage.getItem(STORAGE_KEYS.ADMINS) || '[]');
@@ -1075,101 +656,89 @@ export const dbService = {
     const files = JSON.parse(localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES) || '[]');
     const cleanSubId = (subjectId || '').toLowerCase().trim();
     const cleanSubCode = (subjectCode || '').toLowerCase().trim();
-    
-    // Helper to extract exact Unit Number (1 to 5) from unitId, unitTitle or string
-    const extractUnitNum = (str) => {
-      if (!str) return null;
-      const match = str.toLowerCase().match(/unit\s*[-_]?\s*([1-5])/);
-      return match ? match[1] : null;
+    const cleanUnitId = (unitId || '').toLowerCase().trim();
+    const cleanUnitTitle = (unitTitle || '').toLowerCase().trim();
+
+    const normYr = (y) => {
+      if (!y) return '';
+      const str = y.toString().toLowerCase();
+      if (str.includes('1')) return '1st';
+      if (str.includes('2')) return '2nd';
+      if (str.includes('3') || str.includes('5') || str.includes('6')) return '3rd';
+      if (str.includes('4') || str.includes('7') || str.includes('8')) return '4th';
+      return str;
     };
 
-    const targetNum = extractUnitNum(unitId) || extractUnitNum(unitTitle);
+    const targetYr = normYr(yearId);
+    const targetBr = (branchId || '').toString().trim().toUpperCase();
 
-    return files.filter(f => {
-      // Subject Match (by subjectId or subjectCode)
-      const subMatch = 
-        (!cleanSubId && !cleanSubCode) ? true :
-        (f.subjectId && f.subjectId.toLowerCase().trim() === cleanSubId) ||
-        (f.subjectCode && f.subjectCode.toLowerCase().trim() === cleanSubCode) ||
-        (f.subjectCode && cleanSubId && f.subjectCode.toLowerCase().trim() === cleanSubId) ||
-        (f.subjectId && cleanSubCode && f.subjectId.toLowerCase().trim() === cleanSubCode);
+    return files.filter(file => {
+      const matchYr = !targetYr || normYr(file.yearId) === targetYr;
+      const matchBr = !targetBr || (file.branchId || '').toString().trim().toUpperCase() === targetBr;
+      
+      const matchSub = (
+        (file.subjectId && file.subjectId.toLowerCase() === cleanSubId) ||
+        (file.subjectCode && file.subjectCode.toLowerCase() === cleanSubCode)
+      );
 
-      // Strict Unit Number Match (Unit 1 file -> Unit 1 page ONLY, Unit 2 file -> Unit 2 page ONLY)
-      const fileNum = extractUnitNum(f.unitId) || extractUnitNum(f.unitTitle);
+      const matchUnit = (
+        (file.unitId && file.unitId.toLowerCase() === cleanUnitId) ||
+        (file.unitTitle && file.unitTitle.toLowerCase().includes(cleanUnitTitle)) ||
+        (cleanUnitTitle && file.unitTitle && file.unitTitle.toLowerCase().includes(cleanUnitTitle))
+      );
 
-      const unitMatch = (targetNum && fileNum) 
-        ? targetNum === fileNum 
-        : (f.unitId && f.unitId.toLowerCase().trim() === (unitId || '').toLowerCase().trim());
-
-      return subMatch && unitMatch;
+      return matchYr && matchBr && matchSub && matchUnit;
     });
   },
 
   saveFacultyUploadedFile: (fileRecord) => {
     const files = JSON.parse(localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES) || '[]');
-    const newFile = {
+    const newRecord = {
       id: `file-${Date.now()}`,
-      ...fileRecord,
-      uploadedAt: new Date().toISOString().split('T')[0]
+      uploadedAt: new Date().toISOString().split('T')[0],
+      ...fileRecord
     };
-    files.unshift(newFile);
+    files.push(newRecord);
     localStorage.setItem(STORAGE_KEYS.UPLOADED_FILES, JSON.stringify(files));
-    return newFile;
+    return newRecord;
   },
 
-  deleteUploadedFile: (fileId) => {
+  deleteFacultyUploadedFile: (fileId) => {
     let files = JSON.parse(localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES) || '[]');
     files = files.filter(f => f.id !== fileId);
     localStorage.setItem(STORAGE_KEYS.UPLOADED_FILES, JSON.stringify(files));
+    return files;
   },
 
-  // --- FACULTY MANAGEMENT ---
-  getFacultyList: () => {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
+  // --- ATTENDANCE MANAGEMENT ---
+  getAttendanceRecords: () => {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.ATTENDANCE) || '[]');
   },
 
-  addFaculty: (facultyData) => {
-    return dbService.registerFaculty(facultyData);
+  saveAttendanceRecord: (record) => {
+    let attendance = JSON.parse(localStorage.getItem(STORAGE_KEYS.ATTENDANCE) || '[]');
+    
+    // Check if record exists for this student roll number, subject and year
+    const idx = attendance.findIndex(a => 
+      a.rollNumber.toUpperCase() === record.rollNumber.toUpperCase() && 
+      a.subjectCode.toUpperCase() === record.subjectCode.toUpperCase()
+    );
+
+    if (idx !== -1) {
+      attendance[idx] = { ...attendance[idx], ...record };
+    } else {
+      attendance.push({ id: `att-${Date.now()}`, ...record });
+    }
+
+    localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(attendance));
+    return attendance;
   },
 
-  deleteFaculty: (id) => {
-    let faculty = JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
-    faculty = faculty.filter(f => f.id !== id);
-    localStorage.setItem(STORAGE_KEYS.FACULTY, JSON.stringify(faculty));
-  },
-
-  // --- STUDENT MANAGEMENT ---
-  getStudentsList: () => {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
-  },
-
-  deleteStudent: (id) => {
-    let students = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
-    students = students.filter(s => s.id !== id);
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(students));
-  },
-
-  // --- NOTICES ---
-  getNotices: () => {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTICES) || '[]');
-  },
-
-  addNotice: (noticeData) => {
-    const notices = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTICES) || '[]');
-    const newNotice = {
-      id: `not-${Date.now()}`,
-      ...noticeData,
-      date: new Date().toISOString().split('T')[0]
-    };
-    notices.unshift(newNotice);
-    localStorage.setItem(STORAGE_KEYS.NOTICES, JSON.stringify(notices));
-    return newNotice;
-  },
-
-  deleteNotice: (id) => {
-    let notices = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTICES) || '[]');
-    notices = notices.filter(n => n.id !== id);
-    localStorage.setItem(STORAGE_KEYS.NOTICES, JSON.stringify(notices));
+  getStudentAttendance: (rollNo) => {
+    if (!rollNo) return [];
+    const attendance = JSON.parse(localStorage.getItem(STORAGE_KEYS.ATTENDANCE) || '[]');
+    const cleanRoll = rollNo.toString().trim().toUpperCase();
+    return attendance.filter(a => a.rollNumber.toUpperCase() === cleanRoll);
   },
 
   // --- CURRICULUM & SUBJECTS ---
@@ -1177,10 +746,10 @@ export const dbService = {
     return JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
   },
 
+  // STRICT SUBJECT RETRIEVAL WITHOUT UNINTENDED MIXING OR AUTO-DEFAULTS
   getSubjectsForBranchAndYear: (yearId, branchId) => {
     let curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
     
-    // Flexible year normalizer (e.g., '3rd', '3rd Year', '3' -> '3rd')
     const normYear = (y) => {
       if (!y) return '';
       const str = y.toString().toLowerCase();
@@ -1191,40 +760,18 @@ export const dbService = {
       return str;
     };
 
-    const targetYr = normYear(yearId || '3rd');
-    const targetBr = (branchId || 'CSE').toString().trim().toUpperCase();
+    const targetYr = yearId ? normYear(yearId) : '';
+    const targetBr = branchId ? branchId.toString().trim().toUpperCase() : '';
 
-    let results = curriculum.filter(item => {
-      const matchYr = !targetYr || normYear(item.yearId) === targetYr;
-      const matchBr = !targetBr || (item.branchId || '').toString().trim().toUpperCase() === targetBr;
-      return matchYr && matchBr;
-    });
-
-    // AUTO-RECOVERY FALLBACK: If results are 0, populate from INITIAL_CURRICULUM immediately
-    if (results.length === 0) {
-      const initialMatches = INITIAL_CURRICULUM.filter(item => {
-        const matchYr = !targetYr || normYear(item.yearId) === targetYr;
-        const matchBr = !targetBr || (item.branchId || '').toString().trim().toUpperCase() === targetBr;
-        return matchYr && matchBr;
-      });
-
-      if (initialMatches.length > 0) {
-        initialMatches.forEach(sub => {
-          if (!curriculum.some(c => c.subjectCode.toUpperCase() === sub.subjectCode.toUpperCase() && c.yearId === sub.yearId && c.branchId === sub.branchId)) {
-            curriculum.push(sub);
-          }
-        });
-        localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(curriculum));
-        return initialMatches;
-      }
+    if (!targetYr || !targetBr) {
+      return [];
     }
 
-    return results;
-  },
-
-  resetCurriculumToDefault: () => {
-    localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(INITIAL_CURRICULUM));
-    return INITIAL_CURRICULUM.filter(i => i.yearId === '3rd' && i.branchId === 'CSE');
+    return curriculum.filter(item => {
+      const itemYr = normYear(item.yearId);
+      const itemBr = (item.branchId || '').toString().trim().toUpperCase();
+      return itemYr === targetYr && itemBr === targetBr;
+    });
   },
 
   addSubjectToCurriculum: (subjectData) => {
@@ -1235,9 +782,9 @@ export const dbService = {
     if (!subjectData.subjectName) throw new Error('Subject Name is required.');
     if (!subjectData.yearId || !subjectData.branchId) throw new Error('Please select Academic Year and Branch.');
 
-    const existing = curriculum.find(s => s.subjectCode.toUpperCase() === cleanCode);
+    const existing = curriculum.find(s => s.subjectCode.toUpperCase() === cleanCode && s.yearId === subjectData.yearId && s.branchId === subjectData.branchId);
     if (existing) {
-      throw new Error(`Subject with code "${cleanCode}" already exists in curriculum.`);
+      throw new Error(`Subject with code "${cleanCode}" already exists in ${subjectData.yearId} Year ${subjectData.branchId} curriculum.`);
     }
 
     const newSubObj = {
@@ -1250,13 +797,7 @@ export const dbService = {
       credits: subjectData.credits || 3,
       syllabusPdfUrl: subjectData.syllabusPdfUrl || null,
       syllabusFileName: subjectData.syllabusFileName || null,
-      units: [
-        { unitId: 'unit-1', title: 'Unit-1' },
-        { unitId: 'unit-2', title: 'Unit-2' },
-        { unitId: 'unit-3', title: 'Unit-3' },
-        { unitId: 'unit-4', title: 'Unit-4' },
-        { unitId: 'unit-5', title: 'Unit-5' }
-      ],
+      units: standardUnits,
       addedBy: subjectData.addedBy || 'Faculty',
       createdAt: new Date().toISOString()
     };
@@ -1278,133 +819,36 @@ export const dbService = {
     const curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
     const cleanCode = (subjectCode || '').trim().toUpperCase();
     const idx = curriculum.findIndex(s => s.subjectCode.toUpperCase() === cleanCode);
-    
     if (idx !== -1) {
       curriculum[idx].syllabusPdfUrl = syllabusPdfUrl;
       curriculum[idx].syllabusFileName = syllabusFileName;
       localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(curriculum));
       return curriculum[idx];
     }
-    throw new Error('Subject record not found.');
+    throw new Error(`Subject with code "${cleanCode}" not found.`);
   },
 
-  saveSubjectUnits: (yearId, branchId, subjectName, subjectCode, unitsData) => {
-    const curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
-    const subjectId = subjectCode.toLowerCase().replace(/[^a-z0-9]/g, '');
+  // --- NOTICES MANAGEMENT ---
+  getNotices: () => {
+    return JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTICES) || '[]');
+  },
 
-    const existingIdx = curriculum.findIndex(c => c.yearId === yearId && c.branchId === branchId && c.subjectId === subjectId);
-    
-    const subjectRecord = {
-      yearId,
-      branchId,
-      subjectId,
-      subjectName,
-      subjectCode,
-      units: unitsData,
-      updatedAt: new Date().toISOString()
+  addNotice: (noticeData) => {
+    const notices = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTICES) || '[]');
+    const newNotice = {
+      id: `not-${Date.now()}`,
+      date: new Date().toISOString().split('T')[0],
+      ...noticeData
     };
-
-    if (existingIdx !== -1) {
-      const existingSubject = curriculum[existingIdx];
-      const mergedUnits = [...existingSubject.units];
-      
-      unitsData.forEach(newUnit => {
-        const uIdx = mergedUnits.findIndex(u => u.unitId === newUnit.unitId || u.title === newUnit.title);
-        if (uIdx !== -1) {
-          mergedUnits[uIdx] = newUnit;
-        } else {
-          mergedUnits.push(newUnit);
-        }
-      });
-      subjectRecord.units = mergedUnits;
-      curriculum[existingIdx] = subjectRecord;
-    } else {
-      curriculum.push(subjectRecord);
-    }
-
-    localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(curriculum));
-    return subjectRecord;
+    notices.unshift(newNotice);
+    localStorage.setItem(STORAGE_KEYS.NOTICES, JSON.stringify(notices));
+    return newNotice;
   },
 
-  deleteSubject: (yearId, branchId, subjectId) => {
-    let curriculum = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
-    curriculum = curriculum.filter(c => !(c.yearId === yearId && c.branchId === branchId && c.subjectId === subjectId));
-    localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(curriculum));
-  },
-
-  // --- DOWNLOADS & SAVED TOPICS ---
-  getUserDownloads: (userId) => {
-    try {
-      const data = JSON.parse(localStorage.getItem(STORAGE_KEYS.DOWNLOADS) || '[]');
-      if (Array.isArray(data)) return data;
-      const allList = [];
-      Object.values(data).forEach(arr => {
-        if (Array.isArray(arr)) allList.push(...arr);
-      });
-      return allList;
-    } catch {
-      return [];
-    }
-  },
-
-  saveUserDownload: (userId, itemRecord) => {
-    try {
-      let downloads = dbService.getUserDownloads(userId);
-      const existingIdx = downloads.findIndex(item => item.id === itemRecord.id || item.fileName === itemRecord.fileName);
-      const recordToSave = {
-        ...itemRecord,
-        userId: userId || 'guest',
-        savedAt: new Date().toISOString()
-      };
-      if (existingIdx === -1) {
-        downloads.unshift(recordToSave);
-      } else {
-        downloads[existingIdx] = recordToSave;
-      }
-      localStorage.setItem(STORAGE_KEYS.DOWNLOADS, JSON.stringify(downloads));
-    } catch (err) {
-      console.error('saveUserDownload error:', err);
-    }
-  },
-
-  deleteUserDownload: (userId, fileId) => {
-    try {
-      let downloads = dbService.getUserDownloads(userId);
-      downloads = downloads.filter(item => item.id !== fileId);
-      localStorage.setItem(STORAGE_KEYS.DOWNLOADS, JSON.stringify(downloads));
-    } catch (err) {
-      console.error('deleteUserDownload error:', err);
-    }
-  },
-
-  // --- ATTENDANCE MANAGEMENT ---
-  getAttendanceRecords: () => {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEYS.ATTENDANCE) || '[]');
-    } catch {
-      return [];
-    }
-  },
-
-  saveAttendanceRecord: (newRecord) => {
-    let records = dbService.getAttendanceRecords();
-    const existingIdx = records.findIndex(r => 
-      r.rollNumber.toUpperCase() === newRecord.rollNumber.toUpperCase() && 
-      r.subjectCode === newRecord.subjectCode
-    );
-    if (existingIdx !== -1) {
-      records[existingIdx] = { ...records[existingIdx], ...newRecord };
-    } else {
-      records.unshift(newRecord);
-    }
-    localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(records));
-    return newRecord;
-  },
-
-  getStudentAttendance: (rollNumber) => {
-    const records = dbService.getAttendanceRecords();
-    if (!rollNumber) return records;
-    const cleanRoll = rollNumber.toString().toUpperCase().trim();
-    return records.filter(r => r.rollNumber.toUpperCase() === cleanRoll || cleanRoll.includes(r.rollNumber.toUpperCase()));
+  deleteNotice: (noticeId) => {
+    let notices = JSON.parse(localStorage.getItem(STORAGE_KEYS.NOTICES) || '[]');
+    notices = notices.filter(n => n.id !== noticeId);
+    localStorage.setItem(STORAGE_KEYS.NOTICES, JSON.stringify(notices));
+    return notices;
   }
 };
