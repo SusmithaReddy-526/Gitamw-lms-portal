@@ -400,20 +400,38 @@ const INITIAL_CURRICULUM = [
 
 const INITIAL_UPLOADED_FILES = [];
 
-function safeParse(key, fallback = []) {
+function safeGetItem(key, fallback = null) {
   try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return fallback;
-    return JSON.parse(raw);
+    return localStorage.getItem(key) || fallback;
   } catch (e) {
-    console.error(`Error parsing localStorage key "${key}":`, e);
     return fallback;
   }
 }
 
-// Helper to initialize local storage
+function safeSetItem(key, val) {
+  try {
+    localStorage.setItem(key, val);
+  } catch (e) {}
+}
+
+function safeRemoveItem(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch (e) {}
+}
+
+function safeParse(key, fallback = []) {
+  try {
+    const raw = safeGetItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw);
+  } catch (e) {
+    return fallback;
+  }
+}
+
+// Helper to initialize local storage safely
 function initStorage() {
-  // Clear legacy database keys completely
   const oldKeys = [
     'gitamw_lms_perm_users_db', 
     'gitamw_lms_perm_faculty_db', 
@@ -424,37 +442,39 @@ function initStorage() {
     'lms_v30_users', 
     'lms_users_db'
   ];
-  oldKeys.forEach(k => {
-    try { localStorage.removeItem(k); } catch (e) {}
-  });
+  oldKeys.forEach(k => safeRemoveItem(k));
 
-  if (!localStorage.getItem(STORAGE_KEYS.FACULTY)) {
-    localStorage.setItem(STORAGE_KEYS.FACULTY, JSON.stringify([]));
+  if (!safeGetItem(STORAGE_KEYS.FACULTY)) {
+    safeSetItem(STORAGE_KEYS.FACULTY, JSON.stringify([]));
   }
-  if (!localStorage.getItem(STORAGE_KEYS.USERS)) {
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify([]));
+  if (!safeGetItem(STORAGE_KEYS.USERS)) {
+    safeSetItem(STORAGE_KEYS.USERS, JSON.stringify([]));
   }
-  if (!localStorage.getItem(STORAGE_KEYS.ADMINS)) {
-    localStorage.setItem(STORAGE_KEYS.ADMINS, JSON.stringify([]));
+  if (!safeGetItem(STORAGE_KEYS.ADMINS)) {
+    safeSetItem(STORAGE_KEYS.ADMINS, JSON.stringify([]));
   }
-  if (!localStorage.getItem(STORAGE_KEYS.REGISTERED_ROLES)) {
-    localStorage.setItem(STORAGE_KEYS.REGISTERED_ROLES, JSON.stringify({}));
+  if (!safeGetItem(STORAGE_KEYS.REGISTERED_ROLES)) {
+    safeSetItem(STORAGE_KEYS.REGISTERED_ROLES, JSON.stringify({}));
   }
-  localStorage.setItem(STORAGE_KEYS.NOTICES, JSON.stringify(INITIAL_NOTICES));
+  safeSetItem(STORAGE_KEYS.NOTICES, JSON.stringify(INITIAL_NOTICES));
   
   // Curriculum initialization strictly with INITIAL_CURRICULUM
-  localStorage.setItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(INITIAL_CURRICULUM));
+  safeSetItem(STORAGE_KEYS.CURRICULUM, JSON.stringify(INITIAL_CURRICULUM));
 
   // Attendance Sync
   let attendance = safeParse(STORAGE_KEYS.ATTENDANCE, []);
-  localStorage.setItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(attendance));
+  safeSetItem(STORAGE_KEYS.ATTENDANCE, JSON.stringify(attendance));
 
-  if (!localStorage.getItem(STORAGE_KEYS.UPLOADED_FILES)) {
-    localStorage.setItem(STORAGE_KEYS.UPLOADED_FILES, JSON.stringify(INITIAL_UPLOADED_FILES));
+  if (!safeGetItem(STORAGE_KEYS.UPLOADED_FILES)) {
+    safeSetItem(STORAGE_KEYS.UPLOADED_FILES, JSON.stringify(INITIAL_UPLOADED_FILES));
   }
 }
 
-initStorage();
+try {
+  initStorage();
+} catch (e) {
+  console.warn("Storage init warning:", e);
+}
 
 export const dbService = {
   clearAllDataAndReset: () => {
