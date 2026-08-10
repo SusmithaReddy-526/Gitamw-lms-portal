@@ -87,7 +87,7 @@ function MainContent() {
 
   // Protection Guard: If not logged in and requesting protected page, prompt auth
   const renderActiveView = () => {
-    if (!user) {
+    if (!user && activeTab !== 'search') {
       return (
         <LandingPage 
           onOpenAuth={handleOpenAuth} 
@@ -99,7 +99,7 @@ function MainContent() {
 
     switch (activeTab) {
       case 'dashboard':
-        return <StudentDashboard user={user} onSelectYear={handleSelectYear} />;
+        return user ? <StudentDashboard user={user} onSelectYear={handleSelectYear} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
       
       case 'year-view':
         return (
@@ -130,7 +130,7 @@ function MainContent() {
             onOpenTopic={handleOpenTopic}
             onBack={() => setActiveTab('branch-view')}
           />
-        ) : <StudentDashboard user={user} onSelectYear={handleSelectYear} />;
+        ) : (user ? <StudentDashboard user={user} onSelectYear={handleSelectYear} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />);
 
       case 'topic-view':
         return selectedTopic ? (
@@ -141,39 +141,42 @@ function MainContent() {
             user={user}
             onBack={() => setActiveTab('unit-view')}
           />
-        ) : <StudentDashboard user={user} onSelectYear={handleSelectYear} />;
+        ) : (user ? <StudentDashboard user={user} onSelectYear={handleSelectYear} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />);
 
       case 'subjects':
         return (
           <BranchPage 
-            selectedYear={user?.year || ''} 
-            selectedBranch={user?.branch || ''}
+            selectedYear={user?.year || '2nd'} 
+            selectedBranch={user?.branch || 'CSE'}
             onSelectUnitTopic={handleSelectUnitTopic}
-            onBack={() => setActiveTab('dashboard')}
+            onBack={() => setActiveTab(user ? 'dashboard' : 'home')}
             user={user}
           />
         );
 
       case 'faculty-portal':
-        return <FacultyDashboard user={user} />;
+        return user?.role === 'faculty' ? <FacultyDashboard user={user} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
 
       case 'admin':
-        return <AdminPanel />;
+        return user?.role === 'admin' ? <AdminPanel /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
 
       case 'search':
         return <GlobalSearch onSelectTopic={handleOpenTopic} />;
 
       case 'profile':
-        return <ProfilePage />;
+        return user ? <ProfilePage /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
 
       case 'downloads':
-        return <DownloadsPage user={user} onSelectTopic={handleOpenTopic} />;
+        return user ? <DownloadsPage user={user} onSelectTopic={handleOpenTopic} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
 
       case 'attendance':
-        return <AttendancePage user={user} />;
+        return user ? <AttendancePage user={user} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
 
       case 'home':
       default:
+        if (!user) {
+          return <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
+        }
         if (user.role === 'admin') return <AdminPanel />;
         if (user.role === 'faculty') return <FacultyDashboard user={user} />;
         return <StudentDashboard user={user} onSelectYear={handleSelectYear} />;
