@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
   FACULTY: 'gitamw_lms_fresh_faculty_db',
   ADMINS: 'gitamw_lms_fresh_admins_db',
   NOTICES: 'gitamw_lms_perm_notices_db',
-  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v64',
+  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v65',
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
@@ -728,6 +728,88 @@ const INITIAL_CURRICULUM = [
     yearId: '4th',
     branchId: 'ECE',
     subjectId: '23a52702_4th_ece',
+    subjectName: 'Gender Sentization',
+    subjectCode: '23A52702',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+
+  // --- 9. 4TH YEAR EEE (SEM 7) STRICT USER SUBJECTS ---
+  {
+    yearId: '4th',
+    branchId: 'EEE',
+    subjectId: '23a02701_4th_eee',
+    subjectName: 'Power System Operation and control',
+    subjectCode: '23A02701',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'EEE',
+    subjectId: '23a52701c_4th_eee',
+    subjectName: 'Management Science',
+    subjectCode: '23A52701c',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'EEE',
+    subjectId: '23a02702c_4th_eee',
+    subjectName: 'High Voltage Direct Current and Flexible AC Transmission System',
+    subjectCode: '23A02702c',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'EEE',
+    subjectId: '23a02703c_4th_eee',
+    subjectName: 'Electrical Distribution System',
+    subjectCode: '23A02703c',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'EEE',
+    subjectId: '23a35501t_4th_eee',
+    subjectName: 'Internet of Things',
+    subjectCode: '23A35501T',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'EEE',
+    subjectId: '23a52703_4th_eee',
+    subjectName: 'Employability Skills',
+    subjectCode: '23A52703',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'EEE',
+    subjectId: '23a02706_4th_eee',
+    subjectName: 'Power Systems and Simulation Lab',
+    subjectCode: '23A02706',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'EEE',
+    subjectId: '23a52702_4th_eee',
     subjectName: 'Gender Sentization',
     subjectCode: '23A52702',
     sem: 'Sem 7',
