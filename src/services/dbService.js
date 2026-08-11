@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
   FACULTY: 'gitamw_lms_fresh_faculty_db',
   ADMINS: 'gitamw_lms_fresh_admins_db',
   NOTICES: 'gitamw_lms_perm_notices_db',
-  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v60',
+  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v61',
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
@@ -391,6 +391,78 @@ const INITIAL_CURRICULUM = [
     branchId: 'AIML',
     subjectId: '23a52703_lab',
     subjectName: 'Prompt Engineering Lab',
+    subjectCode: '23A52703',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+
+  // --- 5. 4TH YEAR CSE (SEM 7) STRICT USER SUBJECTS ---
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a30602t_cse',
+    subjectName: 'Deep Learning',
+    subjectCode: '23A30602T',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a52701c_cse',
+    subjectName: 'Management Science',
+    subjectCode: '23A52701c',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a35501t_cse',
+    subjectName: 'Internet Of Things',
+    subjectCode: '23A35501T',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a30604a_cse',
+    subjectName: 'Computer Vision',
+    subjectCode: '23A30604a',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a05703_cse',
+    subjectName: 'Prompt Engineering',
+    subjectCode: '23A05703',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a52702_cse',
+    subjectName: 'Gender Sensitization',
+    subjectCode: '23A52702',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a52703_cse',
+    subjectName: 'Employability Skills',
     subjectCode: '23A52703',
     sem: 'Sem 7',
     semester: 'Sem 7',
