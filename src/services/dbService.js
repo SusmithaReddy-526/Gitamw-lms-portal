@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
   FACULTY: 'gitamw_lms_fresh_faculty_db',
   ADMINS: 'gitamw_lms_fresh_admins_db',
   NOTICES: 'gitamw_lms_perm_notices_db',
-  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v65',
+  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v66',
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
@@ -814,6 +814,108 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A52702',
     sem: 'Sem 7',
     semester: 'Sem 7',
+    units: standardUnits
+  },
+
+  // --- 10. 3RD YEAR EEE (SEM 5) STRICT USER SUBJECTS ---
+  {
+    yearId: '3rd',
+    branchId: 'EEE',
+    subjectId: '25g02501t_3rd_eee',
+    subjectName: 'Power Electronics',
+    subjectCode: '25G02501T',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'EEE',
+    subjectId: '25g02502_3rd_eee',
+    subjectName: 'Digital Circuits',
+    subjectCode: '25G02502',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'EEE',
+    subjectId: '25g02503_3rd_eee',
+    subjectName: 'Power Systems-II',
+    subjectCode: '25G02503',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'EEE',
+    subjectId: '25g05503_3rd_eee',
+    subjectName: 'Introduction to Quantum Technologies and Applications',
+    subjectCode: '25G05503',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'EEE',
+    subjectId: '25g02504c_3rd_eee',
+    subjectName: 'Utilization of Electrial Energy',
+    subjectCode: '25G02504c',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'EEE',
+    subjectId: '25g52502a_3rd_eee',
+    subjectName: 'English for Competitive Examinations',
+    subjectCode: '25G52502a',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'EEE',
+    subjectId: '25g02501p_3rd_eee',
+    subjectName: 'Power Electonics Lab',
+    subjectCode: '25G02501P',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'EEE',
+    subjectId: '25g02506_3rd_eee',
+    subjectName: 'Analog and Digital Circuits Lab',
+    subjectCode: '25G02506',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'EEE',
+    subjectId: '25g52501_3rd_eee',
+    subjectName: 'Soft Skills',
+    subjectCode: '25G52501',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'EEE',
+    subjectId: '25g03508_3rd_eee',
+    subjectName: 'Tinkering Lab',
+    subjectCode: '25G03508',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
     units: standardUnits
   }
 ];
