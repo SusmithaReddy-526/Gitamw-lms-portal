@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
   FACULTY: 'gitamw_lms_fresh_faculty_db',
   ADMINS: 'gitamw_lms_fresh_admins_db',
   NOTICES: 'gitamw_lms_perm_notices_db',
-  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v63',
+  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v64',
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
@@ -650,6 +650,88 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A04501P',
     sem: 'Sem 3',
     semester: 'Sem 3',
+    units: standardUnits
+  },
+
+  // --- 8. 4TH YEAR ECE (SEM 7) STRICT USER SUBJECTS ---
+  {
+    yearId: '4th',
+    branchId: 'ECE',
+    subjectId: '23ao4701_4th_ece',
+    subjectName: 'Data Communications and Networking',
+    subjectCode: '23AO4701',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'ECE',
+    subjectId: '23a045701c_4th_ece',
+    subjectName: 'Management Science',
+    subjectCode: '23A045701c',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'ECE',
+    subjectId: '23a04702a_4th_ece',
+    subjectName: 'Radar Engineering',
+    subjectCode: '23A04702a',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'ECE',
+    subjectId: '23a04703a_4th_ece',
+    subjectName: 'Low Power VLSI Design',
+    subjectCode: '23A04703a',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'ECE',
+    subjectId: '23a52703_4th_ece',
+    subjectName: 'Employability Skills',
+    subjectCode: '23A52703',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'ECE',
+    subjectId: '23a35501t_4th_ece',
+    subjectName: 'Internet of Things',
+    subjectCode: '23A35501T',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'ECE',
+    subjectId: '23a04705a_4th_ece',
+    subjectName: 'RF System Design Tools',
+    subjectCode: '23A04705a',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'ECE',
+    subjectId: '23a52702_4th_ece',
+    subjectName: 'Gender Sentization',
+    subjectCode: '23A52702',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
     units: standardUnits
   }
 ];
