@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
   FACULTY: 'gitamw_lms_fresh_faculty_db',
   ADMINS: 'gitamw_lms_fresh_admins_db',
   NOTICES: 'gitamw_lms_perm_notices_db',
-  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v66',
+  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v67',
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
@@ -916,6 +916,98 @@ const INITIAL_CURRICULUM = [
     subjectCode: '25G03508',
     sem: 'Sem 5',
     semester: 'Sem 5',
+    units: standardUnits
+  },
+
+  // --- 11. 2ND YEAR EEE (SEM 3) STRICT USER SUBJECTS ---
+  {
+    yearId: '2nd',
+    branchId: 'EEE',
+    subjectId: '23a54304_2nd_eee',
+    subjectName: 'Complex Variables & Numerical Methods',
+    subjectCode: '23A54304',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'EEE',
+    subjectId: '23a52301_2nd_eee',
+    subjectName: 'Universal Human Values',
+    subjectCode: '23A52301',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'EEE',
+    subjectId: '23a02301_2nd_eee',
+    subjectName: 'Electromagnetiv Field Theory',
+    subjectCode: '23A02301',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'EEE',
+    subjectId: '23a02302t_2nd_eee',
+    subjectName: 'Electrical Cricuit Analysis-II',
+    subjectCode: '23A02302T',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'EEE',
+    subjectId: '23a02303t_2nd_eee',
+    subjectName: 'DC Machines & Transformers Lab',
+    subjectCode: '23A02303T',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'EEE',
+    subjectId: '23a02302p_2nd_eee',
+    subjectName: 'Electrical Circuit Analysis-II and Simulation Lab',
+    subjectCode: '23A02302P',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'EEE',
+    subjectId: '23a02303p_2nd_eee',
+    subjectName: 'DC Machines & Transforms Lab',
+    subjectCode: '23A02303P',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'EEE',
+    subjectId: '23a05305_2nd_eee',
+    subjectName: 'Data Structures',
+    subjectCode: '23A05305',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'EEE',
+    subjectId: '23a99301_2nd_eee',
+    subjectName: 'Environment Science',
+    subjectCode: '23A99301',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
     units: standardUnits
   }
 ];
