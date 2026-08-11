@@ -154,21 +154,12 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
               ))}
 
               {subjectsList.length === 0 && (
-                <div className="col-span-full p-12 rounded-3xl glass-card text-center space-y-4 border border-brand-500/30">
-                  <BookOpen className="w-12 h-12 text-brand-500 mx-auto opacity-60" />
-                  <h4 className="font-bold text-slate-900 dark:text-white text-lg">No Subjects Loaded for {activeYear} Year {activeBranch}</h4>
-                  <p className="text-xs text-slate-500 max-w-md mx-auto">
-                    Click the button below to instantly load and restore the official 3rd Year CSE (5th Sem) subjects!
+                <div className="col-span-full p-12 rounded-3xl aurora-card text-center space-y-3 border border-fuchsia-500/30">
+                  <BookOpen className="w-12 h-12 text-cyan-400 mx-auto opacity-80" />
+                  <h4 className="font-extrabold text-white text-xl font-outfit">No Subjects Currently Added for {activeYear} Year {activeBranch}</h4>
+                  <p className="text-xs text-slate-300 max-w-md mx-auto">
+                    Faculty or Admin members can upload subjects and unit notes for {activeYear} Year {activeBranch} from the Faculty Upload Portal.
                   </p>
-                  <button
-                    onClick={() => {
-                      setSubjectsList(dbService.resetCurriculumToDefault());
-                    }}
-                    className="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg inline-flex items-center gap-2 transition-all cursor-pointer hover:scale-105"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                    Load & Restore 3rd Year CSE Subjects
-                  </button>
                 </div>
               )}
             </div>
