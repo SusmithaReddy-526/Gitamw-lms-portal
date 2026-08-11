@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
   FACULTY: 'gitamw_lms_fresh_faculty_db',
   ADMINS: 'gitamw_lms_fresh_admins_db',
   NOTICES: 'gitamw_lms_perm_notices_db',
-  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v62',
+  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v63',
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
@@ -568,6 +568,88 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A03508',
     sem: 'Sem 5',
     semester: 'Sem 5',
+    units: standardUnits
+  },
+
+  // --- 7. 2ND YEAR ECE (SEM 3) STRICT USER SUBJECTS ---
+  {
+    yearId: '2nd',
+    branchId: 'ECE',
+    subjectId: '23a04501t_2nd_ece',
+    subjectName: 'Probability and Complex Variables',
+    subjectCode: '23A04501T',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'ECE',
+    subjectId: '23a04502_2nd_ece',
+    subjectName: 'Universal Human Values',
+    subjectCode: '23A04502',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'ECE',
+    subjectId: '23a04503t_2nd_ece',
+    subjectName: 'Signals, Systems and Stochastic Processes',
+    subjectCode: '23A04503T',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'ECE',
+    subjectId: '23a05503_2nd_ece',
+    subjectName: 'Electronic Devices and Circuits',
+    subjectCode: '23A05503',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'ECE',
+    subjectId: '23a04504a_2nd_ece',
+    subjectName: 'Digital Circuits Design',
+    subjectCode: '23A04504a',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'ECE',
+    subjectId: '23a04503p_2nd_ece',
+    subjectName: 'Python Programming',
+    subjectCode: '23A04503P',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'ECE',
+    subjectId: '23a52502a_2nd_ece',
+    subjectName: 'Electronic Devices and Circuits Lab',
+    subjectCode: '23A52502a',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
+    units: standardUnits
+  },
+  {
+    yearId: '2nd',
+    branchId: 'ECE',
+    subjectId: '23a04501p_2nd_ece',
+    subjectName: 'Digital Circuits& Signal Simulation Lab',
+    subjectCode: '23A04501P',
+    sem: 'Sem 3',
+    semester: 'Sem 3',
     units: standardUnits
   }
 ];
