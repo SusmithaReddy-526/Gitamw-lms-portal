@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
   FACULTY: 'gitamw_lms_fresh_faculty_db',
   ADMINS: 'gitamw_lms_fresh_admins_db',
   NOTICES: 'gitamw_lms_perm_notices_db',
-  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v61',
+  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v62',
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
@@ -466,6 +466,108 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A52703',
     sem: 'Sem 7',
     semester: 'Sem 7',
+    units: standardUnits
+  },
+
+  // --- 6. 3RD YEAR ECE (SEM 5) STRICT USER SUBJECTS ---
+  {
+    yearId: '3rd',
+    branchId: 'ECE',
+    subjectId: '23a04501t_ece',
+    subjectName: 'Analog And Digital IC Applications',
+    subjectCode: '23A04501T',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'ECE',
+    subjectId: '23a04502_ece',
+    subjectName: 'Antennas & Wave Propagation',
+    subjectCode: '23A04502',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'ECE',
+    subjectId: '23a04503t_ece',
+    subjectName: 'Microprocessors & Microcontrollers',
+    subjectCode: '23A04503T',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'ECE',
+    subjectId: '23a05503_ece',
+    subjectName: 'Introduction To Quantum Technologies And Applications',
+    subjectCode: '23A05503',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'ECE',
+    subjectId: '23a04504a_ece',
+    subjectName: 'Computer Architexture & Organization',
+    subjectCode: '23A04504a',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'ECE',
+    subjectId: '23a52502a_ece',
+    subjectName: 'English For Competitive Examinations',
+    subjectCode: '23A52502a',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'ECE',
+    subjectId: '23a04503p_ece',
+    subjectName: 'PCB Design & Prototype Development',
+    subjectCode: '23A04503P',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'ECE',
+    subjectId: '23a04501p_ece',
+    subjectName: 'Analog & Digital IC Applications Lab',
+    subjectCode: '23A04501P',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'ECE',
+    subjectId: '23a04503p_lab_ece',
+    subjectName: 'Microprocessors & Microcontrollers Lab',
+    subjectCode: '23A04503P',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'ECE',
+    subjectId: '23a03508_ece',
+    subjectName: 'Tinkering Lab',
+    subjectCode: '23A03508',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
     units: standardUnits
   }
 ];
