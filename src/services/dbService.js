@@ -6,7 +6,7 @@ const STORAGE_KEYS = {
   FACULTY: 'gitamw_lms_fresh_faculty_db',
   ADMINS: 'gitamw_lms_fresh_admins_db',
   NOTICES: 'gitamw_lms_perm_notices_db',
-  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v67',
+  CURRICULUM: 'gitamw_lms_strict_user_curriculum_v68',
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
@@ -1008,6 +1008,108 @@ const INITIAL_CURRICULUM = [
     subjectCode: '23A99301',
     sem: 'Sem 3',
     semester: 'Sem 3',
+    units: standardUnits
+  },
+
+  // --- 12. 3RD YEAR AIML (SEM 5) STRICT USER SUBJECTS ---
+  {
+    yearId: '3rd',
+    branchId: 'AIML',
+    subjectId: '23a31501_3rd_aiml',
+    subjectName: 'Natural Language Processing',
+    subjectCode: '23A31501',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'AIML',
+    subjectId: '23a31502_3rd_aiml',
+    subjectName: 'System Software Programming',
+    subjectCode: '23A31502',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'AIML',
+    subjectId: '23a31503_3rd_aiml',
+    subjectName: 'Computer Vision & Image Processing',
+    subjectCode: '23A31503',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'AIML',
+    subjectId: '25a05503_3rd_aiml',
+    subjectName: 'Introduction to Quantum Technologies & Applications',
+    subjectCode: '25A05503',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'AIML',
+    subjectId: '23a05504b_3rd_aiml',
+    subjectName: 'Soft Computing',
+    subjectCode: '23A05504b',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'AIML',
+    subjectId: '23a52502a_3rd_aiml',
+    subjectName: 'English for Competitive Examinations',
+    subjectCode: '23A52502a',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'AIML',
+    subjectId: '23a33501_3rd_aiml',
+    subjectName: 'Computer Vision & Machine Learning Lab',
+    subjectCode: '23A33501',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'AIML',
+    subjectId: '23a31506_3rd_aiml',
+    subjectName: 'AI & System Programming Lab',
+    subjectCode: '23A31506',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'AIML',
+    subjectId: '23a05506_3rd_aiml',
+    subjectName: 'Full Stack Development -II',
+    subjectCode: '23A05506',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
+    units: standardUnits
+  },
+  {
+    yearId: '3rd',
+    branchId: 'AIML',
+    subjectId: '23a03508_3rd_aiml',
+    subjectName: 'Tinkering Lab',
+    subjectCode: '23A03508',
+    sem: 'Sem 5',
+    semester: 'Sem 5',
     units: standardUnits
   }
 ];
