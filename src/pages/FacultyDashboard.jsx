@@ -32,7 +32,12 @@ const BRANCH_ICONS = {
 };
 
 export function FacultyDashboard({ user }) {
+  const [selectedDept, setSelectedDept] = useState(null); // 'CSE' | 'AIML' | 'ECE' | 'EEE'
+  const [selectedFacultyMember, setSelectedFacultyMember] = useState(null);
   const [activeTabMode, setActiveTabMode] = useState('upload-material'); // 'upload-material' | 'add-subject' | 'manage-syllabus'
+
+  // Fetch registered faculty list
+  const facultyList = dbService.getFacultyList();
 
   // Common selection state
   const [selectedYear, setSelectedYear] = useState('');
@@ -235,8 +240,193 @@ export function FacultyDashboard({ user }) {
     reader.readAsDataURL(file);
   };
 
+  // --- LEVEL 1: 4 DEPARTMENT CARDS (CSE, AIML, ECE, EEE) ---
+  if (!selectedDept) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-8 pb-16">
+        {/* Banner Header */}
+        <div className="p-8 rounded-3xl aurora-glass-panel text-white shadow-2xl relative overflow-hidden border border-fuchsia-500/30">
+          <div className="relative z-10 max-w-4xl space-y-3">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-fuchsia-500/20 text-fuchsia-200 text-xs font-black uppercase tracking-wider border border-fuchsia-400/40 shadow-lg shadow-fuchsia-500/20">
+              <Sparkles className="w-4 h-4 text-fuchsia-300" />
+              GITAMW Autonomous Faculty Portal
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-black font-outfit tracking-tight">
+              Select Engineering <span className="aurora-text">Department</span>
+            </h1>
+            <p className="text-sm text-slate-200">
+              Click a department below to view its registered Faculty Members (e.g. Dr. K. Rangaswamy in CSE) & Academic Workspaces.
+            </p>
+          </div>
+        </div>
+
+        {/* 4 DEPARTMENT CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {BRANCHES.map(b => {
+            const Icon = BRANCH_ICONS[b.id] || BookOpen;
+            const deptFaculty = facultyList.filter(f => (f.department || f.branch || '').toUpperCase() === b.id.toUpperCase());
+
+            return (
+              <motion.div
+                key={b.id}
+                whileHover={{ y: -6, scale: 1.02 }}
+                onClick={() => setSelectedDept(b.id)}
+                className="p-6 rounded-3xl aurora-card cursor-pointer flex flex-col justify-between relative overflow-hidden group shadow-xl border border-cyan-500/30"
+              >
+                <div>
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-fuchsia-600 text-white flex items-center justify-center text-2xl font-black mb-4 shadow-lg border border-cyan-300/40">
+                    <Icon className="w-7 h-7 text-white" />
+                  </div>
+
+                  <h3 className="text-2xl font-black text-white font-outfit mb-2 group-hover:text-cyan-300 transition-colors">
+                    {b.code}
+                  </h3>
+                  <p className="text-xs text-slate-300 mb-4 font-medium leading-relaxed">
+                    {b.name}
+                  </p>
+
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-900/90 text-cyan-300 text-xs font-mono font-bold border border-slate-700">
+                    <span>{deptFaculty.length} Registered Faculty</span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-xs font-black pt-5 border-t border-slate-800 text-cyan-300 group-hover:translate-x-1 transition-transform">
+                  <span>View Faculty Members</span>
+                  <ArrowRight className="w-4 h-4 text-cyan-400" />
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // --- LEVEL 2: FACULTY MEMBERS LIST UNDER SELECTED DEPARTMENT ---
+  if (selectedDept && !selectedFacultyMember) {
+    const deptFaculty = facultyList.filter(f => (f.department || f.branch || '').toUpperCase() === selectedDept.toUpperCase());
+    const deptObj = BRANCHES.find(b => b.id === selectedDept);
+
+    return (
+      <div className="max-w-6xl mx-auto space-y-8 pb-16">
+        {/* Navigation & Header */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setSelectedDept(null)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Departments
+          </button>
+
+          <span className="px-4 py-1.5 rounded-full bg-brand-500/20 text-cyan-300 text-xs font-black uppercase tracking-wider border border-cyan-400/40">
+            {deptObj?.name || selectedDept} ({selectedDept})
+          </span>
+        </div>
+
+        {/* Banner */}
+        <div className="p-8 rounded-3xl aurora-glass-panel text-white shadow-2xl relative overflow-hidden border border-cyan-500/30">
+          <div className="relative z-10 space-y-2">
+            <h2 className="text-3xl font-black font-outfit">
+              {selectedDept} Department — <span className="aurora-text">Faculty Members Directory</span>
+            </h2>
+            <p className="text-xs text-slate-200">
+              Click a faculty member below (e.g. Dr. K. Rangaswamy) to view their profile, subjects handled, and upload unit materials.
+            </p>
+          </div>
+        </div>
+
+        {/* FACULTY MEMBERS LIST GRID */}
+        {deptFaculty.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {deptFaculty.map(fac => {
+              const isCurrentUser = user && (user.employeeId === fac.employeeId || user.fullName === fac.fullName);
+
+              return (
+                <motion.div
+                  key={fac.id || fac.employeeId}
+                  whileHover={{ y: -4 }}
+                  onClick={() => {
+                    setSelectedFacultyMember(fac);
+                    setSelectedBranch(selectedDept);
+                  }}
+                  className={`p-6 rounded-3xl aurora-card cursor-pointer border flex flex-col justify-between relative overflow-hidden transition-all shadow-xl ${
+                    isCurrentUser 
+                      ? 'border-fuchsia-400 ring-2 ring-fuchsia-400/50 shadow-fuchsia-500/20' 
+                      : 'border-slate-800 hover:border-cyan-400'
+                  }`}
+                >
+                  {isCurrentUser && (
+                    <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-fuchsia-600 text-white text-[10px] font-black uppercase tracking-wider shadow-lg border border-fuchsia-300">
+                      Your Active Profile
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 text-white font-black text-xl flex items-center justify-center shadow-lg border border-cyan-300/40">
+                        {fac.fullName ? fac.fullName.replace('Dr. ', '').charAt(0) : 'F'}
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-extrabold text-white font-outfit">
+                          {fac.fullName}
+                        </h3>
+                        <p className="text-xs text-cyan-300 font-mono font-bold">
+                          Emp ID: {fac.employeeId || 'FAC-01'} • {fac.department || selectedDept} Department
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-1.5 text-xs text-slate-300 font-mono">
+                      <div>📧 Email: <span className="text-white">{fac.email || 'faculty@gitamw.ac.in'}</span></div>
+                      <div>📱 Mobile: <span className="text-white">{fac.mobile || 'Registered'}</span></div>
+                      {fac.subjectsHandled && (
+                        <div className="pt-1 border-t border-slate-800 text-[11px] font-outfit text-amber-300">
+                          📚 Subjects Handled: {fac.subjectsHandled.join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-5 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-black text-cyan-300">
+                    <span>Manage Academic Uploads & Subjects</span>
+                    <ArrowRight className="w-4 h-4 text-cyan-400" />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="p-12 text-center rounded-3xl glass-card border border-slate-800 text-slate-400 space-y-3">
+            <BookOpen className="w-12 h-12 text-cyan-500/40 mx-auto" />
+            <h4 className="font-extrabold text-white text-lg">No Faculty Members Registered for {selectedDept} Yet</h4>
+            <p className="text-xs text-slate-400 max-w-md mx-auto">
+              Faculty members registered under {selectedDept} during account sign up will automatically appear here.
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // --- LEVEL 3: SELECTED FACULTY MEMBER WORKSPACE & UPLOAD TOOLS ---
   return (
     <div className="max-w-6xl mx-auto space-y-8 pb-16">
+      {/* Navigation Header */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => setSelectedFacultyMember(null)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to {selectedDept} Faculty Directory
+        </button>
+
+        <span className="px-4 py-1.5 rounded-full bg-brand-500/20 text-cyan-300 text-xs font-black uppercase tracking-wider border border-cyan-400/40">
+          Faculty: {selectedFacultyMember.fullName} ({selectedFacultyMember.employeeId})
+        </span>
+      </div>
+
       {/* Aurora Banner Header */}
       <div className="p-8 rounded-3xl aurora-glass-panel text-white shadow-2xl relative overflow-hidden border border-fuchsia-500/30">
         <div className="absolute top-0 right-0 w-80 h-80 bg-fuchsia-600/15 rounded-full blur-3xl pointer-events-none" />
@@ -245,13 +435,13 @@ export function FacultyDashboard({ user }) {
         <div className="relative z-10 max-w-4xl space-y-3">
           <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-fuchsia-500/20 text-fuchsia-200 text-xs font-black uppercase tracking-wider border border-fuchsia-400/40 shadow-lg shadow-fuchsia-500/20">
             <Sparkles className="w-4 h-4 text-fuchsia-300" />
-            GITAMW Autonomous Faculty Portal
+            {selectedFacultyMember.fullName}'s Academic Workspace
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black font-outfit tracking-tight">
-            Faculty Curriculum & <span className="aurora-text">Material Control</span>
+          <h1 className="text-3xl sm:text-4xl font-black font-outfit tracking-tight">
+            {selectedFacultyMember.fullName} — <span className="aurora-text">{selectedDept} Academic Control</span>
           </h1>
-          <p className="text-sm text-slate-200">
-            Welcome, <span className="font-bold text-cyan-300">{user?.fullName || 'Faculty Member'}</span>! Full access to manage 4 years curriculum cards, upload syllabus PDFs, attach unit notes, and delete subjects.
+          <p className="text-xs text-slate-200 font-mono">
+            Employee ID: <span className="text-cyan-300 font-bold">{selectedFacultyMember.employeeId}</span> • Department: <span className="text-cyan-300 font-bold">{selectedDept}</span> • Email: <span className="text-cyan-300">{selectedFacultyMember.email}</span>
           </p>
         </div>
       </div>

@@ -1157,6 +1157,61 @@ const OFFICIAL_DEFAULT_ADMINS = [
   }
 ];
 
+const OFFICIAL_DEFAULT_FACULTY = [
+  {
+    id: 'fac-rangaswamy',
+    fullName: 'Dr. K. Rangaswamy',
+    employeeId: 'EMP-CSE-01',
+    department: 'CSE',
+    branch: 'CSE',
+    email: 'k.rangaswamy@gitamw.ac.in',
+    mobile: '9848012345',
+    username: 'EMP-CSE-01',
+    password: 'faculty123',
+    role: 'faculty',
+    subjectsHandled: ['Deep Learning (23A30602T)', 'Computer Architecture & Organization']
+  },
+  {
+    id: 'fac-saritha',
+    fullName: 'Dr. M. Saritha',
+    employeeId: 'EMP-AIML-01',
+    department: 'AIML',
+    branch: 'AIML',
+    email: 'm.saritha@gitamw.ac.in',
+    mobile: '9848023456',
+    username: 'EMP-AIML-01',
+    password: 'faculty123',
+    role: 'faculty',
+    subjectsHandled: ['Natural Language Processing (23A31501)', 'Soft Computing']
+  },
+  {
+    id: 'fac-venkat',
+    fullName: 'Dr. P. Venkat Rao',
+    employeeId: 'EMP-ECE-01',
+    department: 'ECE',
+    branch: 'ECE',
+    email: 'p.venkatrao@gitamw.ac.in',
+    mobile: '9848034567',
+    username: 'EMP-ECE-01',
+    password: 'faculty123',
+    role: 'faculty',
+    subjectsHandled: ['Analog & Digital IC Applications', 'Signals & Systems']
+  },
+  {
+    id: 'fac-ramesh',
+    fullName: 'Dr. T. Ramesh Babu',
+    employeeId: 'EMP-EEE-01',
+    department: 'EEE',
+    branch: 'EEE',
+    email: 't.rameshbabu@gitamw.ac.in',
+    mobile: '9848045678',
+    username: 'EMP-EEE-01',
+    password: 'faculty123',
+    role: 'faculty',
+    subjectsHandled: ['Power Electronics (25G02501T)', 'DC Machines & Transformers']
+  }
+];
+
 const INITIAL_UPLOADED_FILES = [];
 
 function safeGetItem(key, fallback = null) {
@@ -1269,7 +1324,14 @@ export const dbService = {
   },
 
   getFacultyList: () => {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
+    const customFaculty = safeParse(STORAGE_KEYS.FACULTY, []);
+    const merged = [...OFFICIAL_DEFAULT_FACULTY];
+    customFaculty.forEach(cf => {
+      if (!merged.some(m => m.employeeId?.toUpperCase() === cf.employeeId?.toUpperCase())) {
+        merged.push(cf);
+      }
+    });
+    return merged;
   },
 
   getOfficialAdmins: () => OFFICIAL_DEFAULT_ADMINS,
