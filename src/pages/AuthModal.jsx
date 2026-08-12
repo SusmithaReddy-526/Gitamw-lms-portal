@@ -81,6 +81,7 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
     employeeId: '',
     department: '',
     email: '',
+    mobile: '',
     password: '',
     confirmPassword: ''
   });
@@ -130,6 +131,10 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
       } else if (role === 'faculty') {
         if (!facultyReg.department) {
           setError('Please select your Department from the dropdown.');
+          return;
+        }
+        if (!facultyReg.mobile || facultyReg.mobile.trim().length < 10) {
+          setError('Please enter a valid 10-digit Mobile Number.');
           return;
         }
         if (facultyReg.password !== facultyReg.confirmPassword) {
@@ -507,18 +512,34 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                       </div>
                     </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                        Email Address *
-                      </label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="faculty@gitamw.edu.in"
-                        value={facultyReg.email}
-                        onChange={e => setFacultyReg({ ...facultyReg, email: e.target.value })}
-                        className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs outline-none"
-                      />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                          Email Address *
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          placeholder="faculty@gitamw.edu.in"
+                          value={facultyReg.email}
+                          onChange={e => setFacultyReg({ ...facultyReg, email: e.target.value })}
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                          Mobile Number *
+                        </label>
+                        <input
+                          type="tel"
+                          required
+                          placeholder="9848012345"
+                          value={facultyReg.mobile}
+                          onChange={e => setFacultyReg({ ...facultyReg, mobile: e.target.value.replace(/[^0-9]/g, '').slice(0, 10) })}
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 text-xs font-mono outline-none"
+                        />
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">

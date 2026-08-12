@@ -1326,6 +1326,9 @@ export const dbService = {
       ...facultyData,
       employeeId: cleanEmpId,
       username: cleanEmpId,
+      branch: facultyData.department || facultyData.branch || '',
+      department: facultyData.department || facultyData.branch || '',
+      mobile: facultyData.mobile || facultyData.mobileNumber || '',
       role: 'faculty',
       registeredAt: new Date().toISOString()
     };

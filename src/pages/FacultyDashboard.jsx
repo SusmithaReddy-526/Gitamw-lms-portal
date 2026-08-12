@@ -39,6 +39,18 @@ export function FacultyDashboard({ user }) {
   // Fetch registered faculty list
   const facultyList = dbService.getFacultyList();
 
+  // Auto-detect registered department & profile for logged-in faculty
+  useEffect(() => {
+    if (user && user.role === 'faculty') {
+      const userDept = (user.department || user.branch || '').toUpperCase();
+      if (userDept && BRANCHES.some(b => b.id === userDept)) {
+        setSelectedDept(userDept);
+        setSelectedFacultyMember(user);
+        setSelectedBranch(userDept);
+      }
+    }
+  }, [user]);
+
   // Common selection state
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
@@ -497,7 +509,7 @@ export function FacultyDashboard({ user }) {
             {selectedFacultyMember.fullName} — <span className="aurora-text">{selectedDept} Academic Control</span>
           </h1>
           <p className="text-xs text-slate-200 font-mono">
-            Employee ID: <span className="text-cyan-300 font-bold">{selectedFacultyMember.employeeId}</span> • Department: <span className="text-cyan-300 font-bold">{selectedDept}</span> • Email: <span className="text-cyan-300">{selectedFacultyMember.email}</span>
+            Employee ID: <span className="text-cyan-300 font-bold">{selectedFacultyMember.employeeId}</span> • Department: <span className="text-cyan-300 font-bold">{selectedDept}</span> • Email: <span className="text-cyan-300">{selectedFacultyMember.email}</span> • Mobile: <span className="text-emerald-300 font-bold">{selectedFacultyMember.mobile || 'Registered'}</span>
           </p>
         </div>
       </div>
