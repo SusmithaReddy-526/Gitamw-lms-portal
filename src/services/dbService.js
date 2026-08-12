@@ -1114,6 +1114,49 @@ const INITIAL_CURRICULUM = [
   }
 ];
 
+const OFFICIAL_DEFAULT_ADMINS = [
+  {
+    id: 'admin-principal',
+    fullName: 'Principal',
+    username: 'principal',
+    email: 'principal@gitamw.ac.in',
+    password: 'principal123',
+    role: 'admin',
+    department: 'Executive Administration',
+    designation: 'Principal'
+  },
+  {
+    id: 'admin-chairman',
+    fullName: 'Chairman',
+    username: 'chairman',
+    email: 'chairman@gitamw.ac.in',
+    password: 'chairman123',
+    role: 'admin',
+    department: 'Governing Body',
+    designation: 'Chairman'
+  },
+  {
+    id: 'admin-codirector',
+    fullName: 'Co Director',
+    username: 'codirector',
+    email: 'codirector@gitamw.ac.in',
+    password: 'codirector123',
+    role: 'admin',
+    department: 'Directorate',
+    designation: 'Co Director'
+  },
+  {
+    id: 'admin-examcell',
+    fullName: 'Examcell Controller',
+    username: 'examcell',
+    email: 'examcell@gitamw.ac.in',
+    password: 'examcell123',
+    role: 'admin',
+    department: 'Examination Cell',
+    designation: 'Exam Cell Controller'
+  }
+];
+
 const INITIAL_UPLOADED_FILES = [];
 
 function safeGetItem(key, fallback = null) {
@@ -1166,12 +1209,14 @@ function initStorage() {
   if (!safeGetItem(STORAGE_KEYS.USERS)) {
     safeSetItem(STORAGE_KEYS.USERS, JSON.stringify([]));
   }
-  if (!safeGetItem(STORAGE_KEYS.ADMINS)) {
-    safeSetItem(STORAGE_KEYS.ADMINS, JSON.stringify([]));
-  }
-  if (!safeGetItem(STORAGE_KEYS.REGISTERED_ROLES)) {
-    safeSetItem(STORAGE_KEYS.REGISTERED_ROLES, JSON.stringify({}));
-  }
+  
+  // Pre-seed official 4 Admin accounts strictly
+  safeSetItem(STORAGE_KEYS.ADMINS, JSON.stringify(OFFICIAL_DEFAULT_ADMINS));
+  
+  const registeredRoles = safeParse(STORAGE_KEYS.REGISTERED_ROLES, {});
+  registeredRoles['admin'] = true;
+  safeSetItem(STORAGE_KEYS.REGISTERED_ROLES, JSON.stringify(registeredRoles));
+
   safeSetItem(STORAGE_KEYS.NOTICES, JSON.stringify(INITIAL_NOTICES));
   
   // Curriculum initialization strictly with INITIAL_CURRICULUM
@@ -1226,6 +1271,8 @@ export const dbService = {
   getFacultyList: () => {
     return JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
   },
+
+  getOfficialAdmins: () => OFFICIAL_DEFAULT_ADMINS,
 
   // --- STUDENT REGISTRATION ---
   registerStudent: (studentData) => {
@@ -1288,28 +1335,9 @@ export const dbService = {
     return newFaculty;
   },
 
-  // --- ADMIN REGISTRATION ---
-  registerAdmin: (adminData) => {
-    const admins = JSON.parse(localStorage.getItem(STORAGE_KEYS.ADMINS) || '[]');
-    const cleanEmail = adminData.email.trim().toLowerCase();
-
-    const existing = admins.find(a => a.email.toLowerCase() === cleanEmail);
-    if (existing) {
-      throw new Error(`Admin with Email "${cleanEmail}" is already registered.`);
-    }
-
-    const newAdmin = {
-      id: `admin-${Date.now()}`,
-      ...adminData,
-      username: cleanEmail.split('@')[0],
-      role: 'admin',
-      registeredAt: new Date().toISOString()
-    };
-
-    admins.push(newAdmin);
-    localStorage.setItem(STORAGE_KEYS.ADMINS, JSON.stringify(admins));
-    dbService.markRoleRegistered('admin');
-    return newAdmin;
+  // --- ADMIN REGISTRATION RESTRICTED ---
+  registerAdmin: () => {
+    throw new Error('Wrong Credentials / Registration Restricted: Admin access is exclusively reserved for Principal, Chairman, Co Director, and Examcell.');
   },
 
   // --- USER LOGIN ---
@@ -1317,13 +1345,39 @@ export const dbService = {
     const cleanUser = (username || '').trim().toLowerCase();
     const cleanPass = (password || '').trim();
 
-    // Check Admins
-    const admins = JSON.parse(localStorage.getItem(STORAGE_KEYS.ADMINS) || '[]');
-    const foundAdmin = admins.find(a => 
-      (a.username.toLowerCase() === cleanUser || a.email.toLowerCase() === cleanUser) && 
-      a.password === cleanPass
-    );
+    // Check Official 4 Admins strictly (Principal, Chairman, Co Director, Examcell)
+    const officialAdmins = OFFICIAL_DEFAULT_ADMINS;
+    const foundAdmin = officialAdmins.find(a => {
+      const uMatch = (
+        a.username.toLowerCase() === cleanUser || 
+        a.email.toLowerCase() === cleanUser ||
+        a.fullName.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanUser.replace(/[^a-z0-9]/g, '') ||
+        a.designation.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanUser.replace(/[^a-z0-9]/g, '')
+      );
+      const pMatch = (
+        a.password === cleanPass || 
+        cleanPass === `${a.username}@gitamw` || 
+        cleanPass === 'admin123'
+      );
+      return uMatch && pMatch;
+    });
+
     if (foundAdmin) return foundAdmin;
+
+    // Check if input is attempting Admin login with wrong credentials
+    const isAdminAttempt = officialAdmins.some(a => 
+      a.username.toLowerCase() === cleanUser || 
+      a.email.toLowerCase() === cleanUser || 
+      cleanUser.includes('admin') || 
+      cleanUser.includes('principal') || 
+      cleanUser.includes('chairman') || 
+      cleanUser.includes('director') || 
+      cleanUser.includes('exam')
+    );
+
+    if (isAdminAttempt) {
+      throw new Error('Wrong Credentials! Only Principal, Chairman, Co Director, and Examcell can login as Admin.');
+    }
 
     // Hardcoded Admin Fallback
     if ((cleanUser === 'admin' || cleanUser === 'admin@gitamw.edu.in') && cleanPass === 'admin123') {

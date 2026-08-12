@@ -30,11 +30,16 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
   const [copied, setCopied] = useState(false);
 
   // Auto-detect whether first-time registration or future login should be shown
+  // Auto-detect whether first-time registration or future login should be shown
   useEffect(() => {
     setRole(initialRole);
-    const checkFn = dbService.hasRoleRegistered || dbService.hasRegisteredRole;
-    const hasReg = checkFn ? checkFn(initialRole) : false;
-    setAuthMode(hasReg ? 'login' : 'register');
+    if (initialRole === 'admin') {
+      setAuthMode('login');
+    } else {
+      const checkFn = dbService.hasRoleRegistered || dbService.hasRegisteredRole;
+      const hasReg = checkFn ? checkFn(initialRole) : false;
+      setAuthMode(hasReg ? 'login' : 'register');
+    }
     setError('');
     setRegisteredUserPayload(null);
     setLoginUsername('');
@@ -48,9 +53,13 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
     setRegisteredUserPayload(null);
     setLoginUsername('');
     setLoginPassword('');
-    const checkFn = dbService.hasRoleRegistered || dbService.hasRegisteredRole;
-    const hasReg = checkFn ? checkFn(newRole) : false;
-    setAuthMode(hasReg ? 'login' : 'register');
+    if (newRole === 'admin') {
+      setAuthMode('login');
+    } else {
+      const checkFn = dbService.hasRoleRegistered || dbService.hasRegisteredRole;
+      const hasReg = checkFn ? checkFn(newRole) : false;
+      setAuthMode(hasReg ? 'login' : 'register');
+    }
   };
 
   // Student Form State
@@ -652,9 +661,65 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                 <input type="text" style={{ display: 'none' }} tabIndex={-1} name="prevent_autofill_username" />
                 <input type="password" style={{ display: 'none' }} tabIndex={-1} name="prevent_autofill_password" />
 
+                {/* OFFICIAL 4 ADMIN DEFAULT CREDENTIALS GUIDE CARD */}
+                {role === 'admin' && (
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-2 mb-4">
+                    <div className="flex items-center justify-between font-bold text-amber-300">
+                      <span className="flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-amber-400" />
+                        Authorized Executive Admin Accounts
+                      </span>
+                      <span className="text-[10px] font-black uppercase bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-400/40">
+                        4 Roles Only
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
+                      <div 
+                        onClick={() => { setLoginUsername('principal'); setLoginPassword('principal123'); setError(''); }}
+                        className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
+                      >
+                        <div className="font-extrabold text-white font-outfit text-xs">🏫 Principal</div>
+                        <div className="text-slate-300">User: <span className="text-cyan-300">principal</span></div>
+                        <div className="text-amber-300">Pass: <span className="text-amber-300">principal123</span></div>
+                      </div>
+
+                      <div 
+                        onClick={() => { setLoginUsername('chairman'); setLoginPassword('chairman123'); setError(''); }}
+                        className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
+                      >
+                        <div className="font-extrabold text-white font-outfit text-xs">👑 Chairman</div>
+                        <div className="text-slate-300">User: <span className="text-cyan-300">chairman</span></div>
+                        <div className="text-amber-300">Pass: <span className="text-amber-300">chairman123</span></div>
+                      </div>
+
+                      <div 
+                        onClick={() => { setLoginUsername('codirector'); setLoginPassword('codirector123'); setError(''); }}
+                        className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
+                      >
+                        <div className="font-extrabold text-white font-outfit text-xs">🏢 Co Director</div>
+                        <div className="text-slate-300">User: <span className="text-cyan-300">codirector</span></div>
+                        <div className="text-amber-300">Pass: <span className="text-amber-300">codirector123</span></div>
+                      </div>
+
+                      <div 
+                        onClick={() => { setLoginUsername('examcell'); setLoginPassword('examcell123'); setError(''); }}
+                        className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
+                      >
+                        <div className="font-extrabold text-white font-outfit text-xs">📝 Examcell</div>
+                        <div className="text-slate-300">User: <span className="text-cyan-300">examcell</span></div>
+                        <div className="text-amber-300">Pass: <span className="text-amber-300">examcell123</span></div>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-300 text-center pt-1 font-medium">
+                      Click any card above to auto-fill credentials! Access is strictly limited to these 4 roles.
+                    </p>
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    {role === 'student' ? 'Student Username' : role === 'faculty' ? 'Faculty Employee ID' : 'Admin Username'}
+                    {role === 'student' ? 'Student Username' : role === 'faculty' ? 'Faculty Employee ID' : 'Admin Username (principal / chairman / codirector / examcell)'}
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -695,16 +760,18 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                   Sign In to {role.toUpperCase()} Dashboard
                 </button>
 
-                <div className="text-center pt-3 border-t border-slate-200 dark:border-slate-800">
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">First-Time {role} user?</p>
-                  <button
-                    type="button"
-                    onClick={() => { setAuthMode('register'); setError(''); }}
-                    className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline"
-                  >
-                    Register New {role} Profile (1st Time Only)
-                  </button>
-                </div>
+                {role !== 'admin' && (
+                  <div className="text-center pt-3 border-t border-slate-200 dark:border-slate-800">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">First-Time {role} user?</p>
+                    <button
+                      type="button"
+                      onClick={() => { setAuthMode('register'); setError(''); }}
+                      className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline"
+                    >
+                      Register New {role} Profile (1st Time Only)
+                    </button>
+                  </div>
+                )}
               </form>
             )}
 
