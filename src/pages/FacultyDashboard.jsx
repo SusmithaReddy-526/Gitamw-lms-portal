@@ -255,7 +255,7 @@ export function FacultyDashboard({ user }) {
               Select Engineering <span className="aurora-text">Department</span>
             </h1>
             <p className="text-sm text-slate-200">
-              Click a department below to view its registered Faculty Members (e.g. Dr. K. Rangaswamy in CSE) & Academic Workspaces.
+              Click a department below to view its registered Faculty Members & Academic Workspaces.
             </p>
           </div>
         </div>
@@ -331,7 +331,7 @@ export function FacultyDashboard({ user }) {
               {selectedDept} Department — <span className="aurora-text">Faculty Members Directory</span>
             </h2>
             <p className="text-xs text-slate-200">
-              Click a faculty member below (e.g. Dr. K. Rangaswamy) to view their profile, subjects handled, and upload unit materials.
+              Click a faculty member below to view their profile, subjects handled, and upload unit materials.
             </p>
           </div>
         </div>
