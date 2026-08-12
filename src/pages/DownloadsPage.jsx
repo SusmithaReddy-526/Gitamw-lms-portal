@@ -1,20 +1,72 @@
 import React, { useState, useEffect } from 'react';
 import { dbService } from '../services/dbService';
-import { Download, BookOpen, FileText, ArrowRight, Bookmark, Trash2, Eye, CheckCircle2, X } from 'lucide-react';
+import { Download, BookOpen, FileText, ArrowRight, Bookmark, Trash2, Eye, CheckCircle2, X, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Helper to convert Base64 Data URL to Blob Object URL for 100% browser PDF rendering
+export function dataURLtoBlobUrl(dataUrl) {
+  if (!dataUrl) return null;
+  try {
+    if (dataUrl.startsWith('blob:') || dataUrl.startsWith('http://') || dataUrl.startsWith('https://')) {
+      return dataUrl;
+    }
+    if (dataUrl.startsWith('data:')) {
+      const parts = dataUrl.split(',');
+      const mimeMatch = parts[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : 'application/pdf';
+      const bstr = atob(parts[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      const blob = new Blob([u8arr], { type: mime });
+      return URL.createObjectURL(blob);
+    }
+  } catch (err) {
+    console.error('Error converting Data URL to Blob URL:', err);
+  }
+  return dataUrl;
+}
 
 export function DownloadsPage({ user }) {
   const userId = user?.id || 'guest';
   const [downloadsList, setDownloadsList] = useState(() => dbService.getUserDownloads(userId));
   const [activePdfModal, setActivePdfModal] = useState(null);
+  const [activeBlobUrl, setActiveBlobUrl] = useState(null);
 
   useEffect(() => {
     setDownloadsList(dbService.getUserDownloads(userId));
   }, [user]);
 
+  // Convert Base64 fileData to Blob URL whenever a file is selected for viewing
+  useEffect(() => {
+    if (activePdfModal?.fileData) {
+      const url = dataURLtoBlobUrl(activePdfModal.fileData);
+      setActiveBlobUrl(url);
+
+      return () => {
+        if (url && url.startsWith('blob:')) {
+          try {
+            URL.revokeObjectURL(url);
+          } catch {}
+        }
+      };
+    } else {
+      setActiveBlobUrl(null);
+    }
+  }, [activePdfModal]);
+
   const handleDeleteDownload = (fileId) => {
     dbService.deleteUserDownload(userId, fileId);
     setDownloadsList(dbService.getUserDownloads(userId));
+  };
+
+  const handleOpenFullscreenTab = () => {
+    const targetUrl = activeBlobUrl || (activePdfModal?.fileData ? dataURLtoBlobUrl(activePdfModal.fileData) : null);
+    if (targetUrl) {
+      window.open(targetUrl, '_blank');
+    }
   };
 
   return (
@@ -81,7 +133,7 @@ export function DownloadsPage({ user }) {
                     onClick={() => {
                       if (item.fileData) {
                         const link = document.createElement('a');
-                        link.href = item.fileData;
+                        link.href = activeBlobUrl || dataURLtoBlobUrl(item.fileData) || item.fileData;
                         link.download = item.fileName || `${item.title || 'Downloaded_Material'}.pdf`;
                         document.body.appendChild(link);
                         link.click();
@@ -111,7 +163,7 @@ export function DownloadsPage({ user }) {
           <Download className="w-14 h-14 text-brand-500/40 mx-auto" />
           <h4 className="font-bold text-slate-800 dark:text-slate-200 text-lg">No Downloaded Files in Your Dashboard</h4>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
-            When you click "Download PDF File" on any Unit page, it will automatically save into this In-App Downloads Dashboard for 100% offline reading anytime.
+            When you click "Download" on any Unit page, it will automatically save into this In-App Downloads Dashboard for 100% offline reading anytime.
           </p>
         </div>
       )}
@@ -119,41 +171,87 @@ export function DownloadsPage({ user }) {
       {/* IN-APP OFFLINE PDF VIEWER MODAL */}
       <AnimatePresence>
         {activePdfModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/85 backdrop-blur-md">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="w-full max-w-4xl h-[85vh] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col"
+              className="w-full max-w-5xl h-[88vh] bg-slate-900 rounded-3xl shadow-2xl border border-slate-800 overflow-hidden flex flex-col"
             >
               {/* Modal Header */}
-              <div className="p-5 bg-slate-100 dark:bg-slate-800 flex items-center justify-between border-b border-slate-200 dark:border-slate-700">
-                <div className="space-y-0.5">
-                  <h3 className="font-extrabold text-slate-900 dark:text-white text-base font-outfit">
-                    {activePdfModal.title || activePdfModal.fileName}
-                  </h3>
-                  <p className="text-xs text-slate-500">
+              <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+                <div className="space-y-0.5 max-w-lg">
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <h3 className="font-extrabold text-white text-base font-outfit truncate">
+                      {activePdfModal.title || activePdfModal.fileName}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-400 truncate">
                     {activePdfModal.subjectName} • {activePdfModal.unitName} • 🟢 Reading Offline
                   </p>
                 </div>
-                <button
-                  onClick={() => setActivePdfModal(null)}
-                  className="p-2 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-300 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleOpenFullscreenTab}
+                    className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs flex items-center gap-1.5 transition-colors border border-cyan-500/30"
+                    title="Open Full Screen in New Tab"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Open Fullscreen</span>
+                  </button>
+
+                  <button
+                    onClick={() => setActivePdfModal(null)}
+                    className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
-              {/* PDF Viewer Frame */}
-              <div className="flex-1 bg-slate-900 flex items-center justify-center">
-                {activePdfModal.fileData ? (
-                  <iframe
-                    src={activePdfModal.fileData}
-                    className="w-full h-full border-none"
-                    title={activePdfModal.fileName}
-                  />
+              {/* Document / PDF / Image Content Frame */}
+              <div className="flex-1 bg-slate-950 relative overflow-hidden flex items-center justify-center p-2">
+                {activeBlobUrl || activePdfModal.fileData ? (
+                  activePdfModal.fileType?.includes('image') ? (
+                    <img 
+                      src={activeBlobUrl || activePdfModal.fileData} 
+                      alt={activePdfModal.title}
+                      className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                    />
+                  ) : (
+                    <object
+                      data={activeBlobUrl || activePdfModal.fileData}
+                      type="application/pdf"
+                      className="w-full h-full rounded-xl border-none bg-slate-900"
+                    >
+                      <embed 
+                        src={activeBlobUrl || activePdfModal.fileData} 
+                        type="application/pdf" 
+                        className="w-full h-full rounded-xl"
+                      />
+                      <iframe
+                        src={activeBlobUrl || activePdfModal.fileData}
+                        className="w-full h-full border-none rounded-xl bg-white"
+                        title={activePdfModal.fileName}
+                      />
+                    </object>
+                  )
                 ) : (
-                  <p className="text-slate-400 text-xs font-bold">PDF Preview unavailable offline.</p>
+                  <div className="text-center space-y-3 p-8">
+                    <FileText className="w-14 h-14 text-slate-600 mx-auto" />
+                    <h4 className="text-white font-bold text-base">PDF Preview Unavailable</h4>
+                    <p className="text-slate-400 text-xs max-w-sm mx-auto">
+                      Click "Open Fullscreen" to view this PDF in a new window.
+                    </p>
+                    <button
+                      onClick={handleOpenFullscreenTab}
+                      className="px-4 py-2 rounded-xl bg-cyan-600 text-white font-bold text-xs"
+                    >
+                      Open Fullscreen ↗️
+                    </button>
+                  </div>
                 )}
               </div>
             </motion.div>

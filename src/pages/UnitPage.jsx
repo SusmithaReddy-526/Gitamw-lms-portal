@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { dbService } from '../services/dbService';
 import { 
@@ -10,12 +10,58 @@ import {
   UserCheck,
   CheckCircle2,
   X,
-  FileText
+  FileText,
+  ExternalLink
 } from 'lucide-react';
+
+// Helper to convert Base64 Data URL to Blob Object URL for 100% browser PDF rendering
+export function dataURLtoBlobUrl(dataUrl) {
+  if (!dataUrl) return null;
+  try {
+    if (dataUrl.startsWith('blob:') || dataUrl.startsWith('http://') || dataUrl.startsWith('https://')) {
+      return dataUrl;
+    }
+    if (dataUrl.startsWith('data:')) {
+      const parts = dataUrl.split(',');
+      const mimeMatch = parts[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : 'application/pdf';
+      const bstr = atob(parts[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      const blob = new Blob([u8arr], { type: mime });
+      return URL.createObjectURL(blob);
+    }
+  } catch (err) {
+    console.error('Error converting Data URL to Blob URL:', err);
+  }
+  return dataUrl;
+}
 
 export function UnitPage({ subject, unit, user, onBack }) {
   const [savedMessage, setSavedMessage] = useState('');
   const [viewingFileModal, setViewingFileModal] = useState(null);
+  const [activeBlobUrl, setActiveBlobUrl] = useState(null);
+
+  // Convert Base64 fileData to Blob URL whenever a file is selected for viewing
+  useEffect(() => {
+    if (viewingFileModal?.fileData) {
+      const url = dataURLtoBlobUrl(viewingFileModal.fileData);
+      setActiveBlobUrl(url);
+
+      return () => {
+        if (url && url.startsWith('blob:')) {
+          try {
+            URL.revokeObjectURL(url);
+          } catch {}
+        }
+      };
+    } else {
+      setActiveBlobUrl(null);
+    }
+  }, [viewingFileModal]);
 
   // Fetch files uploaded by faculty for this specific subject & unit
   const uploadedFiles = dbService.getUploadedFilesForUnit(
@@ -49,7 +95,7 @@ export function UnitPage({ subject, unit, user, onBack }) {
     // 2. Trigger Browser File Download
     if (file.fileData) {
       const link = document.createElement('a');
-      link.href = file.fileData;
+      link.href = activeBlobUrl || dataURLtoBlobUrl(file.fileData) || file.fileData;
       link.download = file.fileName || `${file.title || 'Unit_Material'}.pdf`;
       document.body.appendChild(link);
       link.click();
@@ -59,6 +105,13 @@ export function UnitPage({ subject, unit, user, onBack }) {
     // 3. Show Toast Notification
     setSavedMessage(`"${file.title || file.fileName}" downloaded & saved to your Downloads Dashboard!`);
     setTimeout(() => setSavedMessage(''), 5000);
+  };
+
+  const handleOpenFullscreenTab = () => {
+    const targetUrl = activeBlobUrl || (viewingFileModal?.fileData ? dataURLtoBlobUrl(viewingFileModal.fileData) : null);
+    if (targetUrl) {
+      window.open(targetUrl, '_blank');
+    }
   };
 
   return (
@@ -187,42 +240,54 @@ export function UnitPage({ subject, unit, user, onBack }) {
         )}
       </div>
 
-      {/* VIEW MATERIAL MODAL */}
+      {/* VIEW MATERIAL MODAL WITH BLOB URL CONVERSION */}
       <AnimatePresence>
         {viewingFileModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-950/85 backdrop-blur-md">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="w-full max-w-4xl h-[85vh] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col"
+              className="w-full max-w-5xl h-[88vh] bg-slate-900 rounded-3xl shadow-2xl border border-slate-800 overflow-hidden flex flex-col"
             >
               {/* Modal Header */}
-              <div className="p-5 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
-                <div className="space-y-0.5">
+              <div className="p-4 sm:p-5 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800 shrink-0">
+                <div className="space-y-0.5 max-w-lg">
                   <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-cyan-400" />
-                    <h3 className="font-extrabold text-white text-base font-outfit">
+                    <Eye className="w-4 h-4 text-cyan-400 shrink-0" />
+                    <h3 className="font-extrabold text-white text-base font-outfit truncate">
                       {viewingFileModal.title || viewingFileModal.fileName}
                     </h3>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-400 truncate">
                     {subject.subjectName} ({subject.subjectCode}) • {displayUnitName} • By {viewingFileModal.uploadedBy || 'Faculty'}
                   </p>
                 </div>
 
                 <div className="flex items-center gap-2">
+                  {/* OPEN IN NEW TAB BUTTON */}
+                  <button
+                    onClick={handleOpenFullscreenTab}
+                    className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs flex items-center gap-1.5 transition-colors border border-cyan-500/30"
+                    title="Open Full Screen in New Tab"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Open Fullscreen</span>
+                  </button>
+
+                  {/* DOWNLOAD BUTTON */}
                   <button
                     onClick={() => {
                       handleDownloadFile(viewingFileModal);
                       setViewingFileModal(null);
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors shadow"
+                    className="px-3 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 transition-colors shadow"
                   >
-                    <Download className="w-4 h-4" />
-                    Download
+                    <Download className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Download</span>
                   </button>
 
+                  {/* CLOSE BUTTON */}
                   <button
                     onClick={() => setViewingFileModal(null)}
                     className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
@@ -232,26 +297,46 @@ export function UnitPage({ subject, unit, user, onBack }) {
                 </div>
               </div>
 
-              {/* Document / Image Viewer Frame */}
-              <div className="flex-1 bg-slate-950 flex items-center justify-center overflow-auto p-2">
-                {viewingFileModal.fileData ? (
+              {/* Document / PDF / Image Content Frame */}
+              <div className="flex-1 bg-slate-950 relative overflow-hidden flex items-center justify-center p-2">
+                {activeBlobUrl || viewingFileModal.fileData ? (
                   viewingFileModal.fileType?.includes('image') ? (
                     <img 
-                      src={viewingFileModal.fileData} 
+                      src={activeBlobUrl || viewingFileModal.fileData} 
                       alt={viewingFileModal.title}
                       className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
                     />
                   ) : (
-                    <iframe
-                      src={viewingFileModal.fileData}
-                      className="w-full h-full border-none rounded-xl bg-white"
-                      title={viewingFileModal.fileName}
-                    />
+                    <object
+                      data={activeBlobUrl || viewingFileModal.fileData}
+                      type="application/pdf"
+                      className="w-full h-full rounded-xl border-none bg-slate-900"
+                    >
+                      <embed 
+                        src={activeBlobUrl || viewingFileModal.fileData} 
+                        type="application/pdf" 
+                        className="w-full h-full rounded-xl"
+                      />
+                      <iframe
+                        src={activeBlobUrl || viewingFileModal.fileData}
+                        className="w-full h-full border-none rounded-xl bg-white"
+                        title={viewingFileModal.fileName}
+                      />
+                    </object>
                   )
                 ) : (
-                  <div className="text-center space-y-3">
-                    <FileText className="w-12 h-12 text-slate-600 mx-auto" />
-                    <p className="text-slate-400 text-xs font-bold">Document preview data is not available.</p>
+                  <div className="text-center space-y-3 p-8">
+                    <FileText className="w-14 h-14 text-slate-600 mx-auto" />
+                    <h4 className="text-white font-bold text-base">Unable to Render PDF Preview</h4>
+                    <p className="text-slate-400 text-xs max-w-sm mx-auto">
+                      Click "Open Fullscreen" to view this PDF in a new browser window.
+                    </p>
+                    <button
+                      onClick={handleOpenFullscreenTab}
+                      className="px-4 py-2 rounded-xl bg-cyan-600 text-white font-bold text-xs"
+                    >
+                      Open Fullscreen ↗️
+                    </button>
                   </div>
                 )}
               </div>
