@@ -1120,7 +1120,7 @@ const OFFICIAL_DEFAULT_ADMINS = [
     fullName: 'Principal',
     username: 'principal_gitamw',
     email: 'principal@gitamw.ac.in',
-    password: 'Principal#GITAMW2026',
+    password: 'Principal#GITAMW',
     role: 'admin',
     department: 'Executive Administration',
     designation: 'Principal'
@@ -1130,7 +1130,7 @@ const OFFICIAL_DEFAULT_ADMINS = [
     fullName: 'Chairman',
     username: 'chairman_gitamw',
     email: 'chairman@gitamw.ac.in',
-    password: 'Chairman#GITAMW2026',
+    password: 'Chairman#GITAMW',
     role: 'admin',
     department: 'Governing Body',
     designation: 'Chairman'
@@ -1140,7 +1140,7 @@ const OFFICIAL_DEFAULT_ADMINS = [
     fullName: 'Co Director',
     username: 'codirector_gitamw',
     email: 'codirector@gitamw.ac.in',
-    password: 'CoDirector#GITAMW2026',
+    password: 'CoDirector#GITAMW',
     role: 'admin',
     department: 'Directorate',
     designation: 'Co Director'
@@ -1150,7 +1150,7 @@ const OFFICIAL_DEFAULT_ADMINS = [
     fullName: 'Examcell Controller',
     username: 'examcell_gitamw',
     email: 'examcell@gitamw.ac.in',
-    password: 'ExamCell#GITAMW2026',
+    password: 'ExamCell#GITAMW',
     role: 'admin',
     department: 'Examination Cell',
     designation: 'Exam Cell Controller'
@@ -1353,13 +1353,13 @@ export const dbService = {
         a.username.toLowerCase() === cleanUser || 
         a.email.toLowerCase() === cleanUser ||
         shortCode === cleanUser.replace(/[^a-z0-9]/g, '') ||
-        cleanUser === `${shortCode}_gitamw`
+        cleanUser === `${shortCode}_gitamw` ||
+        cleanUser === a.fullName.toLowerCase().replace(/[^a-z0-9]/g, '')
       );
       const pMatch = (
         a.password === password || 
         cleanPass === a.password.toLowerCase() ||
-        cleanPass === `${shortCode}@gitamw` || 
-        cleanPass === 'admin123'
+        cleanPass === `${shortCode}@gitamw`
       );
       return uMatch && pMatch;
     });
@@ -1367,18 +1367,22 @@ export const dbService = {
     if (foundAdmin) return foundAdmin;
 
     // Check if input is attempting Admin login with wrong credentials
-    const isAdminAttempt = officialAdmins.some(a => 
-      a.username.toLowerCase() === cleanUser || 
-      a.email.toLowerCase() === cleanUser || 
-      cleanUser.includes('admin') || 
-      cleanUser.includes('principal') || 
-      cleanUser.includes('chairman') || 
-      cleanUser.includes('director') || 
-      cleanUser.includes('exam')
-    );
+    const isAdminAttempt = officialAdmins.some(a => {
+      const shortCode = a.designation.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return (
+        a.username.toLowerCase() === cleanUser || 
+        a.email.toLowerCase() === cleanUser || 
+        cleanUser.includes('admin') || 
+        cleanUser.includes('principal') || 
+        cleanUser.includes('chairman') || 
+        cleanUser.includes('director') || 
+        cleanUser.includes('exam') ||
+        shortCode === cleanUser.replace(/[^a-z0-9]/g, '')
+      );
+    });
 
     if (isAdminAttempt) {
-      throw new Error('Wrong Credentials! Only Principal, Chairman, Co Director, and Examcell can login as Admin.');
+      throw new Error('Wrong Credentials! Incorrect password entered.');
     }
 
     // Hardcoded Admin Fallback

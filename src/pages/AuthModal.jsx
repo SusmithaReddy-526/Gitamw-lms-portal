@@ -661,65 +661,114 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                 <input type="text" style={{ display: 'none' }} tabIndex={-1} name="prevent_autofill_username" />
                 <input type="password" style={{ display: 'none' }} tabIndex={-1} name="prevent_autofill_password" />
 
-                {/* OFFICIAL 4 ADMIN DEFAULT CREDENTIALS GUIDE CARD */}
+                {/* OFFICIAL 4 EXECUTIVE ADMIN SELECTOR CARDS */}
                 {role === 'admin' && (
-                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-2 mb-4">
+                  <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs space-y-3 mb-4">
                     <div className="flex items-center justify-between font-bold text-amber-300">
                       <span className="flex items-center gap-1.5">
                         <ShieldCheck className="w-4 h-4 text-amber-400" />
-                        Authorized Executive Admin Accounts
+                        Select Executive Admin Role
                       </span>
                       <span className="text-[10px] font-black uppercase bg-amber-500/20 px-2 py-0.5 rounded-full border border-amber-400/40">
                         4 Roles Only
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
+                    <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
+                      {/* Principal */}
                       <div 
-                        onClick={() => { setLoginUsername('principal_gitamw'); setLoginPassword('Principal#GITAMW2026'); setError(''); }}
-                        className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
+                        onClick={() => { 
+                          setLoginUsername('principal_gitamw'); 
+                          setLoginPassword(''); 
+                          setError(''); 
+                          document.getElementById('admin-password-input')?.focus();
+                        }}
+                        className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                          loginUsername === 'principal_gitamw'
+                            ? 'bg-amber-500/20 border-amber-400 shadow-md ring-2 ring-amber-400/30'
+                            : 'bg-slate-900/90 border-amber-500/20 hover:border-amber-400 hover:scale-[1.02]'
+                        }`}
                       >
-                        <div className="font-extrabold text-white font-outfit text-xs">🏫 Principal</div>
-                        <div className="text-slate-300 truncate">User: <span className="text-cyan-300">principal_gitamw</span></div>
-                        <div className="text-amber-300 truncate">Pass: <span className="text-amber-300">Principal#GITAMW2026</span></div>
+                        <div className="font-extrabold text-white font-outfit text-xs flex items-center justify-between">
+                          <span>🏫 Principal</span>
+                          {loginUsername === 'principal_gitamw' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                        </div>
+                        <div className="text-slate-300 text-[10px] mt-1">User: <span className="text-cyan-300">principal_gitamw</span></div>
                       </div>
 
+                      {/* Chairman */}
                       <div 
-                        onClick={() => { setLoginUsername('chairman_gitamw'); setLoginPassword('Chairman#GITAMW2026'); setError(''); }}
-                        className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
+                        onClick={() => { 
+                          setLoginUsername('chairman_gitamw'); 
+                          setLoginPassword(''); 
+                          setError(''); 
+                          document.getElementById('admin-password-input')?.focus();
+                        }}
+                        className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                          loginUsername === 'chairman_gitamw'
+                            ? 'bg-amber-500/20 border-amber-400 shadow-md ring-2 ring-amber-400/30'
+                            : 'bg-slate-900/90 border-amber-500/20 hover:border-amber-400 hover:scale-[1.02]'
+                        }`}
                       >
-                        <div className="font-extrabold text-white font-outfit text-xs">👑 Chairman</div>
-                        <div className="text-slate-300 truncate">User: <span className="text-cyan-300">chairman_gitamw</span></div>
-                        <div className="text-amber-300 truncate">Pass: <span className="text-amber-300">Chairman#GITAMW2026</span></div>
+                        <div className="font-extrabold text-white font-outfit text-xs flex items-center justify-between">
+                          <span>👑 Chairman</span>
+                          {loginUsername === 'chairman_gitamw' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                        </div>
+                        <div className="text-slate-300 text-[10px] mt-1">User: <span className="text-cyan-300">chairman_gitamw</span></div>
                       </div>
 
+                      {/* Co Director */}
                       <div 
-                        onClick={() => { setLoginUsername('codirector_gitamw'); setLoginPassword('CoDirector#GITAMW2026'); setError(''); }}
-                        className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
+                        onClick={() => { 
+                          setLoginUsername('codirector_gitamw'); 
+                          setLoginPassword(''); 
+                          setError(''); 
+                          document.getElementById('admin-password-input')?.focus();
+                        }}
+                        className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                          loginUsername === 'codirector_gitamw'
+                            ? 'bg-amber-500/20 border-amber-400 shadow-md ring-2 ring-amber-400/30'
+                            : 'bg-slate-900/90 border-amber-500/20 hover:border-amber-400 hover:scale-[1.02]'
+                        }`}
                       >
-                        <div className="font-extrabold text-white font-outfit text-xs">🏢 Co Director</div>
-                        <div className="text-slate-300 truncate">User: <span className="text-cyan-300">codirector_gitamw</span></div>
-                        <div className="text-amber-300 truncate">Pass: <span className="text-amber-300">CoDirector#GITAMW2026</span></div>
+                        <div className="font-extrabold text-white font-outfit text-xs flex items-center justify-between">
+                          <span>🏢 Co Director</span>
+                          {loginUsername === 'codirector_gitamw' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                        </div>
+                        <div className="text-slate-300 text-[10px] mt-1">User: <span className="text-cyan-300">codirector_gitamw</span></div>
                       </div>
 
+                      {/* Examcell */}
                       <div 
-                        onClick={() => { setLoginUsername('examcell_gitamw'); setLoginPassword('ExamCell#GITAMW2026'); setError(''); }}
-                        className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
+                        onClick={() => { 
+                          setLoginUsername('examcell_gitamw'); 
+                          setLoginPassword(''); 
+                          setError(''); 
+                          document.getElementById('admin-password-input')?.focus();
+                        }}
+                        className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                          loginUsername === 'examcell_gitamw'
+                            ? 'bg-amber-500/20 border-amber-400 shadow-md ring-2 ring-amber-400/30'
+                            : 'bg-slate-900/90 border-amber-500/20 hover:border-amber-400 hover:scale-[1.02]'
+                        }`}
                       >
-                        <div className="font-extrabold text-white font-outfit text-xs">📝 Examcell</div>
-                        <div className="text-slate-300 truncate">User: <span className="text-cyan-300">examcell_gitamw</span></div>
-                        <div className="text-amber-300 truncate">Pass: <span className="text-amber-300">ExamCell#GITAMW2026</span></div>
+                        <div className="font-extrabold text-white font-outfit text-xs flex items-center justify-between">
+                          <span>📝 Examcell</span>
+                          {loginUsername === 'examcell_gitamw' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                        </div>
+                        <div className="text-slate-300 text-[10px] mt-1">User: <span className="text-cyan-300">examcell_gitamw</span></div>
                       </div>
                     </div>
-                    <p className="text-[10px] text-slate-300 text-center pt-1 font-medium">
-                      Click any card above to auto-fill credentials! Access is strictly limited to these 4 roles.
+                    
+                    <p className="text-[10px] text-amber-300/90 text-center font-medium bg-amber-500/10 py-1.5 px-3 rounded-lg border border-amber-500/20">
+                      💡 Click a card to select role, then enter its password below to log in.
                     </p>
                   </div>
                 )}
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    {role === 'student' ? 'Student Username' : role === 'faculty' ? 'Faculty Employee ID' : 'Admin Username (e.g. principal_gitamw / chairman_gitamw)'}
+                    {role === 'student' ? 'Student Username' : role === 'faculty' ? 'Faculty Employee ID' : 'Selected Admin Account'}
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -737,14 +786,15 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Password
+                    Password *
                   </label>
                   <div className="relative">
                     <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                     <input
+                      id="admin-password-input"
                       type="password"
                       required
-                      placeholder=""
+                      placeholder="Enter Admin Password"
                       autoComplete="new-password"
                       value={loginPassword}
                       onChange={e => setLoginPassword(e.target.value)}
