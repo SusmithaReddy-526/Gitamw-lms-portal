@@ -68,17 +68,36 @@ export function DownloadsPage({ user }) {
               </div>
 
               <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                <button
-                  onClick={() => setActivePdfModal(item)}
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
-                >
-                  <Eye className="w-4 h-4" />
-                  Read PDF Offline (In-App)
-                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => setActivePdfModal(item)}
+                    className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs shadow-md flex items-center justify-center gap-1.5 transition-all"
+                  >
+                    <Eye className="w-4 h-4 text-cyan-400" />
+                    Read Offline
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      if (item.fileData) {
+                        const link = document.createElement('a');
+                        link.href = item.fileData;
+                        link.download = item.fileName || `${item.title || 'Downloaded_Material'}.pdf`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }
+                    }}
+                    className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-md flex items-center justify-center gap-1.5 transition-all"
+                  >
+                    <Download className="w-4 h-4 text-amber-300" />
+                    Save File
+                  </button>
+                </div>
 
                 <button
                   onClick={() => handleDeleteDownload(item.id)}
-                  className="w-full py-2 text-[11px] font-semibold text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors flex items-center justify-center gap-1"
+                  className="w-full py-1.5 text-[11px] font-semibold text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition-colors flex items-center justify-center gap-1"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   Remove from Downloads

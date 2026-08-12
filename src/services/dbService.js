@@ -1664,5 +1664,46 @@ export const dbService = {
     notices = notices.filter(n => n.id !== noticeId);
     localStorage.setItem(STORAGE_KEYS.NOTICES, JSON.stringify(notices));
     return notices;
+  },
+
+  // --- USER DOWNLOADS MANAGEMENT ---
+  getUserDownloads: (userId) => {
+    const key = userId || 'guest';
+    const downloadsMap = safeParse(STORAGE_KEYS.DOWNLOADS, {});
+    return downloadsMap[key] || [];
+  },
+
+  saveUserDownload: (userId, fileRecord) => {
+    const key = userId || 'guest';
+    const downloadsMap = safeParse(STORAGE_KEYS.DOWNLOADS, {});
+    const userDownloads = downloadsMap[key] || [];
+
+    const existingIdx = userDownloads.findIndex(d => d.id === fileRecord.id || d.fileName === fileRecord.fileName);
+    if (existingIdx !== -1) {
+      userDownloads[existingIdx] = { 
+        ...userDownloads[existingIdx], 
+        ...fileRecord, 
+        downloadedAt: new Date().toISOString().split('T')[0] 
+      };
+    } else {
+      userDownloads.unshift({ 
+        ...fileRecord, 
+        downloadedAt: new Date().toISOString().split('T')[0] 
+      });
+    }
+
+    downloadsMap[key] = userDownloads;
+    safeSetItem(STORAGE_KEYS.DOWNLOADS, JSON.stringify(downloadsMap));
+    return userDownloads;
+  },
+
+  deleteUserDownload: (userId, fileId) => {
+    const key = userId || 'guest';
+    const downloadsMap = safeParse(STORAGE_KEYS.DOWNLOADS, {});
+    let userDownloads = downloadsMap[key] || [];
+    userDownloads = userDownloads.filter(d => d.id !== fileId);
+    downloadsMap[key] = userDownloads;
+    safeSetItem(STORAGE_KEYS.DOWNLOADS, JSON.stringify(downloadsMap));
+    return userDownloads;
   }
 };
