@@ -1118,9 +1118,9 @@ const OFFICIAL_DEFAULT_ADMINS = [
   {
     id: 'admin-principal',
     fullName: 'Principal',
-    username: 'principal',
+    username: 'principal_gitamw',
     email: 'principal@gitamw.ac.in',
-    password: 'principal123',
+    password: 'Principal#GITAMW2026',
     role: 'admin',
     department: 'Executive Administration',
     designation: 'Principal'
@@ -1128,9 +1128,9 @@ const OFFICIAL_DEFAULT_ADMINS = [
   {
     id: 'admin-chairman',
     fullName: 'Chairman',
-    username: 'chairman',
+    username: 'chairman_gitamw',
     email: 'chairman@gitamw.ac.in',
-    password: 'chairman123',
+    password: 'Chairman#GITAMW2026',
     role: 'admin',
     department: 'Governing Body',
     designation: 'Chairman'
@@ -1138,9 +1138,9 @@ const OFFICIAL_DEFAULT_ADMINS = [
   {
     id: 'admin-codirector',
     fullName: 'Co Director',
-    username: 'codirector',
+    username: 'codirector_gitamw',
     email: 'codirector@gitamw.ac.in',
-    password: 'codirector123',
+    password: 'CoDirector#GITAMW2026',
     role: 'admin',
     department: 'Directorate',
     designation: 'Co Director'
@@ -1148,9 +1148,9 @@ const OFFICIAL_DEFAULT_ADMINS = [
   {
     id: 'admin-examcell',
     fullName: 'Examcell Controller',
-    username: 'examcell',
+    username: 'examcell_gitamw',
     email: 'examcell@gitamw.ac.in',
-    password: 'examcell123',
+    password: 'ExamCell#GITAMW2026',
     role: 'admin',
     department: 'Examination Cell',
     designation: 'Exam Cell Controller'
@@ -1348,15 +1348,17 @@ export const dbService = {
     // Check Official 4 Admins strictly (Principal, Chairman, Co Director, Examcell)
     const officialAdmins = OFFICIAL_DEFAULT_ADMINS;
     const foundAdmin = officialAdmins.find(a => {
+      const shortCode = a.designation.toLowerCase().replace(/[^a-z0-9]/g, '');
       const uMatch = (
         a.username.toLowerCase() === cleanUser || 
         a.email.toLowerCase() === cleanUser ||
-        a.fullName.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanUser.replace(/[^a-z0-9]/g, '') ||
-        a.designation.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanUser.replace(/[^a-z0-9]/g, '')
+        shortCode === cleanUser.replace(/[^a-z0-9]/g, '') ||
+        cleanUser === `${shortCode}_gitamw`
       );
       const pMatch = (
-        a.password === cleanPass || 
-        cleanPass === `${a.username}@gitamw` || 
+        a.password === password || 
+        cleanPass === a.password.toLowerCase() ||
+        cleanPass === `${shortCode}@gitamw` || 
         cleanPass === 'admin123'
       );
       return uMatch && pMatch;

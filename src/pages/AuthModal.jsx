@@ -676,39 +676,39 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
 
                     <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-[11px]">
                       <div 
-                        onClick={() => { setLoginUsername('principal'); setLoginPassword('principal123'); setError(''); }}
+                        onClick={() => { setLoginUsername('principal_gitamw'); setLoginPassword('Principal#GITAMW2026'); setError(''); }}
                         className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
                       >
                         <div className="font-extrabold text-white font-outfit text-xs">🏫 Principal</div>
-                        <div className="text-slate-300">User: <span className="text-cyan-300">principal</span></div>
-                        <div className="text-amber-300">Pass: <span className="text-amber-300">principal123</span></div>
+                        <div className="text-slate-300 truncate">User: <span className="text-cyan-300">principal_gitamw</span></div>
+                        <div className="text-amber-300 truncate">Pass: <span className="text-amber-300">Principal#GITAMW2026</span></div>
                       </div>
 
                       <div 
-                        onClick={() => { setLoginUsername('chairman'); setLoginPassword('chairman123'); setError(''); }}
+                        onClick={() => { setLoginUsername('chairman_gitamw'); setLoginPassword('Chairman#GITAMW2026'); setError(''); }}
                         className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
                       >
                         <div className="font-extrabold text-white font-outfit text-xs">👑 Chairman</div>
-                        <div className="text-slate-300">User: <span className="text-cyan-300">chairman</span></div>
-                        <div className="text-amber-300">Pass: <span className="text-amber-300">chairman123</span></div>
+                        <div className="text-slate-300 truncate">User: <span className="text-cyan-300">chairman_gitamw</span></div>
+                        <div className="text-amber-300 truncate">Pass: <span className="text-amber-300">Chairman#GITAMW2026</span></div>
                       </div>
 
                       <div 
-                        onClick={() => { setLoginUsername('codirector'); setLoginPassword('codirector123'); setError(''); }}
+                        onClick={() => { setLoginUsername('codirector_gitamw'); setLoginPassword('CoDirector#GITAMW2026'); setError(''); }}
                         className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
                       >
                         <div className="font-extrabold text-white font-outfit text-xs">🏢 Co Director</div>
-                        <div className="text-slate-300">User: <span className="text-cyan-300">codirector</span></div>
-                        <div className="text-amber-300">Pass: <span className="text-amber-300">codirector123</span></div>
+                        <div className="text-slate-300 truncate">User: <span className="text-cyan-300">codirector_gitamw</span></div>
+                        <div className="text-amber-300 truncate">Pass: <span className="text-amber-300">CoDirector#GITAMW2026</span></div>
                       </div>
 
                       <div 
-                        onClick={() => { setLoginUsername('examcell'); setLoginPassword('examcell123'); setError(''); }}
+                        onClick={() => { setLoginUsername('examcell_gitamw'); setLoginPassword('ExamCell#GITAMW2026'); setError(''); }}
                         className="p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 cursor-pointer transition-all hover:scale-[1.02]"
                       >
                         <div className="font-extrabold text-white font-outfit text-xs">📝 Examcell</div>
-                        <div className="text-slate-300">User: <span className="text-cyan-300">examcell</span></div>
-                        <div className="text-amber-300">Pass: <span className="text-amber-300">examcell123</span></div>
+                        <div className="text-slate-300 truncate">User: <span className="text-cyan-300">examcell_gitamw</span></div>
+                        <div className="text-amber-300 truncate">Pass: <span className="text-amber-300">ExamCell#GITAMW2026</span></div>
                       </div>
                     </div>
                     <p className="text-[10px] text-slate-300 text-center pt-1 font-medium">
@@ -719,7 +719,7 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    {role === 'student' ? 'Student Username' : role === 'faculty' ? 'Faculty Employee ID' : 'Admin Username (principal / chairman / codirector / examcell)'}
+                    {role === 'student' ? 'Student Username' : role === 'faculty' ? 'Faculty Employee ID' : 'Admin Username (e.g. principal_gitamw / chairman_gitamw)'}
                   </label>
                   <div className="relative">
                     <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
