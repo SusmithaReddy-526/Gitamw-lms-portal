@@ -70,9 +70,65 @@ export function FacultyDashboard({ user }) {
   const [syllabusUploadSubjectCode, setSyllabusUploadSubjectCode] = useState(null);
   const [singleSyllabusFile, setSingleSyllabusFile] = useState(null);
 
+  // --- 4. PUBLISH ONLINE QUIZ STATE ---
+  const [quizTitle, setQuizTitle] = useState('');
+  const [quizLink, setQuizLink] = useState('');
+  const [quizDesc, setQuizDesc] = useState('');
+  const [quizYear, setQuizYear] = useState('');
+  const [quizBranch, setQuizBranch] = useState('');
+  const [quizSubjectSelect, setQuizSubjectSelect] = useState('');
+  const [quizSuccessMsg, setQuizSuccessMsg] = useState('');
+  const [quizErrorMsg, setQuizErrorMsg] = useState('');
+  const [quizzesList, setQuizzesList] = useState(() => dbService.getQuizzes());
+
   // Uploaded Files & Curriculum list
   const [uploadedFilesList, setUploadedFilesList] = useState(() => dbService.getUploadedFiles());
   const [curriculumList, setCurriculumList] = useState(() => dbService.getCurriculum());
+
+  const handlePublishQuizSubmit = (e) => {
+    e.preventDefault();
+    setQuizSuccessMsg('');
+    setQuizErrorMsg('');
+
+    if (!quizYear || !quizBranch || !quizSubjectSelect || !quizTitle.trim() || !quizLink.trim()) {
+      setQuizErrorMsg('Please select Academic Year, Branch, Subject, and enter Quiz Title & Quiz Link.');
+      return;
+    }
+
+    try {
+      const parts = quizSubjectSelect.split('|');
+      const subCode = parts[0] || '';
+      const subName = parts[1] || '';
+
+      const publishedQuiz = dbService.saveQuiz({
+        title: quizTitle.trim(),
+        quizLink: quizLink.trim(),
+        subjectName: subName.trim(),
+        subjectCode: subCode.trim(),
+        yearId: quizYear,
+        branchId: quizBranch,
+        description: quizDesc.trim(),
+        uploadedBy: selectedFacultyMember?.fullName ? `${selectedFacultyMember.fullName} (${selectedFacultyMember.employeeId || 'Faculty'})` : (user?.fullName || 'Faculty')
+      });
+
+      setQuizzesList(dbService.getQuizzes());
+      setQuizSuccessMsg(`Successfully published "${publishedQuiz.title}" for ${publishedQuiz.subjectName} (${publishedQuiz.subjectCode})! Appears in Student Portal under QUIZ card.`);
+
+      setQuizTitle('');
+      setQuizLink('');
+      setQuizDesc('');
+      setQuizSubjectSelect('');
+    } catch (err) {
+      setQuizErrorMsg(err.message || 'Failed to publish quiz.');
+    }
+  };
+
+  const handleDeleteQuiz = (quizId, qTitle) => {
+    if (window.confirm(`Are you sure you want to delete quiz "${qTitle}"?`)) {
+      dbService.deleteQuiz(quizId);
+      setQuizzesList(dbService.getQuizzes());
+    }
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -447,7 +503,7 @@ export function FacultyDashboard({ user }) {
       </div>
 
       {/* Standalone High-Visibility Action Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <button
           onClick={() => setActiveTabMode('upload-material')}
           className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
@@ -478,7 +534,7 @@ export function FacultyDashboard({ user }) {
           </div>
           <div>
             <h4 className="font-extrabold text-sm flex items-center gap-1">
-              ➕ Add New Course Subject
+              ➕ Add New Subject
             </h4>
             <p className={`text-[11px] ${activeTabMode === 'add-subject' ? 'text-emerald-100' : 'text-slate-500'}`}>Create new subject in curriculum</p>
           </div>
@@ -500,8 +556,27 @@ export function FacultyDashboard({ user }) {
             <BookOpen className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="font-extrabold text-sm">Manage Department Syllabus</h4>
-            <p className={`text-[11px] ${activeTabMode === 'manage-syllabus' ? 'text-indigo-100' : 'text-slate-500'}`}>4 Years Cards &amp; Branch Hierarchy</p>
+            <h4 className="font-extrabold text-sm">Manage Syllabus</h4>
+            <p className={`text-[11px] ${activeTabMode === 'manage-syllabus' ? 'text-indigo-100' : 'text-slate-500'}`}>4 Years &amp; Syllabus PDFs</p>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setActiveTabMode('publish-quiz')}
+          className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
+            activeTabMode === 'publish-quiz'
+              ? 'bg-fuchsia-600 text-white border-fuchsia-500 shadow-xl ring-2 ring-fuchsia-400 scale-[1.02]'
+              : 'glass-card border-slate-200 dark:border-slate-800 hover:border-fuchsia-500/50 text-slate-800 dark:text-slate-200'
+          }`}
+        >
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl shrink-0 ${activeTabMode === 'publish-quiz' ? 'bg-white/20 text-white' : 'bg-fuchsia-500/10 text-fuchsia-400'}`}>
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <div>
+            <h4 className="font-extrabold text-sm flex items-center gap-1">
+              📝 Publish Online Quiz
+            </h4>
+            <p className={`text-[11px] ${activeTabMode === 'publish-quiz' ? 'text-fuchsia-100' : 'text-slate-500'}`}>Google Form &amp; Quiz Links</p>
           </div>
         </button>
       </div>
@@ -1133,6 +1208,216 @@ export function FacultyDashboard({ user }) {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* --- MODE 4: PUBLISH ONLINE QUIZ --- */}
+      {activeTabMode === 'publish-quiz' && (
+        <div className="space-y-8">
+          <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
+            <div className="flex items-center gap-3">
+              <span className="w-10 h-10 rounded-2xl bg-fuchsia-500/10 text-fuchsia-500 font-bold flex items-center justify-center">
+                <Sparkles className="w-5 h-5" />
+              </span>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
+                  Publish Online Quiz for Specific Subject
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Published quiz links appear strictly inside the target subject's <strong>QUIZ</strong> card in the Student Portal.
+                </p>
+              </div>
+            </div>
+
+            {quizSuccessMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+              >
+                <CheckCircle2 className="w-5 h-5 shrink-0" />
+                <span>{quizSuccessMsg}</span>
+              </motion.div>
+            )}
+
+            {quizErrorMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-2xl bg-rose-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+              >
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span>{quizErrorMsg}</span>
+              </motion.div>
+            )}
+
+            <form onSubmit={handlePublishQuizSubmit} className="space-y-6">
+              {/* Year & Branch */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Academic Year *
+                  </label>
+                  <select
+                    value={quizYear}
+                    onChange={e => {
+                      setQuizYear(e.target.value);
+                      setQuizSubjectSelect('');
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-fuchsia-500 outline-none"
+                  >
+                    <option value="">-- Select Academic Year --</option>
+                    {YEARS.map(y => (
+                      <option key={y.id} value={y.id}>{y.title}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Engineering Branch *
+                  </label>
+                  <select
+                    value={quizBranch}
+                    onChange={e => {
+                      setQuizBranch(e.target.value);
+                      setQuizSubjectSelect('');
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-fuchsia-500 outline-none"
+                  >
+                    <option value="">-- Select Engineering Branch --</option>
+                    {BRANCHES.map(b => (
+                      <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Target Subject Selector */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Target Course Subject *
+                </label>
+                <select
+                  value={quizSubjectSelect}
+                  onChange={e => setQuizSubjectSelect(e.target.value)}
+                  disabled={!quizYear || !quizBranch}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-fuchsia-500 outline-none disabled:opacity-50"
+                >
+                  <option value="">-- Select Target Subject --</option>
+                  {quizYear && quizBranch && dbService.getSubjectsForBranchAndYear(quizYear, quizBranch).map(sub => (
+                    <option key={sub.id || sub.subjectCode} value={`${sub.subjectCode}|${sub.subjectName}`}>
+                      {sub.subjectCode} - {sub.subjectName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Quiz Title & Link */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Quiz Name / Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={quizTitle}
+                    onChange={e => setQuizTitle(e.target.value)}
+                    placeholder="e.g. Unit 1-3 Online Test / Mid Quiz"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-fuchsia-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Online Quiz Link / Form URL *
+                  </label>
+                  <input
+                    type="url"
+                    required
+                    value={quizLink}
+                    onChange={e => setQuizLink(e.target.value)}
+                    placeholder="e.g. https://forms.google.com/..."
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-fuchsia-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Quiz Instructions / Description (Optional)
+                </label>
+                <textarea
+                  rows="2"
+                  value={quizDesc}
+                  onChange={e => setQuizDesc(e.target.value)}
+                  placeholder="e.g. 20 Multiple Choice Questions. Time limit: 30 minutes."
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-fuchsia-500 outline-none"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-fuchsia-600 via-purple-600 to-indigo-600 hover:from-fuchsia-500 hover:to-indigo-500 text-white font-extrabold text-sm shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
+              >
+                <Sparkles className="w-5 h-5 text-fuchsia-200" />
+                <span>Publish Online Quiz to Student Subject Card</span>
+              </button>
+            </form>
+          </div>
+
+          {/* Published Quizzes Log */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-fuchsia-500" />
+              Published Online Quizzes Log ({quizzesList.length})
+            </h3>
+
+            {quizzesList.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {quizzesList.map(q => (
+                  <div
+                    key={q.id}
+                    className="p-5 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-3 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-extrabold uppercase bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/20">
+                          {q.subjectCode || q.subjectName}
+                        </span>
+                        <span className="text-[11px] font-mono text-slate-400">{q.createdAt}</span>
+                      </div>
+
+                      <h4 className="font-bold text-slate-900 dark:text-white text-base">
+                        {q.title}
+                      </h4>
+                      <p className="text-xs text-slate-500 leading-relaxed truncate">
+                        Link: {q.quizLink}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                      <span className="text-[11px] text-slate-400">By {q.uploadedBy}</span>
+                      <button
+                        onClick={() => handleDeleteQuiz(q.id, q.title)}
+                        className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-bold flex items-center gap-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center rounded-2xl glass-card text-slate-500 border border-slate-200 dark:border-slate-800">
+                <p className="text-xs font-bold">No online quizzes published yet.</p>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

@@ -10,6 +10,7 @@ const STORAGE_KEYS = {
   UPLOADED_FILES: 'gitamw_lms_perm_uploaded_files_db',
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
+  QUIZZES: 'gitamw_lms_perm_quizzes_db',
   REGISTERED_ROLES: 'gitamw_lms_fresh_registered_roles_history'
 };
 
@@ -1705,5 +1706,49 @@ export const dbService = {
     downloadsMap[key] = userDownloads;
     safeSetItem(STORAGE_KEYS.DOWNLOADS, JSON.stringify(downloadsMap));
     return userDownloads;
+  },
+
+  // --- QUIZZES MANAGEMENT ---
+  saveQuiz: (quizData) => {
+    const quizzes = safeParse(STORAGE_KEYS.QUIZZES, []);
+    const newQuiz = {
+      id: `quiz-${Date.now()}`,
+      title: quizData.title.trim(),
+      quizLink: quizData.quizLink.trim(),
+      subjectName: quizData.subjectName.trim(),
+      subjectCode: (quizData.subjectCode || '').trim().toUpperCase(),
+      yearId: quizData.yearId,
+      branchId: quizData.branchId,
+      description: (quizData.description || '').trim(),
+      uploadedBy: quizData.uploadedBy || 'Faculty',
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+    quizzes.unshift(newQuiz);
+    safeSetItem(STORAGE_KEYS.QUIZZES, JSON.stringify(quizzes));
+    return newQuiz;
+  },
+
+  getQuizzes: () => {
+    return safeParse(STORAGE_KEYS.QUIZZES, []);
+  },
+
+  getQuizzesForSubject: (subjectCode, subjectName) => {
+    const quizzes = safeParse(STORAGE_KEYS.QUIZZES, []);
+    const cleanCode = (subjectCode || '').trim().toUpperCase();
+    const cleanName = (subjectName || '').trim().toLowerCase();
+
+    return quizzes.filter(q => {
+      const qCode = (q.subjectCode || '').trim().toUpperCase();
+      const qName = (q.subjectName || '').trim().toLowerCase();
+      if (cleanCode && qCode === cleanCode) return true;
+      if (cleanName && qName && qName.includes(cleanName)) return true;
+      return false;
+    });
+  },
+
+  deleteQuiz: (quizId) => {
+    let quizzes = safeParse(STORAGE_KEYS.QUIZZES, []);
+    quizzes = quizzes.filter(q => q.id !== quizId);
+    safeSetItem(STORAGE_KEYS.QUIZZES, JSON.stringify(quizzes));
   }
 };

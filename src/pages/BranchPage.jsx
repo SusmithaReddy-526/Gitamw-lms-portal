@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { dbService, BRANCHES, YEARS } from '../services/dbService';
-import { ArrowLeft, BookOpen, ArrowRight, FileText, Trash2, Filter, RefreshCw } from 'lucide-react';
+import { ArrowLeft, BookOpen, ArrowRight, FileText, Trash2, Filter, HelpCircle, ExternalLink, X, Sparkles } from 'lucide-react';
 
 export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, onBack, user }) {
   const [activeYear, setActiveYear] = useState(selectedYear || user?.year || '2nd');
   const [activeBranch, setActiveBranch] = useState(selectedBranch || user?.branch || 'CSE');
   const [selectedSubject, setSelectedSubject] = useState(null);
+  const [showQuizModal, setShowQuizModal] = useState(false);
   
   // Refreshable subjects state
   const [subjectsList, setSubjectsList] = useState(() => 
@@ -39,7 +40,6 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
     }
   };
 
-  // Standard 5 Units
   const standardUnits = [
     { unitId: 'unit-1', name: 'Unit-1' },
     { unitId: 'unit-2', name: 'Unit-2' },
@@ -48,10 +48,15 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
     { unitId: 'unit-5', name: 'Unit-5' }
   ];
 
+  // Subject Quizzes list
+  const subjectQuizzes = selectedSubject 
+    ? dbService.getQuizzesForSubject(selectedSubject.subjectCode, selectedSubject.subjectName)
+    : [];
+
   return (
     <div className="space-y-8 pb-12">
-      {/* Navigation & Control Panel */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800">
+      {/* Header Navigation */}
+      <div className="flex items-center justify-between">
         <button
           onClick={() => {
             if (selectedSubject) {
@@ -60,113 +65,115 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
               onBack();
             }
           }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass-card text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors w-fit"
+          className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          {selectedSubject ? 'Back to Subject Cards' : 'Back to Dashboard'}
+          {selectedSubject ? 'Back to Course Subjects' : 'Back to Main Dashboard'}
         </button>
 
-        {/* Dynamic Year & Branch Dropdowns */}
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-brand-500" />
-            <select
-              value={activeYear}
-              onChange={e => handleYearChange(e.target.value)}
-              className="px-3.5 py-2 rounded-xl border border-brand-500/40 bg-brand-50/30 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer"
-            >
-              <option value="">-- Select Academic Year --</option>
-              {YEARS.map(y => (
-                <option key={y.id} value={y.id}>{y.title}</option>
-              ))}
-            </select>
-          </div>
+        <span className="px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400 text-xs font-bold uppercase">
+          {activeYear} Year • {activeBranch} Branch
+        </span>
+      </div>
 
-          <select
-            value={activeBranch}
-            onChange={e => handleBranchChange(e.target.value)}
-            className="px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-700 dark:text-slate-200 focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer"
-          >
-            {BRANCHES.map(b => (
-              <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
+      {/* FILTER BAR: YEAR & BRANCH SELECTORS */}
+      <div className="p-6 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Filter className="w-5 h-5 text-brand-500" />
+            <h2 className="text-xl font-black text-slate-900 dark:text-white font-outfit">
+              Select Year & Branch
+            </h2>
+          </div>
+        </div>
+
+        {/* 4 Years Filter Buttons */}
+        <div className="space-y-2">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Academic Year:</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {YEARS.map(y => (
+              <button
+                key={y.id}
+                onClick={() => handleYearChange(y.id)}
+                className={`py-3 px-4 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  activeYear === y.id
+                    ? 'bg-gradient-to-r from-brand-600 to-indigo-600 text-white shadow-lg shadow-brand-500/25 scale-[1.02]'
+                    : 'glass-card text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                <span>{y.title}</span>
+              </button>
             ))}
-          </select>
+          </div>
+        </div>
+
+        {/* 4 Branches Filter Buttons */}
+        <div className="space-y-2">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Engineering Branch:</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {BRANCHES.map(b => (
+              <button
+                key={b.id}
+                onClick={() => handleBranchChange(b.id)}
+                className={`py-3 px-4 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                  activeBranch === b.id
+                    ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg shadow-cyan-500/25 scale-[1.02]'
+                    : 'glass-card text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
+              >
+                <span>{b.code}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {!selectedSubject ? (
         /* STEP 1: SUBJECT CARDS GRID */
         <div className="space-y-6">
-          <div className="space-y-2">
-            <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white font-outfit">
-              Course Subjects {activeYear ? `(${activeYear} Year ${activeBranch})` : ''}
-            </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Select an Academic Year above to view Unit-1 through Unit-5 and access study files.
-            </p>
+          <div className="flex items-center justify-between">
+            <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white font-outfit">
+              {activeYear} Year {activeBranch} Subjects ({subjectsList.length})
+            </h3>
           </div>
 
-          {activeYear ? (
+          {subjectsList.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {subjectsList.map((sub) => (
-                <div
-                  key={sub.subjectCode}
-                  onClick={() => setSelectedSubject(sub)}
-                  className="p-7 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 hover:border-brand-500 shadow-xl hover:-translate-y-1 hover:scale-[1.01] transition-all cursor-pointer group flex flex-col justify-between relative overflow-hidden"
+              {subjectsList.map((subject) => (
+                <motion.div
+                  key={subject.id || subject.subjectCode}
+                  whileHover={{ y: -4 }}
+                  onClick={() => setSelectedSubject(subject)}
+                  className="p-6 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 hover:border-brand-500 shadow-xl hover:shadow-2xl transition-all cursor-pointer flex flex-col justify-between space-y-4 group relative"
                 >
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="px-3 py-1 rounded-full text-[11px] font-mono font-extrabold uppercase bg-brand-500/10 text-brand-500 border border-brand-500/20">
-                        {sub.subjectCode}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="px-3 py-1 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 font-mono font-bold text-xs">
+                        {subject.subjectCode}
                       </span>
-                      
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-500">
-                          5 Units
-                        </span>
-
-                        {/* Faculty Direct Delete Button */}
-                        {user?.role === 'faculty' && (
-                          <button
-                            onClick={(e) => handleDeleteSubject(e, sub.subjectCode, sub.subjectName)}
-                            className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
-                            title="Delete Subject"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300">
+                        {subject.credits || 3} Credits
+                      </span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 font-outfit group-hover:text-brand-500 transition-colors">
-                      {sub.subjectName}
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
-                      JNTUA Autonomous Curriculum • Credits: {sub.credits || 3}
-                    </p>
+                    <h4 className="text-xl font-bold text-slate-900 dark:text-white font-outfit group-hover:text-brand-500 transition-colors">
+                      {subject.subjectName}
+                    </h4>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-brand-500 group-hover:translate-x-1 transition-transform">
-                    <span>Open Unit-1 to Unit-5</span>
-                    <ArrowRight className="w-4 h-4" />
+                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-brand-500">
+                    <span>Open Unit-1 to Unit-5 & QUIZ</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
-                </div>
+                </motion.div>
               ))}
-
-              {subjectsList.length === 0 && (
-                <div className="col-span-full p-12 rounded-3xl aurora-card text-center space-y-3 border border-fuchsia-500/30">
-                  <BookOpen className="w-12 h-12 text-cyan-400 mx-auto opacity-80" />
-                  <h4 className="font-extrabold text-white text-xl font-outfit">No Subjects Currently Added for {activeYear} Year {activeBranch}</h4>
-                  <p className="text-xs text-slate-300 max-w-md mx-auto">
-                    Faculty or Admin members can upload subjects and unit notes for {activeYear} Year {activeBranch} from the Faculty Upload Portal.
-                  </p>
-                </div>
-              )}
             </div>
           ) : (
-            <div className="p-16 rounded-3xl glass-card text-center space-y-4 border border-brand-500/20">
-              <BookOpen className="w-14 h-14 text-brand-500/40 mx-auto" />
-              <h4 className="font-bold text-slate-800 dark:text-slate-200 text-lg">Select Academic Year to View Subjects</h4>
+            <div className="p-16 text-center rounded-3xl glass-card border border-slate-200 dark:border-slate-800 space-y-4">
+              <BookOpen className="w-16 h-16 text-brand-500/30 mx-auto" />
+              <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200">
+                No Course Subjects for {activeYear} Year {activeBranch}
+              </h3>
               <p className="text-xs text-slate-500 max-w-md mx-auto">
                 Please select an Academic Year (1st, 2nd, 3rd, or 4th Year) and Branch from the dropdown selector above.
               </p>
@@ -174,7 +181,7 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
           )}
         </div>
       ) : (
-        /* STEP 2: STRICT CLEAN 5 UNIT CARDS (Unit-1, Unit-2, Unit-3, Unit-4, Unit-5) */
+        /* STEP 2: STRICT CLEAN 6 CARDS (Unit-1, Unit-2, Unit-3, Unit-4, Unit-5 AND QUIZ CARD) */
         <div className="space-y-6">
           <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-2">
             <span className="px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 text-xs font-bold font-mono">
@@ -184,11 +191,13 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
               {selectedSubject.subjectName}
             </h2>
             <p className="text-xs text-slate-500">
-              Select any Unit card below to view and download faculty uploaded PDF reference materials.
+              Select Unit 1-5 for PDF notes or click QUIZ card to participate in faculty published online quizzes.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
+          {/* 6 CARDS GRID: 5 UNIT CARDS + 1 QUIZ CARD */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+            {/* UNIT 1 TO UNIT 5 CARDS */}
             {standardUnits.map((uItem) => {
               const matchingUnit = selectedSubject.units?.find(
                 u => u.unitId === uItem.unitId || u.title.toLowerCase().includes(uItem.name.toLowerCase())
@@ -221,9 +230,124 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
                 </div>
               );
             })}
+
+            {/* 6TH CARD: QUIZ CARD */}
+            <div
+              onClick={() => setShowQuizModal(true)}
+              className="p-6 rounded-2xl bg-gradient-to-br from-fuchsia-950/80 via-purple-900/80 to-slate-900 border border-fuchsia-500/50 hover:border-fuchsia-400 shadow-xl hover:-translate-y-1 hover:scale-[1.02] transition-all cursor-pointer flex flex-col justify-between text-center group text-white relative overflow-hidden"
+            >
+              <div className="space-y-4 relative z-10">
+                <div className="w-12 h-12 rounded-2xl bg-fuchsia-500/20 text-fuchsia-300 font-extrabold mx-auto flex items-center justify-center text-lg shadow-inner border border-fuchsia-400/30 group-hover:bg-fuchsia-500 group-hover:text-white transition-colors">
+                  <HelpCircle className="w-6 h-6" />
+                </div>
+
+                <h3 className="text-2xl font-black text-white font-outfit tracking-wide">
+                  QUIZ
+                </h3>
+                
+                <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30">
+                  {subjectQuizzes.length} Online Quizzes
+                </span>
+              </div>
+
+              <div className="mt-6 pt-3 border-t border-fuchsia-500/30 flex items-center justify-center gap-1.5 text-xs font-bold text-cyan-300 group-hover:translate-x-0.5 transition-transform relative z-10">
+                <span>Take Subject Quiz</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </div>
+            </div>
           </div>
         </div>
       )}
+
+      {/* QUIZ MODAL FOR SELECTED SUBJECT */}
+      <AnimatePresence>
+        {showQuizModal && selectedSubject && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="w-full max-w-3xl bg-slate-900 rounded-3xl shadow-2xl border border-fuchsia-500/40 overflow-hidden flex flex-col max-h-[85vh]"
+            >
+              {/* Modal Header */}
+              <div className="p-6 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <HelpCircle className="w-5 h-5 text-fuchsia-400" />
+                    <h3 className="font-extrabold text-white text-xl font-outfit">
+                      {selectedSubject.subjectName} ({selectedSubject.subjectCode}) — Online Quizzes
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    Faculty published online test & quiz links for {selectedSubject.subjectName}.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => setShowQuizModal(false)}
+                  className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Quizzes List */}
+              <div className="p-6 overflow-y-auto space-y-4">
+                {subjectQuizzes.length > 0 ? (
+                  subjectQuizzes.map(quiz => (
+                    <motion.div
+                      key={quiz.id}
+                      whileHover={{ y: -2 }}
+                      className="p-5 rounded-2xl bg-slate-950 border border-slate-800 hover:border-fuchsia-500/50 space-y-3 shadow-lg"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30 flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 text-fuchsia-400" />
+                          ONLINE QUIZ
+                        </span>
+                        <span className="text-[11px] font-mono text-slate-400">Published: {quiz.createdAt}</span>
+                      </div>
+
+                      <div>
+                        <h4 className="text-lg font-bold text-white font-outfit mb-1">
+                          {quiz.title}
+                        </h4>
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          {quiz.description || 'Participate in this online quiz to test your knowledge.'}
+                        </p>
+                      </div>
+
+                      <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
+                        <span className="text-[11px] text-slate-400">
+                          By: <strong className="text-cyan-300">{quiz.uploadedBy || 'Course Faculty'}</strong>
+                        </span>
+
+                        <a
+                          href={quiz.quizLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 rounded-xl bg-gradient-to-r from-fuchsia-600 to-indigo-600 hover:from-fuchsia-500 hover:to-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg transition-transform hover:scale-105"
+                        >
+                          <span>Take Quiz Online</span>
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </div>
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="p-12 text-center space-y-3 bg-slate-950/50 rounded-2xl border border-slate-800">
+                    <HelpCircle className="w-12 h-12 text-fuchsia-500/40 mx-auto" />
+                    <h4 className="font-extrabold text-white text-base">No Quizzes Published Yet for {selectedSubject.subjectName}</h4>
+                    <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                      Course faculty will publish Google Form / Online Quiz links here for {selectedSubject.subjectName}.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
