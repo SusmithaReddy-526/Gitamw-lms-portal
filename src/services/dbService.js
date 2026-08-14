@@ -11,6 +11,8 @@ const STORAGE_KEYS = {
   DOWNLOADS: 'gitamw_lms_perm_user_downloads',
   ATTENDANCE: 'gitamw_lms_perm_attendance_db',
   QUIZZES: 'gitamw_lms_perm_quizzes_db',
+  ASSIGNMENTS: 'gitamw_lms_perm_assignments_db',
+  SUBMISSIONS: 'gitamw_lms_perm_submissions_db',
   REGISTERED_ROLES: 'gitamw_lms_fresh_registered_roles_history'
 };
 
@@ -1753,5 +1755,73 @@ export const dbService = {
     let quizzes = safeParse(STORAGE_KEYS.QUIZZES, []);
     quizzes = quizzes.filter(q => q.id !== quizId);
     safeSetItem(STORAGE_KEYS.QUIZZES, JSON.stringify(quizzes));
+  },
+
+  // --- ASSIGNMENTS & HOMEWORK MANAGEMENT ---
+  saveAssignment: (assignmentData) => {
+    const assignments = safeParse(STORAGE_KEYS.ASSIGNMENTS, []);
+    const newAssignment = {
+      id: `assign-${Date.now()}`,
+      title: assignmentData.title.trim(),
+      description: (assignmentData.description || '').trim(),
+      dueDate: assignmentData.dueDate || '',
+      yearId: assignmentData.yearId,
+      branchId: assignmentData.branchId,
+      subjectName: assignmentData.subjectName.trim(),
+      subjectCode: (assignmentData.subjectCode || '').trim().toUpperCase(),
+      unitTitle: assignmentData.unitTitle,
+      unitId: (assignmentData.unitTitle || '').toLowerCase().replace(/[^a-z0-9]/g, ''),
+      fileName: assignmentData.fileName || null,
+      fileType: assignmentData.fileType || null,
+      fileSize: assignmentData.fileSize || null,
+      fileData: assignmentData.fileData || null,
+      uploadedBy: assignmentData.uploadedBy || 'Faculty',
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+    assignments.unshift(newAssignment);
+    safeSetItem(STORAGE_KEYS.ASSIGNMENTS, JSON.stringify(assignments));
+    return newAssignment;
+  },
+
+  getAssignments: () => {
+    return safeParse(STORAGE_KEYS.ASSIGNMENTS, []);
+  },
+
+  getAssignmentsForUnit: (yearId, branchId, subjectCode, unitTitle) => {
+    const assignments = safeParse(STORAGE_KEYS.ASSIGNMENTS, []);
+    const cleanCode = (subjectCode || '').trim().toUpperCase();
+    const cleanUnit = (unitTitle || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    return assignments.filter(a => {
+      const aCode = (a.subjectCode || '').trim().toUpperCase();
+      const aUnit = (a.unitTitle || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const codeMatch = !cleanCode || aCode === cleanCode;
+      const unitMatch = !cleanUnit || aUnit === cleanUnit || cleanUnit.includes(aUnit) || aUnit.includes(cleanUnit);
+      return codeMatch && unitMatch;
+    });
+  },
+
+  deleteAssignment: (assignmentId) => {
+    let assignments = safeParse(STORAGE_KEYS.ASSIGNMENTS, []);
+    assignments = assignments.filter(a => a.id !== assignmentId);
+    safeSetItem(STORAGE_KEYS.ASSIGNMENTS, JSON.stringify(assignments));
+  },
+
+  // Student Assignment Submissions
+  submitAssignmentSolution: (submissionData) => {
+    const submissions = safeParse(STORAGE_KEYS.SUBMISSIONS, []);
+    const newSubmission = {
+      id: `sub-${Date.now()}`,
+      ...submissionData,
+      submittedAt: new Date().toISOString()
+    };
+    submissions.unshift(newSubmission);
+    safeSetItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(submissions));
+    return newSubmission;
+  },
+
+  getStudentSubmissions: (studentId) => {
+    const submissions = safeParse(STORAGE_KEYS.SUBMISSIONS, []);
+    return submissions.filter(s => s.studentId === studentId);
   }
 };

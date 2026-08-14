@@ -11,7 +11,9 @@ import {
   CheckCircle2,
   X,
   FileText,
-  ExternalLink
+  ExternalLink,
+  ClipboardList,
+  Calendar
 } from 'lucide-react';
 
 // Helper to convert Base64 Data URL to Blob Object URL for 100% browser PDF rendering
@@ -69,6 +71,14 @@ export function UnitPage({ subject, unit, user, onBack }) {
     subject.branchId,
     subject.subjectId,
     unit.unitId,
+    subject.subjectCode,
+    unit.title
+  );
+
+  // Fetch assignments uploaded by faculty for this specific subject & unit
+  const unitAssignments = dbService.getAssignmentsForUnit(
+    subject.yearId,
+    subject.branchId,
     subject.subjectCode,
     unit.title
   );
@@ -235,6 +245,95 @@ export function UnitPage({ subject, unit, user, onBack }) {
             <h4 className="font-bold text-slate-800 dark:text-slate-200 text-base">No Faculty Materials Uploaded Yet for {displayUnitName}</h4>
             <p className="text-xs text-slate-500 max-w-md mx-auto">
               Faculty will upload syllabus reference notes and PDFs for this unit directly from the Faculty Portal.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* FACULTY UPLOADED ASSIGNMENTS & HOMEWORK */}
+      <div className="space-y-4 pt-6 border-t border-slate-200 dark:border-slate-800">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
+            <ClipboardList className="w-5 h-5 text-fuchsia-500" />
+            Unit Assignments & Homework ({unitAssignments.length})
+          </h3>
+        </div>
+
+        {unitAssignments.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {unitAssignments.map(assign => (
+              <motion.div
+                key={assign.id}
+                whileHover={{ y: -4 }}
+                className="p-6 rounded-2xl glass-card border border-fuchsia-500/30 hover:border-fuchsia-500 shadow-xl space-y-4 flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase bg-fuchsia-100 dark:bg-fuchsia-950 text-fuchsia-600 dark:text-fuchsia-300 border border-fuchsia-200 dark:border-fuchsia-800 flex items-center gap-1">
+                      <ClipboardList className="w-3.5 h-3.5" />
+                      ASSIGNMENT
+                    </span>
+                    {assign.dueDate && (
+                      <span className="text-xs font-mono font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/40 px-2.5 py-1 rounded-full border border-amber-200 flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" />
+                        Due: {assign.dueDate}
+                      </span>
+                    )}
+                  </div>
+
+                  <h4 className="font-bold text-slate-900 dark:text-white text-base">
+                    {assign.title}
+                  </h4>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    {assign.description || 'Complete this assignment and submit before the due date.'}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between text-[11px] text-slate-400">
+                    <span className="flex items-center gap-1 font-medium">
+                      <UserCheck className="w-3.5 h-3.5 text-fuchsia-500" />
+                      {assign.uploadedBy || 'Faculty'}
+                    </span>
+                    <span className="font-mono">Uploaded: {assign.createdAt}</span>
+                  </div>
+
+                  {/* ACTION BUTTONS: VIEW QUESTION PAPER PDF / DOWNLOAD */}
+                  <div className="grid grid-cols-2 gap-2">
+                    {assign.fileData ? (
+                      <>
+                        <button
+                          onClick={() => setViewingFileModal(assign)}
+                          className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer"
+                        >
+                          <Eye className="w-4 h-4 text-cyan-400" />
+                          View Question PDF
+                        </button>
+
+                        <button
+                          onClick={() => handleDownloadFile(assign)}
+                          className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-fuchsia-600 to-indigo-600 hover:from-fuchsia-500 hover:to-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all shadow-md cursor-pointer"
+                        >
+                          <Download className="w-4 h-4 text-amber-300" />
+                          Download PDF
+                        </button>
+                      </>
+                    ) : (
+                      <div className="col-span-2 py-2 text-center text-xs text-slate-400 font-semibold bg-slate-100 dark:bg-slate-800 rounded-xl">
+                        Text Assignment (No PDF attached)
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-10 rounded-3xl glass-card text-center space-y-3 border border-slate-200 dark:border-slate-800">
+            <ClipboardList className="w-12 h-12 text-fuchsia-500/40 mx-auto" />
+            <h4 className="font-bold text-slate-800 dark:text-slate-200 text-base">No Faculty Assignments Uploaded Yet for {displayUnitName}</h4>
+            <p className="text-xs text-slate-500 max-w-md mx-auto">
+              Faculty will upload unit homework questions and assignment PDFs directly from the Faculty Portal.
             </p>
           </div>
         )}

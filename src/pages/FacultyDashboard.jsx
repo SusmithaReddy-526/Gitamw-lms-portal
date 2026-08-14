@@ -21,7 +21,9 @@ import {
   Cpu,
   Radio,
   Zap,
-  FolderPlus
+  FolderPlus,
+  ClipboardList,
+  Calendar
 } from 'lucide-react';
 
 const BRANCH_ICONS = {
@@ -92,6 +94,84 @@ export function FacultyDashboard({ user }) {
   const [quizSuccessMsg, setQuizSuccessMsg] = useState('');
   const [quizErrorMsg, setQuizErrorMsg] = useState('');
   const [quizzesList, setQuizzesList] = useState(() => dbService.getQuizzes());
+
+  // --- 5. UPLOAD & MANAGE ASSIGNMENTS STATE ---
+  const [assignTitle, setAssignTitle] = useState('');
+  const [assignDesc, setAssignDesc] = useState('');
+  const [assignDueDate, setAssignDueDate] = useState('');
+  const [assignYear, setAssignYear] = useState('');
+  const [assignBranch, setAssignBranch] = useState('');
+  const [assignSubjectSelect, setAssignSubjectSelect] = useState('');
+  const [assignUnitTitle, setAssignUnitTitle] = useState('Unit-1');
+  const [assignFileObject, setAssignFileObject] = useState(null);
+  const [assignSuccessMsg, setAssignSuccessMsg] = useState('');
+  const [assignErrorMsg, setAssignErrorMsg] = useState('');
+  const [assignmentsList, setAssignmentsList] = useState(() => dbService.getAssignments());
+
+  const handlePublishAssignmentSubmit = (e) => {
+    e.preventDefault();
+    setAssignSuccessMsg('');
+    setAssignErrorMsg('');
+
+    if (!assignYear || !assignBranch || !assignSubjectSelect || !assignUnitTitle || !assignTitle.trim()) {
+      setAssignErrorMsg('Please select Academic Year, Branch, Target Subject, Target Unit, and enter Assignment Title.');
+      return;
+    }
+
+    const saveAssignmentAction = (base64Data = null, fileName = null, fileType = null, fileSize = null) => {
+      try {
+        const parts = assignSubjectSelect.split('|');
+        const subCode = parts[0] || '';
+        const subName = parts[1] || '';
+
+        const published = dbService.saveAssignment({
+          title: assignTitle.trim(),
+          description: assignDesc.trim(),
+          dueDate: assignDueDate,
+          yearId: assignYear,
+          branchId: assignBranch,
+          subjectName: subName.trim(),
+          subjectCode: subCode.trim(),
+          unitTitle: assignUnitTitle,
+          fileName: fileName,
+          fileType: fileType,
+          fileSize: fileSize,
+          fileData: base64Data,
+          uploadedBy: selectedFacultyMember?.fullName ? `${selectedFacultyMember.fullName} (${selectedFacultyMember.employeeId || 'Faculty'})` : (user?.fullName || 'Faculty')
+        });
+
+        setAssignmentsList(dbService.getAssignments());
+        setAssignSuccessMsg(`Successfully published assignment "${published.title}" for ${published.subjectName} (${published.unitTitle})! Appears in Student Portal inside ${published.unitTitle}.`);
+
+        setAssignTitle('');
+        setAssignDesc('');
+        setAssignDueDate('');
+        setAssignSubjectSelect('');
+        setAssignFileObject(null);
+      } catch (err) {
+        setAssignErrorMsg(err.message || 'Failed to publish assignment.');
+      }
+    };
+
+    if (assignFileObject) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64Data = reader.result;
+        const sizeStr = (assignFileObject.size / 1024 / 1024).toFixed(2) + ' MB';
+        saveAssignmentAction(base64Data, assignFileObject.name, assignFileObject.type, sizeStr);
+      };
+      reader.readAsDataURL(assignFileObject);
+    } else {
+      saveAssignmentAction();
+    }
+  };
+
+  const handleDeleteAssignment = (id, title) => {
+    if (window.confirm(`Are you sure you want to delete assignment "${title}"?`)) {
+      dbService.deleteAssignment(id);
+      setAssignmentsList(dbService.getAssignments());
+    }
+  };
 
   // Uploaded Files & Curriculum list
   const [uploadedFilesList, setUploadedFilesList] = useState(() => dbService.getUploadedFiles());
@@ -515,7 +595,7 @@ export function FacultyDashboard({ user }) {
       </div>
 
       {/* Standalone High-Visibility Action Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         <button
           onClick={() => setActiveTabMode('upload-material')}
           className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
@@ -534,6 +614,25 @@ export function FacultyDashboard({ user }) {
         </button>
 
         <button
+          onClick={() => setActiveTabMode('assignments')}
+          className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
+            activeTabMode === 'assignments'
+              ? 'bg-purple-600 text-white border-purple-500 shadow-xl ring-2 ring-purple-400 scale-[1.02]'
+              : 'glass-card border-slate-200 dark:border-slate-800 hover:border-purple-500/50 text-slate-800 dark:text-slate-200'
+          }`}
+        >
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl shrink-0 ${activeTabMode === 'assignments' ? 'bg-white/20 text-white' : 'bg-purple-500/10 text-purple-400'}`}>
+            <ClipboardList className="w-6 h-6" />
+          </div>
+          <div>
+            <h4 className="font-extrabold text-sm flex items-center gap-1">
+              📋 Upload Assignments
+            </h4>
+            <p className={`text-[11px] ${activeTabMode === 'assignments' ? 'text-purple-100' : 'text-slate-500'}`}>Homework &amp; Unit Tasks</p>
+          </div>
+        </button>
+
+        <button
           onClick={() => setActiveTabMode('add-subject')}
           className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
             activeTabMode === 'add-subject'
@@ -548,7 +647,7 @@ export function FacultyDashboard({ user }) {
             <h4 className="font-extrabold text-sm flex items-center gap-1">
               ➕ Add New Subject
             </h4>
-            <p className={`text-[11px] ${activeTabMode === 'add-subject' ? 'text-emerald-100' : 'text-slate-500'}`}>Create new subject in curriculum</p>
+            <p className={`text-[11px] ${activeTabMode === 'add-subject' ? 'text-emerald-100' : 'text-slate-500'}`}>Create new subject</p>
           </div>
         </button>
 
@@ -569,7 +668,7 @@ export function FacultyDashboard({ user }) {
           </div>
           <div>
             <h4 className="font-extrabold text-sm">Manage Syllabus</h4>
-            <p className={`text-[11px] ${activeTabMode === 'manage-syllabus' ? 'text-indigo-100' : 'text-slate-500'}`}>4 Years &amp; Syllabus PDFs</p>
+            <p className={`text-[11px] ${activeTabMode === 'manage-syllabus' ? 'text-indigo-100' : 'text-slate-500'}`}>4 Years Syllabus PDFs</p>
           </div>
         </button>
 
@@ -586,9 +685,9 @@ export function FacultyDashboard({ user }) {
           </div>
           <div>
             <h4 className="font-extrabold text-sm flex items-center gap-1">
-              📝 Publish Online Quiz
+              📝 Publish Quiz
             </h4>
-            <p className={`text-[11px] ${activeTabMode === 'publish-quiz' ? 'text-fuchsia-100' : 'text-slate-500'}`}>Google Form &amp; Quiz Links</p>
+            <p className={`text-[11px] ${activeTabMode === 'publish-quiz' ? 'text-fuchsia-100' : 'text-slate-500'}`}>Online Test Links</p>
           </div>
         </button>
       </div>
@@ -1427,6 +1526,251 @@ export function FacultyDashboard({ user }) {
             ) : (
               <div className="p-8 text-center rounded-2xl glass-card text-slate-500 border border-slate-200 dark:border-slate-800">
                 <p className="text-xs font-bold">No online quizzes published yet.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* --- MODE 5: UPLOAD & MANAGE ASSIGNMENTS --- */}
+      {activeTabMode === 'assignments' && (
+        <div className="space-y-8">
+          <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
+            <div className="flex items-center gap-3">
+              <span className="w-10 h-10 rounded-2xl bg-purple-500/10 text-purple-500 font-bold flex items-center justify-center">
+                <ClipboardList className="w-5 h-5" />
+              </span>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
+                  Upload Unit Assignment &amp; Homework Question Paper
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Uploaded assignments automatically appear inside the selected target <strong>Subject Unit Page</strong> in the Student Portal.
+                </p>
+              </div>
+            </div>
+
+            {assignSuccessMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+              >
+                <CheckCircle2 className="w-5 h-5 shrink-0" />
+                <span>{assignSuccessMsg}</span>
+              </motion.div>
+            )}
+
+            {assignErrorMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-2xl bg-rose-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+              >
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span>{assignErrorMsg}</span>
+              </motion.div>
+            )}
+
+            <form onSubmit={handlePublishAssignmentSubmit} className="space-y-6">
+              {/* Year & Branch */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Academic Year *
+                  </label>
+                  <select
+                    value={assignYear}
+                    onChange={e => {
+                      setAssignYear(e.target.value);
+                      setAssignSubjectSelect('');
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-purple-500 outline-none"
+                  >
+                    <option value="">-- Select Academic Year --</option>
+                    {YEARS.map(y => (
+                      <option key={y.id} value={y.id}>{y.title}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Engineering Branch *
+                  </label>
+                  <select
+                    value={assignBranch}
+                    onChange={e => {
+                      setAssignBranch(e.target.value);
+                      setAssignSubjectSelect('');
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-purple-500 outline-none"
+                  >
+                    <option value="">-- Select Engineering Branch --</option>
+                    {BRANCHES.map(b => (
+                      <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Subject & Target Unit */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Target Course Subject *
+                  </label>
+                  <select
+                    value={assignSubjectSelect}
+                    onChange={e => setAssignSubjectSelect(e.target.value)}
+                    disabled={!assignYear || !assignBranch}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-purple-500 outline-none disabled:opacity-50"
+                  >
+                    <option value="">-- Select Target Subject --</option>
+                    {assignYear && assignBranch && dbService.getSubjectsForBranchAndYear(assignYear, assignBranch).map(sub => (
+                      <option key={sub.id || sub.subjectCode} value={`${sub.subjectCode}|${sub.subjectName}`}>
+                        {sub.subjectCode} - {sub.subjectName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Target Unit *
+                  </label>
+                  <select
+                    value={assignUnitTitle}
+                    onChange={e => setAssignUnitTitle(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-purple-500 outline-none"
+                  >
+                    <option value="Unit-1">Unit 1</option>
+                    <option value="Unit-2">Unit 2</option>
+                    <option value="Unit-3">Unit 3</option>
+                    <option value="Unit-4">Unit 4</option>
+                    <option value="Unit-5">Unit 5</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Assignment Title & Due Date */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Assignment Title / Homework Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={assignTitle}
+                    onChange={e => setAssignTitle(e.target.value)}
+                    placeholder="e.g. Assignment-1: Complex Variables & Cauchy Equations"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-purple-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Submission Due Date *
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={assignDueDate}
+                    onChange={e => setAssignDueDate(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-purple-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Instructions / Description */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Assignment Questions / Instructions (Optional)
+                </label>
+                <textarea
+                  rows="3"
+                  value={assignDesc}
+                  onChange={e => setAssignDesc(e.target.value)}
+                  placeholder="e.g. Solve all 5 questions on A4 sheets. Scan and submit PDF before deadline."
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-purple-500 outline-none"
+                />
+              </div>
+
+              {/* File Attachment (Optional PDF) */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Attach Assignment Question Paper PDF (Optional)
+                </label>
+                <input
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={e => setAssignFileObject(e.target.files[0])}
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-500 cursor-pointer"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-extrabold text-sm shadow-xl flex items-center justify-center gap-2 cursor-pointer transition-all hover:scale-[1.01]"
+              >
+                <ClipboardList className="w-5 h-5 text-purple-200" />
+                <span>Publish Assignment to Student Unit Page 🚀</span>
+              </button>
+            </form>
+          </div>
+
+          {/* Published Assignments Log */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
+              <ClipboardList className="w-5 h-5 text-purple-500" />
+              Published Assignments Log ({assignmentsList.length})
+            </h3>
+
+            {assignmentsList.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {assignmentsList.map(a => (
+                  <div
+                    key={a.id}
+                    className="p-5 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-3 flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-mono font-extrabold uppercase bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                          {a.subjectCode || a.subjectName} • {a.unitTitle}
+                        </span>
+                        {a.dueDate && (
+                          <span className="text-[11px] font-mono font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded border border-amber-200">
+                            Due: {a.dueDate}
+                          </span>
+                        )}
+                      </div>
+
+                      <h4 className="font-bold text-slate-900 dark:text-white text-base">
+                        {a.title}
+                      </h4>
+                      <p className="text-xs text-slate-500 leading-relaxed truncate">
+                        {a.description || 'No instructions specified.'}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                      <span className="text-[11px] text-slate-400">By {a.uploadedBy}</span>
+                      <button
+                        onClick={() => handleDeleteAssignment(a.id, a.title)}
+                        className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center rounded-2xl glass-card text-slate-500 border border-slate-200 dark:border-slate-800">
+                <p className="text-xs font-bold">No assignments published yet.</p>
               </div>
             )}
           </div>
