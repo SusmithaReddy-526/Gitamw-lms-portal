@@ -43,7 +43,10 @@ export function ProfilePage() {
 
       // Update auth context state
       updateProfile(updated);
-      setMsg(`Account profile & Enrolled Academic Year updated successfully to ${year} Year ${branch}!`);
+      setMsg(user.role === 'student' 
+        ? `Account profile & Enrolled Academic Year updated successfully to ${year} Year ${branch}!` 
+        : `Account profile details updated successfully!`
+      );
     } catch (e) {
       setErr(e.message || 'Failed to update profile details.');
     }
@@ -111,12 +114,12 @@ export function ProfilePage() {
       <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
         <div>
           <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
-            Edit Account Details &amp; Enrolled Academic Year
+            {user.role === 'student' ? 'Edit Account Details & Enrolled Academic Year' : 'Edit Account Details'}
           </h3>
           <p className="text-xs text-slate-500">
             {user.role === 'student' 
               ? 'Promoted to next academic year (e.g. 2nd Year -> 3rd Year)? Update your Academic Year & Branch below to instantly access your new year syllabus, subjects, and study materials.'
-              : 'Update your contact information, branch, and login credentials.'
+              : 'Update your contact information and login credentials.'
             }
           </p>
         </div>
@@ -206,84 +209,88 @@ export function ProfilePage() {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                Engineering Branch *
-              </label>
-              <select
-                value={branch}
-                onChange={e => setBranch(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
-              >
-                {BRANCHES.map(b => (
-                  <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Enrolled Academic Year & Semester Selector */}
-          <div className="p-5 rounded-2xl bg-brand-50/40 dark:bg-brand-950/20 border border-brand-500/30 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-brand-600 dark:text-brand-400 uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-brand-500" />
-                Enrolled Academic Year &amp; Syllabus Access
-              </span>
-              <span className="text-[10px] font-bold text-slate-500">
-                Update when promoted to next year
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {user.role !== 'admin' && (
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Enrolled Academic Year *
+                  {user.role === 'faculty' ? 'Department / Engineering Branch *' : 'Engineering Branch *'}
                 </label>
                 <select
-                  value={year}
-                  onChange={e => {
-                    const newYr = e.target.value;
-                    setYear(newYr);
-                    if (newYr === '1st') setSemester('Sem 1');
-                    else if (newYr === '2nd') setSemester('Sem 3');
-                    else if (newYr === '3rd') setSemester('Sem 5');
-                    else if (newYr === '4th') setSemester('Sem 7');
-                  }}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/60 bg-white dark:bg-slate-900 text-xs font-extrabold text-brand-600 dark:text-brand-400 outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
+                  value={branch}
+                  onChange={e => setBranch(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
                 >
-                  {YEARS.map(y => (
-                    <option key={y.id} value={y.id}>{y.title}</option>
+                  {BRANCHES.map(b => (
+                    <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
                   ))}
                 </select>
               </div>
+            )}
+          </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Academic Semester
-                </label>
-                <select
-                  value={semester}
-                  onChange={e => setSemester(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
-                >
-                  {year === '1st' && <option value="Sem 1">Sem 1 (1st Year Sem 1)</option>}
-                  {year === '1st' && <option value="Sem 2">Sem 2 (1st Year Sem 2)</option>}
-                  {year === '2nd' && <option value="Sem 3">Sem 3 (2nd Year Sem 1)</option>}
-                  {year === '2nd' && <option value="Sem 4">Sem 4 (2nd Year Sem 2)</option>}
-                  {year === '3rd' && <option value="Sem 5">Sem 5 (3rd Year Sem 1)</option>}
-                  {year === '3rd' && <option value="Sem 6">Sem 6 (3rd Year Sem 2)</option>}
-                  {year === '4th' && <option value="Sem 7">Sem 7 (4th Year Sem 1)</option>}
-                  {year === '4th' && <option value="Sem 8">Sem 8 (4th Year Sem 2)</option>}
-                </select>
+          {/* Enrolled Academic Year & Semester Selector (Students Only) */}
+          {user.role === 'student' && (
+            <div className="p-5 rounded-2xl bg-brand-50/40 dark:bg-brand-950/20 border border-brand-500/30 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-extrabold text-brand-600 dark:text-brand-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-brand-500" />
+                  Enrolled Academic Year &amp; Syllabus Access
+                </span>
+                <span className="text-[10px] font-bold text-slate-500">
+                  Update when promoted to next year
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Enrolled Academic Year *
+                  </label>
+                  <select
+                    value={year}
+                    onChange={e => {
+                      const newYr = e.target.value;
+                      setYear(newYr);
+                      if (newYr === '1st') setSemester('Sem 1');
+                      else if (newYr === '2nd') setSemester('Sem 3');
+                      else if (newYr === '3rd') setSemester('Sem 5');
+                      else if (newYr === '4th') setSemester('Sem 7');
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/60 bg-white dark:bg-slate-900 text-xs font-extrabold text-brand-600 dark:text-brand-400 outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
+                  >
+                    {YEARS.map(y => (
+                      <option key={y.id} value={y.id}>{y.title}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Academic Semester
+                  </label>
+                  <select
+                    value={semester}
+                    onChange={e => setSemester(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer"
+                  >
+                    {year === '1st' && <option value="Sem 1">Sem 1 (1st Year Sem 1)</option>}
+                    {year === '1st' && <option value="Sem 2">Sem 2 (1st Year Sem 2)</option>}
+                    {year === '2nd' && <option value="Sem 3">Sem 3 (2nd Year Sem 1)</option>}
+                    {year === '2nd' && <option value="Sem 4">Sem 4 (2nd Year Sem 2)</option>}
+                    {year === '3rd' && <option value="Sem 5">Sem 5 (3rd Year Sem 1)</option>}
+                    {year === '3rd' && <option value="Sem 6">Sem 6 (3rd Year Sem 2)</option>}
+                    {year === '4th' && <option value="Sem 7">Sem 7 (4th Year Sem 1)</option>}
+                    {year === '4th' && <option value="Sem 8">Sem 8 (4th Year Sem 2)</option>}
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <button
             type="submit"
             className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg transition-all hover:scale-[1.01] cursor-pointer"
           >
-            Update Account Details &amp; Academic Year
+            {user.role === 'student' ? 'Update Account Details & Academic Year' : 'Update Account Details'}
           </button>
         </form>
       </div>
