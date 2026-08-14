@@ -444,8 +444,8 @@ export function AdminPanel() {
 
           <div className="p-6 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-2">
             <span className="text-xs font-bold text-slate-400 uppercase">Engineering Branches</span>
-            <div className="text-3xl font-extrabold text-purple-600 dark:text-purple-400 font-outfit">7</div>
-            <p className="text-[11px] text-slate-400">CSE, AIML, ECE, EEE, MECH, CIVIL, IT</p>
+            <div className="text-3xl font-extrabold text-purple-600 dark:text-purple-400 font-outfit">{BRANCHES.length}</div>
+            <p className="text-[11px] text-slate-400 font-bold text-purple-400">CSE, AIML, ECE, EEE</p>
           </div>
 
           <div className="p-6 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-2">
