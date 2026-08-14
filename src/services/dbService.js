@@ -1341,6 +1341,29 @@ export const dbService = {
     return newFaculty;
   },
 
+  addFaculty: (facultyData) => {
+    return dbService.registerFaculty({
+      fullName: facultyData.name || facultyData.fullName || '',
+      employeeId: facultyData.employeeId || '',
+      department: facultyData.department || facultyData.branch || 'CSE',
+      email: facultyData.email || '',
+      password: facultyData.password || 'password123',
+      mobile: facultyData.mobile || ''
+    });
+  },
+
+  deleteFaculty: (id) => {
+    let faculty = safeParse(STORAGE_KEYS.FACULTY, []);
+    faculty = faculty.filter(f => f.id !== id && f.employeeId !== id);
+    safeSetItem(STORAGE_KEYS.FACULTY, JSON.stringify(faculty));
+  },
+
+  deleteStudent: (id) => {
+    let students = safeParse(STORAGE_KEYS.USERS, []);
+    students = students.filter(s => s.id !== id && s.username !== id && s.rollNumber !== id);
+    safeSetItem(STORAGE_KEYS.USERS, JSON.stringify(students));
+  },
+
   // --- ADMIN REGISTRATION RESTRICTED ---
   registerAdmin: () => {
     throw new Error('Wrong Credentials / Registration Restricted: Admin access is exclusively reserved for Principal, Chairman, Co Director, and Examcell.');
