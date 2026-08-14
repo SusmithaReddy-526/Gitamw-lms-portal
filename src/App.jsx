@@ -161,16 +161,16 @@ function MainContent() {
         return user?.role === 'admin' ? <AdminPanel /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
 
       case 'search':
-        return <GlobalSearch onSelectTopic={handleOpenTopic} />;
+        return user?.role === 'admin' ? <AdminPanel /> : <GlobalSearch onSelectTopic={handleOpenTopic} />;
 
       case 'profile':
         return user ? <ProfilePage /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
 
       case 'downloads':
-        return user ? <DownloadsPage user={user} onSelectTopic={handleOpenTopic} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
+        return user?.role === 'admin' ? <AdminPanel /> : (user ? <DownloadsPage user={user} onSelectTopic={handleOpenTopic} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />);
 
       case 'attendance':
-        return user ? <AttendancePage user={user} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
+        return user?.role === 'admin' ? <AdminPanel /> : (user ? <AttendancePage user={user} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />);
 
       case 'home':
       default:

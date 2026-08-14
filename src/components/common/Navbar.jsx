@@ -38,16 +38,17 @@ export function Navbar({ activeTab, setActiveTab }) {
     };
   }, []);
 
-  const navItems = [
+  let navItems = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, requiresAuth: true },
     { id: 'subjects', label: 'Subjects', icon: BookOpen, requiresAuth: true },
-    { id: 'attendance', label: 'Attendance', icon: UserCheck, requiresAuth: true },
-    { id: 'search', label: 'Search', icon: Search },
-    { id: 'downloads', label: 'Downloads', icon: Download, requiresAuth: true },
+    { id: 'attendance', label: 'Attendance', icon: UserCheck, requiresAuth: true, hideForAdmin: true },
+    { id: 'search', label: 'Search', icon: Search, hideForAdmin: true },
+    { id: 'downloads', label: 'Downloads', icon: Download, requiresAuth: true, hideForAdmin: true },
   ];
 
   if (user?.role === 'admin') {
+    navItems = navItems.filter(item => !item.hideForAdmin);
     navItems.push({ id: 'admin', label: 'Admin Panel', icon: Shield });
   }
 
