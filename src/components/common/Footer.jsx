@@ -10,8 +10,12 @@ export function Footer() {
           {/* Column 1: GITAMW Autonomous & Description */}
           <div className="space-y-3 md:col-span-1">
             <div className="flex items-center gap-3 text-white">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-500 via-fuchsia-600 to-amber-500 flex items-center justify-center text-white font-bold shadow-lg shadow-fuchsia-500/30 border border-fuchsia-300/40">
-                <GraduationCap className="w-6 h-6" />
+              <div className="w-10 h-10 rounded-2xl bg-white p-0.5 shadow-lg shadow-amber-500/20 border-2 border-amber-400/60 flex items-center justify-center overflow-hidden shrink-0">
+                <img 
+                  src={`${import.meta.env.BASE_URL}gitamw_logo.png`} 
+                  alt="GITAMW Emblem" 
+                  className="w-full h-full object-contain" 
+                />
               </div>
               <span className="font-extrabold text-lg font-outfit text-white">
                 GITAMW <span className="aurora-text">AUTONOMOUS</span>

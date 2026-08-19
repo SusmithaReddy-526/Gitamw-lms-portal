@@ -55,8 +55,12 @@ export function Navbar({ activeTab, setActiveTab }) {
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => setActiveTab('home')}
           >
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-fuchsia-600 to-amber-500 flex items-center justify-center text-white shadow-xl shadow-fuchsia-500/30 border border-fuchsia-300/40 group-hover:scale-105 transition-transform">
-              <GraduationCap className="w-6 h-6 text-white" />
+            <div className="w-11 h-11 rounded-2xl bg-white p-0.5 shadow-xl shadow-amber-500/20 border-2 border-amber-400/60 flex items-center justify-center group-hover:scale-105 transition-transform overflow-hidden shrink-0">
+              <img 
+                src={`${import.meta.env.BASE_URL}gitamw_logo.png`} 
+                alt="GITAMW Emblem" 
+                className="w-full h-full object-contain" 
+              />
             </div>
             <div>
               <span className="font-black text-xl tracking-tight text-white font-outfit flex items-center gap-1.5">
