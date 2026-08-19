@@ -251,9 +251,9 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
               <button
                 type="button"
                 onClick={() => handleRoleChange('student')}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 ${
                   role === 'student'
-                    ? 'bg-brand-600 text-white shadow-md'
+                    ? 'bg-gradient-to-r from-cyan-500 to-indigo-600 text-white shadow-lg shadow-cyan-500/25 scale-[1.02]'
                     : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
                 }`}
               >
@@ -264,9 +264,9 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
               <button
                 type="button"
                 onClick={() => handleRoleChange('faculty')}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 ${
                   role === 'faculty'
-                    ? 'bg-brand-600 text-white shadow-md'
+                    ? 'bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white shadow-lg shadow-fuchsia-500/25 scale-[1.02]'
                     : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
                 }`}
               >
@@ -277,13 +277,13 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
               <button
                 type="button"
                 onClick={() => handleRoleChange('admin')}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                className={`flex-1 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-2 ${
                   role === 'admin'
-                    ? 'bg-slate-900 text-white shadow-md'
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/25 scale-[1.02]'
                     : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
                 }`}
               >
-                <ShieldCheck className="w-4 h-4" />
+                <Shield className="w-4 h-4" />
                 Admin
               </button>
             </div>
