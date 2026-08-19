@@ -93,15 +93,17 @@ export function Navbar({ activeTab, setActiveTab }) {
 
           {/* Controls & Profile */}
           <div className="hidden md:flex items-center gap-3">
-            {/* Suggestions & Feedback / Complaints Button */}
-            <button
-              onClick={() => setSuggestionOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 text-xs font-bold hover:bg-brand-500/20 transition-all cursor-pointer"
-              title="Submit Suggestion / Complaint to Admin"
-            >
-              <MessageSquarePlus className="w-4 h-4 text-brand-500" />
-              <span>Feedback</span>
-            </button>
+            {/* Suggestions & Feedback / Complaints Button (Logged In Only) */}
+            {user && (
+              <button
+                onClick={() => setSuggestionOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 text-xs font-bold hover:bg-brand-500/20 transition-all cursor-pointer"
+                title="Submit Suggestion / Complaint to Admin"
+              >
+                <MessageSquarePlus className="w-4 h-4 text-brand-500" />
+                <span>Feedback</span>
+              </button>
+            )}
 
             {/* Theme Toggle */}
             <button
