@@ -118,7 +118,7 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
     try {
       if (role === 'student') {
         if (!studentReg.branch || !studentReg.year || !studentReg.semester) {
-          setError('Please select your Branch, Academic Year, and Semester from the dropdowns.');
+          setError('Please select your Branch, Year, and Semester from the dropdowns.');
           return;
         }
         if (studentReg.password !== studentReg.confirmPassword) {
@@ -365,7 +365,7 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                          Academic Year *
+                          Year *
                         </label>
                         <select
                           value={studentReg.year}
@@ -373,7 +373,7 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                           onChange={e => setStudentReg({ ...studentReg, year: e.target.value })}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs outline-none"
                         >
-                          <option value="">-- Select Academic Year --</option>
+                          <option value="">-- Select Year --</option>
                           {YEARS.map(y => (
                             <option key={y.id} value={y.id}>{y.title}</option>
                           ))}
