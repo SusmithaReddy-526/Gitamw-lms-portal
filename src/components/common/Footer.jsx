@@ -39,11 +39,10 @@ export function Footer() {
               Academic Branches
             </h5>
             <ul className="space-y-2 text-xs text-slate-300">
-              <li className="hover:text-cyan-300 transition-colors">Computer Science &amp; Engineering (CSE)</li>
-              <li className="hover:text-fuchsia-300 transition-colors">Artificial Intelligence &amp; Machine Learning (AIML)</li>
-              <li className="hover:text-amber-300 transition-colors">Electronics &amp; Communication (ECE)</li>
-              <li className="hover:text-cyan-300 transition-colors">Electrical &amp; Electronics (EEE)</li>
-              <li className="hover:text-emerald-300 transition-colors">Mechanical &amp; Civil Engineering</li>
+              <li className="hover:text-cyan-300 transition-colors font-medium">Computer Science &amp; Engineering (CSE)</li>
+              <li className="hover:text-fuchsia-300 transition-colors font-medium">Artificial Intelligence &amp; Machine Learning (AIML)</li>
+              <li className="hover:text-amber-300 transition-colors font-medium">Electronics &amp; Communication Engineering (ECE)</li>
+              <li className="hover:text-cyan-300 transition-colors font-medium">Electrical &amp; Electronics Engineering (EEE)</li>
             </ul>
           </div>
 
