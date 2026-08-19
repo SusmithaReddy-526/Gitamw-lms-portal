@@ -1588,7 +1588,16 @@ export const dbService = {
 
   // --- CURRICULUM & SUBJECTS ---
   getCurriculum: () => {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
+    const list = JSON.parse(localStorage.getItem(STORAGE_KEYS.CURRICULUM) || '[]');
+    return list.map(item => {
+      const sName = (item.subjectName || '').toLowerCase();
+      const sCode = (item.subjectCode || '').toLowerCase();
+      const isLab = sName.includes('lab') || sName.includes('laboratory') || sName.includes('practical') || sCode.endsWith('p') || sCode.includes('lab');
+      return {
+        ...item,
+        credits: isLab ? 1.5 : 3
+      };
+    });
   },
 
   // STRICT SUBJECT RETRIEVAL WITHOUT UNINTENDED MIXING OR AUTO-DEFAULTS
@@ -1616,6 +1625,14 @@ export const dbService = {
       const itemYr = normYear(item.yearId);
       const itemBr = (item.branchId || '').toString().trim().toUpperCase();
       return itemYr === targetYr && itemBr === targetBr;
+    }).map(item => {
+      const sName = (item.subjectName || '').toLowerCase();
+      const sCode = (item.subjectCode || '').toLowerCase();
+      const isLab = sName.includes('lab') || sName.includes('laboratory') || sName.includes('practical') || sCode.endsWith('p') || sCode.includes('lab');
+      return {
+        ...item,
+        credits: isLab ? 1.5 : 3
+      };
     });
   },
 
@@ -1639,7 +1656,7 @@ export const dbService = {
       yearId: subjectData.yearId,
       branchId: subjectData.branchId,
       semester: subjectData.semester || (subjectData.yearId === '4th' ? 'Sem 7' : subjectData.yearId === '3rd' ? 'Sem 5' : subjectData.yearId === '2nd' ? 'Sem 3' : 'Sem 1'),
-      credits: subjectData.credits || 3,
+      credits: subjectData.credits || ((subjectData.subjectName.toLowerCase().includes('lab') || subjectData.subjectName.toLowerCase().includes('laboratory') || subjectData.subjectName.toLowerCase().includes('practical') || cleanCode.endsWith('P') || cleanCode.includes('LAB')) ? 1.5 : 3),
       syllabusPdfUrl: subjectData.syllabusPdfUrl || null,
       syllabusFileName: subjectData.syllabusFileName || null,
       units: standardUnits,
