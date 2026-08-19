@@ -12,15 +12,17 @@ import {
   CheckCircle2, 
   AlertCircle,
   BarChart3,
-  BookOpen
+  BookOpen,
+  MessageSquarePlus
 } from 'lucide-react';
 
 export function AdminPanel() {
-  const [activeSubTab, setActiveSubTab] = useState('faculty'); // 'faculty' | 'students' | 'notices' | 'analytics'
+  const [activeSubTab, setActiveSubTab] = useState('faculty'); // 'faculty' | 'students' | 'notices' | 'analytics' | 'suggestions'
 
   const [facultyList, setFacultyList] = useState(dbService.getFacultyList());
   const [studentsList, setStudentsList] = useState(dbService.getStudentsList());
   const [noticesList, setNoticesList] = useState(dbService.getNotices());
+  const [suggestionsList, setSuggestionsList] = useState(dbService.getSuggestions());
 
   const [msg, setMsg] = useState('');
   const [err, setErr] = useState('');
@@ -137,11 +139,12 @@ export function AdminPanel() {
       )}
 
       {/* Sub Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
         {[
           { id: 'faculty', label: 'Faculty Management', icon: UserPlus },
           { id: 'students', label: `Students (${studentsList.length})`, icon: Users },
           { id: 'notices', label: 'Campus Notices', icon: Bell },
+          { id: 'suggestions', label: `Suggestions / Complaints (${suggestionsList.length})`, icon: MessageSquarePlus },
           { id: 'analytics', label: 'LMS Analytics', icon: BarChart3 },
         ].map(tab => {
           const Icon = tab.icon;
@@ -423,7 +426,86 @@ export function AdminPanel() {
               </div>
             ))}
           </div>
+        </div>
+      )}
 
+      {/* Sub Tab: Suggestions & Complaints Box */}
+      {activeSubTab === 'suggestions' && (
+        <div className="space-y-6">
+          <div className="p-6 rounded-2xl glass-panel border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
+                <MessageSquarePlus className="w-6 h-6 text-brand-500" />
+                Student &amp; Faculty Suggestions / Complaints Dashboard
+              </h3>
+              <p className="text-xs text-slate-500">
+                Direct feedback, campus complaints, and portal requests submitted by Students and Faculty members.
+              </p>
+            </div>
+            <span className="px-4 py-1.5 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 text-xs font-black">
+              Total Inbox: {suggestionsList.length} Entries
+            </span>
+          </div>
+
+          {suggestionsList.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {suggestionsList.map(s => (
+                <div
+                  key={s.id}
+                  className="p-6 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm relative overflow-hidden flex flex-col justify-between"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                        {s.category || 'Feedback'}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {s.createdAt ? new Date(s.createdAt).toLocaleDateString() : 'Recent'}
+                      </span>
+                    </div>
+
+                    <h4 className="text-base font-extrabold text-slate-900 dark:text-white font-outfit">
+                      {s.title}
+                    </h4>
+
+                    <p className="text-xs text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800">
+                      "{s.message}"
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+                    <div>
+                      <div className="font-bold text-slate-900 dark:text-white">
+                        {s.authorName} <span className="text-[10px] text-slate-400 font-normal uppercase">({s.authorRole})</span>
+                      </div>
+                      <div className="text-[11px] text-slate-500 font-mono">
+                        ID: {s.authorId} {s.authorEmail ? `• ${s.authorEmail}` : ''} {s.contactInfo ? `• ${s.contactInfo}` : ''}
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        if (window.confirm('Delete this suggestion entry?')) {
+                          dbService.deleteSuggestion(s.id);
+                          setSuggestionsList(dbService.getSuggestions());
+                        }
+                      }}
+                      className="p-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                      title="Delete Suggestion"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-12 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 text-center space-y-2">
+              <MessageSquarePlus className="w-10 h-10 text-slate-400 mx-auto" />
+              <h4 className="text-sm font-bold text-slate-700 dark:text-slate-300">No Suggestions / Complaints Received Yet</h4>
+              <p className="text-xs text-slate-500">Student &amp; Faculty suggestions will automatically appear here when submitted.</p>
+            </div>
+          )}
         </div>
       )}
 
@@ -449,9 +531,9 @@ export function AdminPanel() {
           </div>
 
           <div className="p-6 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-2">
-            <span className="text-xs font-bold text-slate-400 uppercase">Curriculum Modules</span>
-            <div className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-outfit">100% Active</div>
-            <p className="text-[11px] text-emerald-500">Vector Diagrams Online</p>
+            <span className="text-xs font-bold text-slate-400 uppercase">Suggestions Received</span>
+            <div className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 font-outfit">{suggestionsList.length}</div>
+            <p className="text-[11px] text-emerald-500">Live Feedback Inbox</p>
           </div>
         </div>
       )}

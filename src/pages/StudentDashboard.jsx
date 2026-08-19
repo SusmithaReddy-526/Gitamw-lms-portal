@@ -5,6 +5,11 @@ import { GraduationCap, ArrowRight, Lock, Unlock, Sparkles, BookOpen, Layers, Be
 export function StudentDashboard({ user, onSelectYear }) {
   const [unlockAll, setUnlockAll] = useState(false);
   const notices = dbService.getNotices();
+  const facultyAnnouncements = dbService.getFacultyAnnouncements().filter(a => {
+    const yrMatch = a.targetYear === 'All' || !user?.year || a.targetYear.toLowerCase().includes((user?.year || '').toLowerCase());
+    const brMatch = a.targetBranch === 'All' || !user?.branch || a.targetBranch.toUpperCase() === (user?.branch || '').toUpperCase();
+    return yrMatch && brMatch;
+  });
 
   // Calculate Student Attendance
   const studentAttendance = dbService.getStudentAttendance(user?.rollNumber || user?.username || '238U1A0561');
@@ -84,6 +89,79 @@ export function StudentDashboard({ user, onSelectYear }) {
           ECAP Attendance Integration System
         </div>
       </div>
+
+      {/* Faculty Announcements & Department Guest Lectures */}
+      {facultyAnnouncements.length > 0 && (
+        <div className="space-y-5">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-600 text-white flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-300/40">
+              <Bell className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-extrabold text-white font-outfit">
+                Faculty Announcements &amp; Guest Lectures
+              </h2>
+              <p className="text-xs text-slate-300">
+                Department workshops, guest speaker visits, and academic announcements published by Faculty.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {facultyAnnouncements.map(a => (
+              <div 
+                key={a.id} 
+                className="p-6 rounded-3xl aurora-card border border-amber-500/30 flex flex-col justify-between space-y-4 shadow-xl"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-400/40">
+                        {a.targetYear === 'All' ? 'For All Years' : `${a.targetYear} Year`}
+                      </span>
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-400/40">
+                        {a.targetBranch === 'All' ? 'For All Branches' : a.targetBranch}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      {a.publishedAt ? new Date(a.publishedAt).toLocaleDateString() : 'Active'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    {a.speakerImage && (
+                      <img
+                        src={a.speakerImage}
+                        alt={a.speaker}
+                        className="w-14 h-14 rounded-2xl object-cover border-2 border-amber-400/50 shadow-md shrink-0"
+                      />
+                    )}
+                    <div>
+                      <h4 className="font-extrabold text-white text-base font-outfit">
+                        {a.topic}
+                      </h4>
+                      <p className="text-xs text-amber-300 font-bold">
+                        Chief Guest / Speaker: {a.speaker}
+                      </p>
+                    </div>
+                  </div>
+
+                  {a.description && (
+                    <p className="text-xs text-slate-200 p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 leading-relaxed">
+                      {a.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="pt-3 border-t border-slate-800 text-[11px] text-slate-400 font-semibold flex items-center justify-between">
+                  <span>Published By: {a.publishedBy}</span>
+                  <span className="text-amber-400 font-bold">GITAMW Event</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Campus Announcements & Circulars Section */}
       <div className="space-y-5">

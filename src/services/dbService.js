@@ -13,6 +13,8 @@ const STORAGE_KEYS = {
   QUIZZES: 'gitamw_lms_perm_quizzes_db',
   ASSIGNMENTS: 'gitamw_lms_perm_assignments_db',
   SUBMISSIONS: 'gitamw_lms_perm_submissions_db',
+  SUGGESTIONS: 'gitamw_lms_perm_suggestions_db',
+  FACULTY_ANNOUNCEMENTS: 'gitamw_lms_perm_faculty_announcements_db',
   REGISTERED_ROLES: 'gitamw_lms_fresh_registered_roles_history'
 };
 
@@ -1846,5 +1848,71 @@ export const dbService = {
   getStudentSubmissions: (studentId) => {
     const submissions = safeParse(STORAGE_KEYS.SUBMISSIONS, []);
     return submissions.filter(s => s.studentId === studentId);
+  },
+
+  // --- SUGGESTIONS & COMPLAINTS BOX (STUDENT & FACULTY -> ADMIN) ---
+  saveSuggestion: (suggestionData) => {
+    const suggestions = safeParse(STORAGE_KEYS.SUGGESTIONS, []);
+    const newSuggestion = {
+      id: `sug-${Date.now()}`,
+      ...suggestionData,
+      createdAt: new Date().toISOString(),
+      status: 'Pending Review'
+    };
+    suggestions.unshift(newSuggestion);
+    safeSetItem(STORAGE_KEYS.SUGGESTIONS, JSON.stringify(suggestions));
+    return newSuggestion;
+  },
+
+  getSuggestions: () => {
+    return safeParse(STORAGE_KEYS.SUGGESTIONS, []);
+  },
+
+  deleteSuggestion: (suggestionId) => {
+    let suggestions = safeParse(STORAGE_KEYS.SUGGESTIONS, []);
+    suggestions = suggestions.filter(s => s.id !== suggestionId);
+    safeSetItem(STORAGE_KEYS.SUGGESTIONS, JSON.stringify(suggestions));
+  },
+
+  // --- FACULTY ANNOUNCEMENTS & EVENTS PUBLISHER ---
+  saveFacultyAnnouncement: (announcementData) => {
+    const announcements = safeParse(STORAGE_KEYS.FACULTY_ANNOUNCEMENTS, []);
+    const newAnnouncement = {
+      id: `ann-${Date.now()}`,
+      ...announcementData,
+      publishedAt: new Date().toISOString()
+    };
+    announcements.unshift(newAnnouncement);
+    safeSetItem(STORAGE_KEYS.FACULTY_ANNOUNCEMENTS, JSON.stringify(announcements));
+    return newAnnouncement;
+  },
+
+  getFacultyAnnouncements: () => {
+    return safeParse(STORAGE_KEYS.FACULTY_ANNOUNCEMENTS, []);
+  },
+
+  deleteFacultyAnnouncement: (announcementId) => {
+    let announcements = safeParse(STORAGE_KEYS.FACULTY_ANNOUNCEMENTS, []);
+    announcements = announcements.filter(a => a.id !== announcementId);
+    safeSetItem(STORAGE_KEYS.FACULTY_ANNOUNCEMENTS, JSON.stringify(announcements));
+  },
+
+  // --- SORTED STUDENTS BY BRANCH AND YEAR ---
+  getStudentsByBranchAndYearSorted: (branch, year) => {
+    const allStudents = safeParse(STORAGE_KEYS.USERS, []);
+    const filtered = allStudents.filter(s => {
+      const bMatch = !branch || (s.branch || '').toUpperCase().trim() === branch.toUpperCase().trim();
+      const yMatch = !year || (s.year || '').toLowerCase().trim() === year.toLowerCase().trim();
+      return bMatch && yMatch;
+    });
+
+    // Natural alphanumeric sorting of roll numbers (e.g. 23A0501, 23A0502...)
+    filtered.sort((a, b) => {
+      const rA = (a.rollNumber || a.username || '').toString().toUpperCase();
+      const rB = (b.rollNumber || b.username || '').toString().toUpperCase();
+      return rA.localeCompare(rB, undefined, { numeric: true, sensitivity: 'base' });
+    });
+
+    return filtered;
   }
 };

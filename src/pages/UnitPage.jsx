@@ -87,7 +87,7 @@ export function UnitPage({ subject, unit, user, onBack }) {
 
   // File Download & Sync to Dashboard Handler
   const handleDownloadFile = (file) => {
-    // 1. Record/Save file to User's Downloads Dashboard in localStorage
+    // Record/Save file to User's Downloads Dashboard in localStorage
     dbService.saveUserDownload(user?.id || 'guest', {
       id: file.id,
       title: file.title,
@@ -95,6 +95,7 @@ export function UnitPage({ subject, unit, user, onBack }) {
       fileData: file.fileData,
       fileSize: file.fileSize,
       fileType: file.fileType,
+      isDriveLink: file.isDriveLink,
       subjectName: subject.subjectName,
       subjectCode: subject.subjectCode,
       unitName: displayUnitName,
@@ -102,12 +103,16 @@ export function UnitPage({ subject, unit, user, onBack }) {
       downloadedAt: new Date().toISOString().split('T')[0]
     });
 
-    // 2. Trigger Browser File Download
+    if (file.isDriveLink || file.fileType === 'link') {
+      window.open(file.fileData, '_blank');
+      return;
+    }
+
+    // Trigger Browser File Download
     if (file.fileData) {
       const link = document.createElement('a');
       link.href = activeBlobUrl || dataURLtoBlobUrl(file.fileData) || file.fileData;
       link.download = file.fileName || `${file.title || 'Unit_Material'}.pdf`;
-      document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }

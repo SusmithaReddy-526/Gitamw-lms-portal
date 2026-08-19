@@ -16,13 +16,17 @@ export function AttendancePage({ user }) {
   const isFaculty = user?.role === 'faculty';
   const rollNumber = user?.rollNumber || user?.username || '';
 
-  // Faculty Posting Form State - STRICTLY INITIALIZED TO EMPTY (NO AUTO-SELECTED DEFAULTS)
+  // 2 Primary Mode Cards State for Faculty: 'day-to-day' vs 'monthly'
+  const [selectedCardMode, setSelectedCardMode] = useState('day-to-day');
+
+  // Faculty Selection State
   const [selectedYear, setSelectedYear] = useState('');
   const [selectedBranch, setSelectedBranch] = useState('');
+  const [selectedSemester, setSelectedSemester] = useState('Sem 1');
   const [selectedSubjectCode, setSelectedSubjectCode] = useState('');
+  const [selectedRolls, setSelectedRolls] = useState([]);
   
   const [inputRollNumber, setInputRollNumber] = useState('');
-  const [isManualRollInput, setIsManualRollInput] = useState(false);
   const [totalClassesInput, setTotalClassesInput] = useState('');
   const [attendedClassesInput, setAttendedClassesInput] = useState('');
   
@@ -32,24 +36,61 @@ export function AttendancePage({ user }) {
   // Attendance Records State
   const [attendanceRecords, setAttendanceRecords] = useState(() => dbService.getAttendanceRecords());
 
-  // Registered Students Filtered by Selected Year & Branch
-  const allStudents = dbService.getStudentsList();
+  // Registered Students Filtered & Sorted in Ascending Order
+  const sortedStudents = dbService.getStudentsByBranchAndYearSorted(selectedBranch, selectedYear);
 
-  const normYear = (y) => {
-    if (!y) return '';
-    const str = y.toString().toLowerCase();
-    if (str.includes('1')) return '1st';
-    if (str.includes('2')) return '2nd';
-    if (str.includes('3') || str.includes('5') || str.includes('6')) return '3rd';
-    if (str.includes('4') || str.includes('7') || str.includes('8')) return '4th';
-    return str;
+  const handlePostDayToDayAttendance = (e) => {
+    e?.preventDefault();
+    setPostingMessage('');
+    setPostingError('');
+
+    if (!selectedBranch || !selectedYear || !selectedSubjectCode) {
+      setPostingError('Please select Engineering Branch, Year, and Course Subject.');
+      return;
+    }
+
+    if (selectedRolls.length === 0) {
+      setPostingError('Please select at least one Present Student Roll Number.');
+      return;
+    }
+
+    const subjects = dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch);
+    const foundSub = subjects.find(s => s.subjectCode === selectedSubjectCode) || {
+      subjectName: 'Course Subject',
+      subjectCode: selectedSubjectCode
+    };
+
+    let count = 0;
+    selectedRolls.forEach((roll) => {
+      const existing = dbService.getStudentAttendance(roll).find(a => a.subjectCode === selectedSubjectCode);
+      const prevTotal = existing ? existing.totalClasses : 0;
+      const prevAttended = existing ? existing.attendedClasses : 0;
+
+      const newTotal = prevTotal + 1;
+      const newAttended = prevAttended + 1;
+
+      const newRecord = {
+        rollNumber: roll.toUpperCase(),
+        yearId: selectedYear,
+        branchId: selectedBranch,
+        semester: selectedSemester,
+        subjectCode: foundSub.subjectCode,
+        subjectName: foundSub.subjectName,
+        totalClasses: newTotal,
+        attendedClasses: newAttended,
+        percentage: parseFloat(((newAttended / newTotal) * 100).toFixed(1)),
+        postedBy: user?.fullName ? `${user.fullName} (${user.employeeId || 'Faculty'})` : 'Department Faculty',
+        updatedAt: new Date().toISOString().split('T')[0]
+      };
+
+      dbService.saveAttendanceRecord(newRecord);
+      count++;
+    });
+
+    setAttendanceRecords(dbService.getAttendanceRecords());
+    setPostingMessage(`Successfully published Day-to-Day attendance for ${count} student(s) in ${foundSub.subjectName}!`);
+    setSelectedRolls([]);
   };
-
-  const filteredStudents = allStudents.filter(s => {
-    const matchYr = !selectedYear || normYear(s.year) === normYear(selectedYear);
-    const matchBr = !selectedBranch || (s.branch || '').toString().trim().toUpperCase() === selectedBranch.trim().toUpperCase();
-    return matchYr && matchBr;
-  });
 
   const handlePostAttendance = (e) => {
     e.preventDefault();
@@ -291,253 +332,474 @@ export function AttendancePage({ user }) {
           )}
         </div>
       )}
-
-      {/* FACULTY VIEW (FULL POSTING & EDITING ACCESS - NO DUMMY 88.5% CARD) */}
+      {/* FACULTY VIEW (2 PRIMARY CARDS: DAY TO DAY ATTENDANCE & MONTHLY SUMMARY) */}
       {isFaculty && (
         <div className="space-y-8">
-          {/* Post Attendance Form */}
-          <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
-            <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-2xl bg-brand-500/10 text-brand-500 font-bold flex items-center justify-center">
-                <Plus className="w-5 h-5" />
-              </span>
+          {/* 2 Primary Mode Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <button
+              onClick={() => setSelectedCardMode('day-to-day')}
+              className={`p-6 rounded-3xl border text-left flex items-center gap-5 transition-all cursor-pointer shadow-xl ${
+                selectedCardMode === 'day-to-day'
+                  ? 'bg-gradient-to-br from-brand-600 to-indigo-600 text-white border-brand-400 ring-4 ring-brand-400/30 scale-[1.02]'
+                  : 'glass-card border-slate-200 dark:border-slate-800 hover:border-brand-400 text-slate-800 dark:text-slate-200'
+              }`}
+            >
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-2xl shrink-0 ${
+                selectedCardMode === 'day-to-day' ? 'bg-white/20 text-white' : 'bg-brand-500/10 text-brand-500'
+              }`}>
+                📅
+              </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
-                  Post Student Attendance
+                <span className={`text-[10px] font-extrabold uppercase tracking-wider block ${selectedCardMode === 'day-to-day' ? 'text-brand-200' : 'text-brand-500'}`}>
+                  Daily Roll Call Register
+                </span>
+                <h3 className="text-xl font-black font-outfit">
+                  Day to Day Attendance Card
                 </h3>
-                <p className="text-xs text-slate-500">Select year, branch, subject, student roll number, and class counts.</p>
+                <p className={`text-xs mt-1 ${selectedCardMode === 'day-to-day' ? 'text-brand-100' : 'text-slate-500'}`}>
+                  Mark daily class attendance for multiple student roll numbers at once.
+                </p>
               </div>
-            </div>
+            </button>
 
-            {postingMessage && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
-              >
-                <CheckCircle2 className="w-5 h-5 shrink-0" />
-                <span>{postingMessage}</span>
-              </motion.div>
-            )}
+            <button
+              onClick={() => setSelectedCardMode('monthly')}
+              className={`p-6 rounded-3xl border text-left flex items-center gap-5 transition-all cursor-pointer shadow-xl ${
+                selectedCardMode === 'monthly'
+                  ? 'bg-gradient-to-br from-purple-600 to-fuchsia-600 text-white border-purple-400 ring-4 ring-purple-400/30 scale-[1.02]'
+                  : 'glass-card border-slate-200 dark:border-slate-800 hover:border-purple-400 text-slate-800 dark:text-slate-200'
+              }`}
+            >
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-2xl shrink-0 ${
+                selectedCardMode === 'monthly' ? 'bg-white/20 text-white' : 'bg-purple-500/10 text-purple-400'
+              }`}>
+                📊
+              </div>
+              <div>
+                <span className={`text-[10px] font-extrabold uppercase tracking-wider block ${selectedCardMode === 'monthly' ? 'text-purple-200' : 'text-purple-400'}`}>
+                  Semester Aggregate Register
+                </span>
+                <h3 className="text-xl font-black font-outfit">
+                  Monthly Attendance Summary Card
+                </h3>
+                <p className={`text-xs mt-1 ${selectedCardMode === 'monthly' ? 'text-purple-100' : 'text-slate-500'}`}>
+                  Update cumulative total classes &amp; monthly percentage records for students.
+                </p>
+              </div>
+            </button>
+          </div>
 
-            {postingError && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-4 rounded-2xl bg-rose-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
-              >
-                <XCircle className="w-5 h-5 shrink-0" />
-                <span>{postingError}</span>
-              </motion.div>
-            )}
+          {postingMessage && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+            >
+              <CheckCircle2 className="w-5 h-5 shrink-0" />
+              <span>{postingMessage}</span>
+            </motion.div>
+          )}
 
-            <form onSubmit={handlePostAttendance} className="space-y-6">
-              {/* Dropdowns - No Auto-Selected Defaults */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {postingError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 rounded-2xl bg-rose-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+            >
+              <XCircle className="w-5 h-5 shrink-0" />
+              <span>{postingError}</span>
+            </motion.div>
+          )}
+
+          {/* CARD MODE 1: DAY TO DAY ATTENDANCE */}
+          {selectedCardMode === 'day-to-day' && (
+            <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
+              <div className="flex items-center gap-3">
+                <span className="w-10 h-10 rounded-2xl bg-brand-500/10 text-brand-500 font-bold flex items-center justify-center text-xl">
+                  📅
+                </span>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Academic Year *
-                  </label>
-                  <select
-                    value={selectedYear}
-                    onChange={e => {
-                      setSelectedYear(e.target.value);
-                      setSelectedSubjectCode('');
-                    }}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
-                  >
-                    <option value="">-- Select Academic Year --</option>
-                    {YEARS.map(y => (
-                      <option key={y.id} value={y.id}>{y.title}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Engineering Branch *
-                  </label>
-                  <select
-                    value={selectedBranch}
-                    onChange={e => {
-                      setSelectedBranch(e.target.value);
-                      setSelectedSubjectCode('');
-                    }}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-brand-500 outline-none"
-                  >
-                    <option value="">-- Select Engineering Branch --</option>
-                    {BRANCHES.map(b => (
-                      <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Course Subject *
-                  </label>
-                  <select
-                    value={selectedSubjectCode}
-                    onChange={e => setSelectedSubjectCode(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/40 bg-brand-50/20 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none"
-                  >
-                    <option value="">-- Select Course Subject --</option>
-                    {selectedYear && selectedBranch && dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).map(s => (
-                      <option key={s.subjectCode} value={s.subjectCode}>
-                        {s.subjectName} ({s.subjectCode})
-                      </option>
-                    ))}
-                  </select>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
+                    Day to Day Attendance Entry Form
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Select Branch, Year, Semester, Subject, and tick present Roll Numbers (sorted in ascending order).
+                  </p>
                 </div>
               </div>
 
-              {/* Class Inputs */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
-                      Student Roll Number *
+              <div className="space-y-6">
+                {/* Branch, Year, Semester, Subject */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Engineering Branch *
                     </label>
-                    {filteredStudents.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsManualRollInput(!isManualRollInput);
-                          setInputRollNumber('');
-                        }}
-                        className="text-[10px] font-bold text-brand-500 hover:underline cursor-pointer"
-                      >
-                        {isManualRollInput ? '📋 Use Registered Dropdown' : '✏️ Type Manually'}
-                      </button>
+                    <select
+                      value={selectedBranch}
+                      onChange={e => {
+                        setSelectedBranch(e.target.value);
+                        setSelectedSubjectCode('');
+                        setSelectedRolls([]);
+                      }}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold focus:ring-2 focus:ring-brand-500 outline-none"
+                    >
+                      <option value="">-- Select Branch --</option>
+                      {BRANCHES.map(b => (
+                        <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Year *
+                    </label>
+                    <select
+                      value={selectedYear}
+                      onChange={e => {
+                        setSelectedYear(e.target.value);
+                        setSelectedSubjectCode('');
+                        setSelectedRolls([]);
+                        if (e.target.value === '1st') setSelectedSemester('Sem 1');
+                        else if (e.target.value === '2nd') setSelectedSemester('Sem 3');
+                        else if (e.target.value === '3rd') setSelectedSemester('Sem 5');
+                        else if (e.target.value === '4th') setSelectedSemester('Sem 7');
+                      }}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold focus:ring-2 focus:ring-brand-500 outline-none"
+                    >
+                      <option value="">-- Select Year --</option>
+                      {YEARS.map(y => (
+                        <option key={y.id} value={y.id}>{y.title}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Academic Semester *
+                    </label>
+                    <select
+                      value={selectedSemester}
+                      onChange={e => setSelectedSemester(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold focus:ring-2 focus:ring-brand-500 outline-none"
+                    >
+                      <option value="Sem 1">Sem 1</option>
+                      <option value="Sem 2">Sem 2</option>
+                      <option value="Sem 3">Sem 3</option>
+                      <option value="Sem 4">Sem 4</option>
+                      <option value="Sem 5">Sem 5</option>
+                      <option value="Sem 6">Sem 6</option>
+                      <option value="Sem 7">Sem 7</option>
+                      <option value="Sem 8">Sem 8</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Course Subject *
+                    </label>
+                    <select
+                      value={selectedSubjectCode}
+                      onChange={e => setSelectedSubjectCode(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/40 bg-brand-50/20 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none"
+                    >
+                      <option value="">-- Select Course Subject --</option>
+                      {selectedYear && selectedBranch && dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).map(s => (
+                        <option key={s.subjectCode} value={s.subjectCode}>
+                          {s.subjectName} ({s.subjectCode})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Registered Roll Numbers Selection Grid */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <label className="block text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider">
+                      Select Present Student Roll Numbers ({sortedStudents.length} Registered in {selectedBranch || 'Branch'} {selectedYear || 'Year'})
+                    </label>
+                    {sortedStudents.length > 0 && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedRolls(sortedStudents.map(s => s.rollNumber || s.username))}
+                          className="px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-500/20 transition-all cursor-pointer"
+                        >
+                          ✓ Select All ({sortedStudents.length})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedRolls([])}
+                          className="px-3 py-1 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs font-bold hover:bg-rose-500/20 transition-all cursor-pointer"
+                        >
+                          ✕ Clear Selection
+                        </button>
+                      </div>
                     )}
                   </div>
 
-                  {!isManualRollInput ? (
-                    <select
-                      value={inputRollNumber}
-                      onChange={e => {
-                        if (e.target.value === '__MANUAL__') {
-                          setIsManualRollInput(true);
-                          setInputRollNumber('');
-                        } else {
-                          setInputRollNumber(e.target.value);
-                        }
-                      }}
-                      required
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-brand-500/60 bg-white dark:bg-slate-900 text-xs font-mono font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none cursor-pointer"
-                    >
-                      <option value="">
-                        {filteredStudents.length > 0 
-                          ? `-- Select Registered Student Roll Number (${filteredStudents.length} Available) --`
-                          : `-- No Registered Students in ${selectedYear || 'Select'} Year ${selectedBranch || 'Branch'} --`
-                        }
-                      </option>
-                      {filteredStudents.map(s => (
-                        <option key={s.id || s.rollNumber} value={s.rollNumber}>
-                          {s.rollNumber} - {s.fullName} ({s.year || selectedYear} Year {s.branch || selectedBranch})
-                        </option>
-                      ))}
-                      <option value="__MANUAL__">✏️ Type Custom Roll Number manually...</option>
-                    </select>
+                  {sortedStudents.length > 0 ? (
+                    <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-80 overflow-y-auto">
+                      {sortedStudents.map((student) => {
+                        const roll = student.rollNumber || student.username;
+                        const isChecked = selectedRolls.includes(roll);
+
+                        return (
+                          <label
+                            key={roll}
+                            className={`p-3 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                              isChecked
+                                ? 'bg-emerald-500/10 border-emerald-500/50 text-emerald-700 dark:text-emerald-300 font-bold'
+                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-400'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedRolls([...selectedRolls, roll]);
+                                  } else {
+                                    setSelectedRolls(selectedRolls.filter(r => r !== roll));
+                                  }
+                                }}
+                                className="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 cursor-pointer"
+                              />
+                              <span className="font-mono text-xs font-extrabold">{roll}</span>
+                            </div>
+                            <span className="text-[11px] truncate max-w-[140px] text-slate-500">
+                              {student.fullName}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
                   ) : (
-                    <div className="space-y-1">
-                      <input
-                        type="text"
-                        required
-                        placeholder="Type Student Roll No (e.g. 238U1A0561)"
-                        value={inputRollNumber}
-                        onChange={e => setInputRollNumber(e.target.value)}
-                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold font-mono focus:ring-2 focus:ring-brand-500 outline-none"
-                      />
+                    <div className="p-8 rounded-2xl glass-card text-center text-slate-500 border border-slate-200 dark:border-slate-800">
+                      <p className="text-xs font-bold">Please select Engineering Branch and Year to load registered student roll numbers in strict ascending order.</p>
                     </div>
                   )}
                 </div>
 
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Total Classes Conducted *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    placeholder="e.g. 45"
-                    value={totalClassesInput}
-                    onChange={e => setTotalClassesInput(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-center focus:ring-2 focus:ring-brand-500 outline-none"
-                  />
-                </div>
+                {/* Submit Day to Day Attendance */}
+                <button
+                  type="button"
+                  onClick={handlePostDayToDayAttendance}
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer"
+                >
+                  <UserCheck className="w-4 h-4" />
+                  Publish Day-to-Day Attendance for {selectedRolls.length} Selected Student(s)
+                </button>
+              </div>
+            </div>
+          )}
 
+          {/* CARD MODE 2: MONTHLY ATTENDANCE SUMMARY */}
+          {selectedCardMode === 'monthly' && (
+            <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
+              <div className="flex items-center gap-3">
+                <span className="w-10 h-10 rounded-2xl bg-purple-500/10 text-purple-500 font-bold flex items-center justify-center text-xl">
+                  📊
+                </span>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Classes Attended *
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    placeholder="e.g. 40"
-                    value={attendedClassesInput}
-                    onChange={e => setAttendedClassesInput(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-emerald-600 text-center focus:ring-2 focus:ring-brand-500 outline-none"
-                  />
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
+                    Monthly Aggregate Attendance Entry Form
+                  </h3>
+                  <p className="text-xs text-slate-500">Update cumulative total conducted classes and attended classes for individual students.</p>
                 </div>
               </div>
 
-              <button
-                type="submit"
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer"
-              >
-                <Save className="w-4 h-4" />
-                Publish & Save Attendance to Student Portal
-              </button>
-            </form>
-          </div>
+              <form onSubmit={handlePostAttendance} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Year *
+                    </label>
+                    <select
+                      value={selectedYear}
+                      onChange={e => {
+                        setSelectedYear(e.target.value);
+                        setSelectedSubjectCode('');
+                      }}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-purple-500 outline-none"
+                    >
+                      <option value="">-- Select Year --</option>
+                      {YEARS.map(y => (
+                        <option key={y.id} value={y.id}>{y.title}</option>
+                      ))}
+                    </select>
+                  </div>
 
-          {/* Published Attendance Log */}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Engineering Branch *
+                    </label>
+                    <select
+                      value={selectedBranch}
+                      onChange={e => {
+                        setSelectedBranch(e.target.value);
+                        setSelectedSubjectCode('');
+                      }}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-purple-500 outline-none"
+                    >
+                      <option value="">-- Select Engineering Branch --</option>
+                      {BRANCHES.map(b => (
+                        <option key={b.id} value={b.id}>{b.code} - {b.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Course Subject *
+                    </label>
+                    <select
+                      value={selectedSubjectCode}
+                      onChange={e => setSelectedSubjectCode(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-purple-500/40 bg-purple-50/20 dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none"
+                    >
+                      <option value="">-- Select Course Subject --</option>
+                      {selectedYear && selectedBranch && dbService.getSubjectsForBranchAndYear(selectedYear, selectedBranch).map(s => (
+                        <option key={s.subjectCode} value={s.subjectCode}>
+                          {s.subjectName} ({s.subjectCode})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Student Roll Number *
+                    </label>
+                    <select
+                      value={inputRollNumber}
+                      onChange={e => setInputRollNumber(e.target.value)}
+                      required
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-purple-500/60 bg-white dark:bg-slate-900 text-xs font-mono font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none cursor-pointer"
+                    >
+                      <option value="">
+                        {sortedStudents.length > 0 
+                          ? `-- Select Student Roll Number (${sortedStudents.length} Available) --`
+                          : `-- Select Branch & Year First --`
+                        }
+                      </option>
+                      {sortedStudents.map(s => (
+                        <option key={s.id || s.rollNumber} value={s.rollNumber || s.username}>
+                          {s.rollNumber || s.username} - {s.fullName}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Total Classes Conducted *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min="1"
+                      placeholder="e.g. 45"
+                      value={totalClassesInput}
+                      onChange={e => setTotalClassesInput(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                      Classes Attended by Student *
+                    </label>
+                    <input
+                      type="number"
+                      required
+                      min="0"
+                      placeholder="e.g. 40"
+                      value={attendedClassesInput}
+                      onChange={e => setAttendedClassesInput(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer"
+                >
+                  <Save className="w-4 h-4" />
+                  Publish Monthly Cumulative Attendance Record
+                </button>
+              </form>
+            </div>
+          )}
+
+          {/* Published Attendance Records Table */}
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
-              Published Attendance Log ({attendanceRecords.length} Records)
+              Published Attendance Directory ({attendanceRecords.length})
             </h3>
 
             {attendanceRecords.length > 0 ? (
-              <div className="rounded-3xl glass-card border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl">
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 font-bold uppercase text-slate-400">
-                      <th className="p-4">Roll Number</th>
-                      <th className="p-4">Subject</th>
-                      <th className="p-4 text-center">Conducted / Attended</th>
-                      <th className="p-4 text-center">Percentage</th>
-                      <th className="p-4 text-right">Posted By</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                    {attendanceRecords.map((item, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
-                        <td className="p-4 font-mono font-bold text-slate-900 dark:text-white">
-                          {item.rollNumber}
-                        </td>
-                        <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">
-                          {item.subjectName} ({item.subjectCode})
-                        </td>
-                        <td className="p-4 text-center font-mono font-bold">
-                          {item.attendedClasses} / {item.totalClasses}
-                        </td>
-                        <td className="p-4 text-center">
-                          <span className="font-extrabold text-emerald-500 font-outfit text-sm">
-                            {item.percentage}%
-                          </span>
-                        </td>
-                        <td className="p-4 text-right text-slate-400 font-medium">
-                          {item.postedBy}
-                        </td>
+              <div className="p-6 rounded-3xl glass-card border border-slate-200 dark:border-slate-800 space-y-4">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400 uppercase font-extrabold">
+                        <th className="p-3">Roll Number</th>
+                        <th className="p-3">Year / Branch</th>
+                        <th className="p-3">Subject</th>
+                        <th className="p-3 text-center">Classes</th>
+                        <th className="p-3 text-center">Attendance %</th>
+                        <th className="p-3 text-right">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {attendanceRecords.map((rec) => (
+                        <tr key={rec.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                          <td className="p-3 font-mono font-extrabold text-slate-900 dark:text-white">
+                            {rec.rollNumber}
+                          </td>
+                          <td className="p-3 font-bold text-slate-600 dark:text-slate-300">
+                            {rec.yearId} Year • {rec.branchId}
+                          </td>
+                          <td className="p-3 font-medium text-slate-700 dark:text-slate-300">
+                            {rec.subjectName} <span className="font-mono text-slate-400">({rec.subjectCode})</span>
+                          </td>
+                          <td className="p-3 text-center font-mono font-bold text-slate-700 dark:text-slate-300">
+                            {rec.attendedClasses} / {rec.totalClasses}
+                          </td>
+                          <td className="p-3 text-center font-black text-sm text-brand-600 dark:text-brand-400">
+                            {rec.percentage}%
+                          </td>
+                          <td className="p-3 text-right">
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`Delete attendance record for Roll ${rec.rollNumber}?`)) {
+                                  dbService.deleteAttendanceRecord(rec.id);
+                                  setAttendanceRecords(dbService.getAttendanceRecords());
+                                }
+                              }}
+                              className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
+                              title="Delete Record"
+                            >
+                              ✕
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             ) : (
-              <div className="p-10 rounded-3xl glass-card text-center text-slate-500 border border-slate-200 dark:border-slate-800">
-                <p className="text-xs font-semibold">No attendance records published yet. Fill out the form above to publish student attendance.</p>
+              <div className="p-8 text-center rounded-2xl glass-card text-slate-500 border border-slate-200 dark:border-slate-800">
+                <p className="text-xs font-bold">No published attendance records found.</p>
               </div>
             )}
           </div>

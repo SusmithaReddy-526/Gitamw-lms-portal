@@ -64,9 +64,22 @@ export function FacultyDashboard({ user }) {
   const [materialTitle, setMaterialTitle] = useState('');
   const [materialDesc, setMaterialDesc] = useState('');
   const [fileObject, setFileObject] = useState(null);
+  const [driveLink, setDriveLink] = useState('');
+  const [uploadMode, setUploadMode] = useState('file'); // 'file' | 'drive'
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  // --- 5. FACULTY ANNOUNCEMENTS STATE ---
+  const [announcementsList, setAnnouncementsList] = useState(() => dbService.getFacultyAnnouncements());
+  const [annTopic, setAnnTopic] = useState('');
+  const [annSpeaker, setAnnSpeaker] = useState('');
+  const [annImage, setAnnImage] = useState('');
+  const [annYear, setAnnYear] = useState('All');
+  const [annBranch, setAnnBranch] = useState('All');
+  const [annDesc, setAnnDesc] = useState('');
+  const [annMessage, setAnnMessage] = useState('');
+  const [annError, setAnnError] = useState('');
 
   // --- 2. ADD NEW SUBJECT STATE ---
   const [newSubName, setNewSubName] = useState('');
@@ -248,6 +261,23 @@ export function FacultyDashboard({ user }) {
     }
   };
 
+  const handlePreviewDocument = () => {
+    if (uploadMode === 'drive') {
+      if (!driveLink.trim()) {
+        alert('Please enter Google Drive Link / Document URL first.');
+        return;
+      }
+      window.open(driveLink.trim(), '_blank');
+    } else {
+      if (!fileObject) {
+        alert('Please select a local PDF / Image file first.');
+        return;
+      }
+      const fileUrl = URL.createObjectURL(fileObject);
+      window.open(fileUrl, '_blank');
+    }
+  };
+
   const handleDirectFileUpload = (e) => {
     e.preventDefault();
     setError('');
@@ -258,12 +288,56 @@ export function FacultyDashboard({ user }) {
       return;
     }
 
-    if (!subjectName.trim() || !subjectCode.trim() || !unitTitle || !materialTitle.trim() || !fileObject) {
-      setError('Please fill out Subject Name, Subject Code, Target Unit, Title, and select a file.');
+    if (!subjectName.trim() || !subjectCode.trim() || !unitTitle || !materialTitle.trim()) {
+      setError('Please fill out Subject Name, Subject Code, Target Unit, and Material Title.');
+      return;
+    }
+
+    if (uploadMode === 'file' && !fileObject) {
+      setError('Please select a local PDF/Image file to upload.');
+      return;
+    }
+
+    if (uploadMode === 'drive' && !driveLink.trim()) {
+      setError('Please enter Google Drive Link / Document URL.');
       return;
     }
 
     setUploading(true);
+
+    if (uploadMode === 'drive') {
+      try {
+        const newFileRecord = {
+          title: materialTitle.trim(),
+          description: materialDesc.trim(),
+          yearId: selectedYear,
+          branchId: selectedBranch,
+          subjectName: subjectName.trim(),
+          subjectCode: subjectCode.trim().toUpperCase(),
+          unitTitle: unitTitle,
+          unitId: unitTitle.toLowerCase().replace(/[^a-z0-9]/g, ''),
+          fileName: 'Google Drive Document Link',
+          fileType: 'link',
+          fileSize: 'Drive URL',
+          fileData: driveLink.trim(),
+          isDriveLink: true,
+          uploadedBy: user?.fullName ? `${user.fullName} (${user.employeeId || 'Faculty'})` : 'Faculty'
+        };
+
+        dbService.saveFacultyUploadedFile(newFileRecord);
+        setUploadedFilesList(dbService.getUploadedFiles());
+
+        setMessage(`Successfully uploaded Drive Link "${materialTitle}" for ${unitTitle}!`);
+        setMaterialTitle('');
+        setMaterialDesc('');
+        setDriveLink('');
+      } catch (err) {
+        setError('Error saving Drive link.');
+      } finally {
+        setUploading(false);
+      }
+      return;
+    }
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -307,6 +381,38 @@ export function FacultyDashboard({ user }) {
     };
 
     reader.readAsDataURL(fileObject);
+  };
+
+  const handlePublishAnnouncement = (e) => {
+    e.preventDefault();
+    setAnnMessage('');
+    setAnnError('');
+
+    if (!annTopic.trim() || !annSpeaker.trim()) {
+      setAnnError('Please fill in Topic Title and Guest Speaker Name.');
+      return;
+    }
+
+    try {
+      dbService.saveFacultyAnnouncement({
+        topic: annTopic.trim(),
+        speaker: annSpeaker.trim(),
+        speakerImage: annImage.trim() || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
+        targetYear: annYear,
+        targetBranch: annBranch,
+        description: annDesc.trim(),
+        publishedBy: user?.fullName ? `${user.fullName} (${user.employeeId || 'Faculty'})` : 'Department Faculty'
+      });
+
+      setAnnouncementsList(dbService.getFacultyAnnouncements());
+      setAnnMessage(`Announcement "${annTopic}" published successfully!`);
+      setAnnTopic('');
+      setAnnSpeaker('');
+      setAnnImage('');
+      setAnnDesc('');
+    } catch (err) {
+      setAnnError(err.message || 'Failed to publish announcement.');
+    }
   };
 
   // --- HANDLE ADDING NEW COURSE SUBJECT ---
@@ -678,6 +784,25 @@ export function FacultyDashboard({ user }) {
         </button>
 
         <button
+          onClick={() => setActiveTabMode('publish-announcement')}
+          className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
+            activeTabMode === 'publish-announcement'
+              ? 'bg-amber-600 text-white border-amber-500 shadow-xl ring-2 ring-amber-400 scale-[1.02]'
+              : 'glass-card border-slate-200 dark:border-slate-800 hover:border-amber-500/50 text-slate-800 dark:text-slate-200'
+          }`}
+        >
+          <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl shrink-0 ${activeTabMode === 'publish-announcement' ? 'bg-white/20 text-white' : 'bg-amber-500/10 text-amber-400'}`}>
+            <Bell className="w-6 h-6" />
+          </div>
+          <div>
+            <h4 className="font-extrabold text-sm flex items-center gap-1">
+              📢 Announcements
+            </h4>
+            <p className={`text-[11px] ${activeTabMode === 'publish-announcement' ? 'text-amber-100' : 'text-slate-500'}`}>Events &amp; Guest Lectures</p>
+          </div>
+        </button>
+
+        <button
           onClick={() => setActiveTabMode('publish-quiz')}
           className={`p-5 rounded-2xl border text-left flex items-center gap-4 transition-all cursor-pointer ${
             activeTabMode === 'publish-quiz'
@@ -697,19 +822,43 @@ export function FacultyDashboard({ user }) {
         </button>
       </div>
 
-      {/* --- MODE 1: UPLOAD UNIT STUDY MATERIAL --- */}
+      {/* --- MODE 1: UPLOAD UNIT STUDY MATERIAL (PDF OR DRIVE LINK WITH PREVIEW) --- */}
       {activeTabMode === 'upload-material' && (
         <div className="space-y-8">
           <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
-            <div className="flex items-center gap-3">
-              <span className="w-10 h-10 rounded-2xl bg-brand-500/10 text-brand-500 font-bold flex items-center justify-center">
-                <FileUp className="w-5 h-5" />
-              </span>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
-                  Upload PDF / Material for Specific Unit
-                </h3>
-                <p className="text-xs text-slate-500">Files uploaded here appear strictly inside the student's selected Unit page.</p>
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-3">
+                <span className="w-10 h-10 rounded-2xl bg-brand-500/10 text-brand-500 font-bold flex items-center justify-center">
+                  <FileUp className="w-5 h-5" />
+                </span>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
+                    Upload PDF / Drive Link Material for Specific Unit
+                  </h3>
+                  <p className="text-xs text-slate-500">Upload PDF files or Google Drive links. Faculty can view the document before publishing.</p>
+                </div>
+              </div>
+
+              {/* Upload Type Toggle */}
+              <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => setUploadMode('file')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    uploadMode === 'file' ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  📄 File Upload (PDF/Image)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setUploadMode('drive')}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    uploadMode === 'drive' ? 'bg-brand-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-300'
+                  }`}
+                >
+                  🔗 Google Drive Link
+                </button>
               </div>
             </div>
 
@@ -837,28 +986,54 @@ export function FacultyDashboard({ user }) {
                 </div>
               </div>
 
-              {/* File Attachment */}
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Select Document File (PDF / Images, Max 15MB) *
-                </label>
-                <input
-                  type="file"
-                  required
-                  accept=".pdf,.png,.jpg,.jpeg"
-                  onChange={handleFileChange}
-                  className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-500 cursor-pointer"
-                />
-              </div>
+              {/* File Attachment OR Drive Link */}
+              {uploadMode === 'file' ? (
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Select Document File (PDF / Images, Max 15MB) *
+                  </label>
+                  <input
+                    type="file"
+                    accept=".pdf,.png,.jpg,.jpeg"
+                    onChange={handleFileChange}
+                    className="w-full p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-500 cursor-pointer"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Google Drive Link / PDF URL *
+                  </label>
+                  <input
+                    type="url"
+                    required
+                    placeholder="https://drive.google.com/file/d/... or https://..."
+                    value={driveLink}
+                    onChange={e => setDriveLink(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-mono outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              )}
 
-              <button
-                type="submit"
-                disabled={uploading}
-                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer disabled:opacity-50"
-              >
-                <Upload className="w-4 h-4" />
-                {uploading ? 'Uploading Document...' : 'Upload & Attach Document to Selected Unit'}
-              </button>
+              {/* Action Buttons: View First + Upload */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                <button
+                  type="button"
+                  onClick={handlePreviewDocument}
+                  className="py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer"
+                >
+                  <span>👁️ View Document / Link First</span>
+                </button>
+
+                <button
+                  type="submit"
+                  disabled={uploading}
+                  className="py-3.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer disabled:opacity-50"
+                >
+                  <Upload className="w-4 h-4" />
+                  {uploading ? 'Uploading Document...' : 'Upload & Attach Document to Selected Unit'}
+                </button>
+              </div>
             </form>
           </div>
 
@@ -1531,6 +1706,230 @@ export function FacultyDashboard({ user }) {
             ) : (
               <div className="p-8 text-center rounded-2xl glass-card text-slate-500 border border-slate-200 dark:border-slate-800">
                 <p className="text-xs font-bold">No online quizzes published yet.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* --- MODE 6: PUBLISH ANNOUNCEMENTS & EVENTS --- */}
+      {activeTabMode === 'publish-announcement' && (
+        <div className="space-y-8">
+          <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-6">
+            <div className="flex items-center gap-3">
+              <span className="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-500 font-bold flex items-center justify-center">
+                <Bell className="w-5 h-5" />
+              </span>
+              <div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit">
+                  Publish Department Announcement / Guest Lecture
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Publish events, chief guest visits, and workshop announcements. Choose target Year and Branch (or select For All).
+                </p>
+              </div>
+            </div>
+
+            {annMessage && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-2xl bg-emerald-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+              >
+                <CheckCircle2 className="w-5 h-5 shrink-0" />
+                <span>{annMessage}</span>
+              </motion.div>
+            )}
+
+            {annError && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-2xl bg-rose-500 text-white font-bold text-xs shadow-lg flex items-center gap-2"
+              >
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <span>{annError}</span>
+              </motion.div>
+            )}
+
+            <form onSubmit={handlePublishAnnouncement} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Announcement Topic / Event Title *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Guest Lecture on Generative AI & Robotics"
+                    value={annTopic}
+                    onChange={e => setAnnTopic(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold focus:ring-2 focus:ring-amber-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Chief Guest / Speaker Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Dr. K. S. Sharma (Principal Scientist, ISRO)"
+                    value={annSpeaker}
+                    onChange={e => setAnnSpeaker(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-amber-600 focus:ring-2 focus:ring-amber-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Target Year *
+                  </label>
+                  <select
+                    value={annYear}
+                    onChange={e => setAnnYear(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold focus:ring-2 focus:ring-amber-500 outline-none"
+                  >
+                    <option value="All">For All Years (1st, 2nd, 3rd, 4th)</option>
+                    <option value="1st">1st Year</option>
+                    <option value="2nd">2nd Year</option>
+                    <option value="3rd">3rd Year</option>
+                    <option value="4th">4th Year</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Target Engineering Branch *
+                  </label>
+                  <select
+                    value={annBranch}
+                    onChange={e => setAnnBranch(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold focus:ring-2 focus:ring-amber-500 outline-none"
+                  >
+                    <option value="All">For All Branches (CSE, AIML, ECE, EEE)</option>
+                    <option value="CSE">CSE - Computer Science &amp; Engineering</option>
+                    <option value="AIML">AIML - Artificial Intelligence &amp; Machine Learning</option>
+                    <option value="ECE">ECE - Electronics &amp; Communication</option>
+                    <option value="EEE">EEE - Electrical &amp; Electronics</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Speaker Image URL / Photo Link
+                  </label>
+                  <input
+                    type="url"
+                    placeholder="https://..."
+                    value={annImage}
+                    onChange={e => setAnnImage(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Event Description &amp; Schedule Details
+                </label>
+                <textarea
+                  rows={3}
+                  placeholder="e.g. Venue: GITAMW Main Auditorium, Date: Tomorrow 10:00 AM. All students are requested to attend."
+                  value={annDesc}
+                  onChange={e => setAnnDesc(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-amber-500 outline-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-[1.01] cursor-pointer"
+              >
+                <Bell className="w-4 h-4" />
+                Publish Announcement
+              </button>
+            </form>
+          </div>
+
+          {/* Published Announcements List */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white font-outfit flex items-center gap-2">
+              <Bell className="w-5 h-5 text-amber-500" />
+              Active Faculty Announcements ({announcementsList.length})
+            </h3>
+
+            {announcementsList.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {announcementsList.map(a => (
+                  <div
+                    key={a.id}
+                    className="p-6 rounded-2xl glass-card border border-slate-200 dark:border-slate-800 space-y-4 shadow-sm flex flex-col justify-between"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <span className="px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                            {a.targetYear === 'All' ? 'For All Years' : `${a.targetYear} Year`}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-md text-[10px] font-extrabold uppercase bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                            {a.targetBranch === 'All' ? 'For All Branches' : a.targetBranch}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-mono">
+                          {a.publishedAt ? new Date(a.publishedAt).toLocaleDateString() : 'Active'}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        {a.speakerImage && (
+                          <img
+                            src={a.speakerImage}
+                            alt={a.speaker}
+                            className="w-14 h-14 rounded-2xl object-cover border-2 border-amber-400/50 shadow-md shrink-0"
+                          />
+                        )}
+                        <div>
+                          <h4 className="font-extrabold text-slate-900 dark:text-white text-base font-outfit">
+                            {a.topic}
+                          </h4>
+                          <p className="text-xs text-amber-600 dark:text-amber-400 font-bold">
+                            Speaker: {a.speaker}
+                          </p>
+                        </div>
+                      </div>
+
+                      {a.description && (
+                        <p className="text-xs text-slate-600 dark:text-slate-300 p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 whitespace-pre-wrap">
+                          {a.description}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                      <span className="text-[11px] text-slate-400">By {a.publishedBy}</span>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete announcement "${a.topic}"?`)) {
+                            dbService.deleteFacultyAnnouncement(a.id);
+                            setAnnouncementsList(dbService.getFacultyAnnouncements());
+                          }
+                        }}
+                        className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-bold flex items-center gap-1 cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center rounded-2xl glass-card text-slate-500 border border-slate-200 dark:border-slate-800">
+                <p className="text-xs font-bold">No announcements published yet.</p>
               </div>
             )}
           </div>

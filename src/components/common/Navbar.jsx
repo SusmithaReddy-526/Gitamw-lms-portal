@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import { SuggestionModal } from './SuggestionModal';
 import { 
   GraduationCap, 
   Home, 
@@ -17,26 +18,14 @@ import {
   X,
   UserCheck,
   Sparkles,
-  Wifi,
-  WifiOff
+  MessageSquarePlus
 } from 'lucide-react';
 
 export function Navbar({ activeTab, setActiveTab }) {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
+  const [suggestionOpen, setSuggestionOpen] = useState(false);
 
   let navItems = [
     { id: 'home', label: 'Home', icon: Home },
@@ -104,20 +93,20 @@ export function Navbar({ activeTab, setActiveTab }) {
 
           {/* Controls & Profile */}
           <div className="hidden md:flex items-center gap-3">
-            {/* Online / Offline Status Badge */}
-            <div className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold flex items-center gap-1.5 border ${
-              isOnline 
-                ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
-                : 'bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-300 border-amber-200 dark:border-amber-800'
-            }`}>
-              {isOnline ? <Wifi className="w-3 h-3 text-emerald-500" /> : <WifiOff className="w-3 h-3 text-amber-500" />}
-              <span>{isOnline ? 'Online' : 'Offline Mode Active'}</span>
-            </div>
+            {/* Suggestions & Feedback / Complaints Button */}
+            <button
+              onClick={() => setSuggestionOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/20 text-xs font-bold hover:bg-brand-500/20 transition-all cursor-pointer"
+              title="Submit Suggestion / Complaint to Admin"
+            >
+              <MessageSquarePlus className="w-4 h-4 text-brand-500" />
+              <span>Feedback</span>
+            </button>
 
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               title="Toggle Theme"
             >
               {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-700" />}
@@ -242,6 +231,13 @@ export function Navbar({ activeTab, setActiveTab }) {
           )}
         </div>
       )}
+
+      {/* Suggestion & Complaint Submission Modal */}
+      <SuggestionModal
+        isOpen={suggestionOpen}
+        onClose={() => setSuggestionOpen(false)}
+        user={user}
+      />
     </header>
   );
 }
