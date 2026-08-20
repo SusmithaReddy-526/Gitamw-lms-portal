@@ -64,10 +64,10 @@ export function Navbar({ activeTab, setActiveTab }) {
               />
             </div>
             <div>
-              <span className="font-black text-xl tracking-tight text-white font-outfit flex items-center gap-1.5">
+              <span className="font-black text-xl tracking-tight text-slate-900 dark:text-white font-outfit flex items-center gap-1.5">
                 GITAMW <span className="aurora-text">AUTONOMOUS</span>
               </span>
-              <span className="block text-[10px] uppercase font-black tracking-widest text-cyan-300 -mt-1 font-mono">
+              <span className="block text-[10px] uppercase font-black tracking-widest text-indigo-600 dark:text-cyan-300 -mt-1 font-mono">
                 Digital Academic Portal
               </span>
             </div>

@@ -4,11 +4,24 @@
 
 @layer base {
   body {
-    @apply antialiased text-slate-100 bg-[#040612] selection:bg-indigo-500 selection:text-white transition-colors duration-300;
+    @apply antialiased transition-colors duration-300;
     font-family: 'Inter', sans-serif;
+  }
+
+  html.dark body {
+    @apply text-slate-100 bg-[#040612] selection:bg-indigo-500 selection:text-white;
     background-image: 
-      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, rgba(217, 70, 239, 0.12) 0px, transparent 50%),
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.14) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(217, 70, 239, 0.14) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.12) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  html:not(.dark) body {
+    @apply text-slate-900 bg-slate-100 selection:bg-indigo-600 selection:text-white;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, rgba(217, 70, 239, 0.1) 0px, transparent 50%),
       radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%);
     background-attachment: fixed;
   }
@@ -18,16 +31,16 @@
   }
 }
 
-/* UNIQUE ULTRA-PREMIUM AURORA GLASS DESIGN SYSTEM */
-.aurora-glass-panel {
-  background: rgba(10, 15, 36, 0.75);
+/* UNIQUE ULTRA-PREMIUM AURORA GLASS DESIGN SYSTEM - DARK MODE */
+html.dark .aurora-glass-panel {
+  background: rgba(10, 15, 36, 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-.aurora-card {
+html.dark .aurora-card {
   background: linear-gradient(135deg, rgba(16, 23, 53, 0.85) 0%, rgba(8, 12, 30, 0.95) 100%);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(139, 92, 246, 0.2);
@@ -35,7 +48,7 @@
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.aurora-card:hover {
+html.dark .aurora-card:hover {
   transform: translateY(-8px) scale(1.015);
   border-color: rgba(217, 70, 239, 0.5);
   box-shadow: 
@@ -44,37 +57,96 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
-.glass-panel {
-  background: rgba(12, 18, 42, 0.8);
+html.dark .glass-panel {
+  background: rgba(12, 18, 42, 0.85);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.glass-card {
-  background: rgba(17, 25, 58, 0.7);
+html.dark .glass-card {
+  background: rgba(17, 25, 58, 0.75);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.glass-card:hover {
+html.dark .glass-card:hover {
   transform: translateY(-5px);
   border-color: rgba(99, 102, 241, 0.4);
   box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.25);
 }
 
+/* UNIQUE ULTRA-PREMIUM AURORA GLASS DESIGN SYSTEM - LIGHT MODE */
+html:not(.dark) .aurora-glass-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+html:not(.dark) .aurora-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.08), inset 0 1px 0 #ffffff;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html:not(.dark) .aurora-card:hover {
+  transform: translateY(-8px) scale(1.015);
+  border-color: rgba(168, 85, 247, 0.6);
+  box-shadow: 
+    0 20px 45px -10px rgba(168, 85, 247, 0.2),
+    0 0 25px rgba(99, 102, 241, 0.15);
+}
+
+html:not(.dark) .glass-panel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(203, 213, 225, 0.9);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+html:not(.dark) .glass-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html:not(.dark) .glass-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 15px 35px -5px rgba(99, 102, 241, 0.15);
+}
+
 /* Unique Aurora Text Gradients */
-.aurora-text {
+html.dark .aurora-text {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-fuchsia-300 to-cyan-300 font-extrabold;
 }
 
-.gold-luxury-text {
+html:not(.dark) .aurora-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 via-purple-700 to-cyan-700 font-extrabold;
+}
+
+html.dark .gold-luxury-text {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 font-extrabold;
 }
 
-.cyan-neon-text {
+html:not(.dark) .gold-luxury-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-700 via-yellow-700 to-amber-800 font-extrabold;
+}
+
+html.dark .cyan-neon-text {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 via-teal-200 to-emerald-300 font-extrabold;
+}
+
+html:not(.dark) .cyan-neon-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-700 via-teal-700 to-emerald-700 font-extrabold;
 }
 
 /* Unique Aurora Glowing Buttons */
@@ -83,6 +155,7 @@
   border: 1px solid rgba(255, 255, 255, 0.25);
   box-shadow: 0 10px 25px -5px rgba(168, 85, 247, 0.4);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #ffffff !important;
 }
 
 .aurora-button:hover {
@@ -91,14 +164,109 @@
   transform: translateY(-2px);
 }
 
+/* LIGHT MODE AUTOMATIC HIGH CONTRAST TEXT RULES */
+html:not(.dark) .aurora-glass-panel,
+html:not(.dark) .aurora-card,
+html:not(.dark) .glass-panel,
+html:not(.dark) .glass-card {
+  color: #0f172a;
+}
+
+/* Override light slate/white text classes in light mode for readability */
+html:not(.dark) .aurora-glass-panel .text-white,
+html:not(.dark) .aurora-card .text-white,
+html:not(.dark) .glass-panel .text-white,
+html:not(.dark) .glass-card .text-white {
+  color: #0f172a;
+}
+
+html:not(.dark) .aurora-glass-panel .text-slate-100,
+html:not(.dark) .aurora-card .text-slate-100,
+html:not(.dark) .glass-panel .text-slate-100,
+html:not(.dark) .glass-card .text-slate-100,
+html:not(.dark) .aurora-glass-panel .text-slate-200,
+html:not(.dark) .aurora-card .text-slate-200,
+html:not(.dark) .glass-panel .text-slate-200,
+html:not(.dark) .glass-card .text-slate-200,
+html:not(.dark) .aurora-glass-panel .text-slate-300,
+html:not(.dark) .aurora-card .text-slate-300,
+html:not(.dark) .glass-panel .text-slate-300,
+html:not(.dark) .glass-card .text-slate-300 {
+  color: #1e293b;
+}
+
+html:not(.dark) .aurora-glass-panel .text-slate-400,
+html:not(.dark) .aurora-card .text-slate-400,
+html:not(.dark) .glass-panel .text-slate-400,
+html:not(.dark) .glass-card .text-slate-400 {
+  color: #475569;
+}
+
+/* Bright high-contrast badge text colors in Light Mode */
+html:not(.dark) .text-cyan-300,
+html:not(.dark) .text-cyan-200,
+html:not(.dark) .text-cyan-100 {
+  color: #0369a1;
+}
+
+html:not(.dark) .text-fuchsia-300,
+html:not(.dark) .text-fuchsia-200,
+html:not(.dark) .text-fuchsia-100 {
+  color: #a21caf;
+}
+
+html:not(.dark) .text-amber-300,
+html:not(.dark) .text-amber-200,
+html:not(.dark) .text-amber-100 {
+  color: #b45309;
+}
+
+html:not(.dark) .text-emerald-300,
+html:not(.dark) .text-emerald-200,
+html:not(.dark) .text-emerald-100 {
+  color: #047857;
+}
+
+html:not(.dark) .text-indigo-300,
+html:not(.dark) .text-indigo-200,
+html:not(.dark) .text-indigo-100 {
+  color: #4338ca;
+}
+
+html:not(.dark) .text-purple-300,
+html:not(.dark) .text-purple-200,
+html:not(.dark) .text-purple-100 {
+  color: #7e22ce;
+}
+
+/* Ensure solid/gradient buttons keep crisp white text in Light Mode */
+html:not(.dark) button.text-white,
+html:not(.dark) a.text-white,
+html:not(.dark) .btn-white,
+html:not(.dark) .bg-gradient-to-r .text-white,
+html:not(.dark) .bg-gradient-to-tr .text-white,
+html:not(.dark) .bg-brand-600,
+html:not(.dark) .bg-fuchsia-600,
+html:not(.dark) .bg-indigo-600,
+html:not(.dark) .bg-emerald-600,
+html:not(.dark) .bg-purple-600,
+html:not(.dark) .bg-amber-600,
+html:not(.dark) .bg-cyan-600 {
+  color: #ffffff !important;
+}
+
 /* Custom scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
-::-webkit-scrollbar-track {
+html.dark ::-webkit-scrollbar-track {
   background: #040612;
+}
+
+html:not(.dark) ::-webkit-scrollbar-track {
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
