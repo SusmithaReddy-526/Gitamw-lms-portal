@@ -23,7 +23,8 @@ import {
   Zap,
   FolderPlus,
   ClipboardList,
-  Calendar
+  Calendar,
+  Bell
 } from 'lucide-react';
 
 const BRANCH_ICONS = {
