@@ -1191,14 +1191,14 @@ const OFFICIAL_DEFAULT_ADMINS = [
     designation: 'Chairman'
   },
   {
-    id: 'admin-codirector',
-    fullName: 'Co Director',
-    username: 'codirector_gitamw',
-    email: 'codirector@gitamw.ac.in',
-    password: 'CoDirector#GITAMW',
+    id: 'admin-director',
+    fullName: 'Director',
+    username: 'director_gitamw',
+    email: 'director@gitamw.ac.in',
+    password: 'Director#GITAMW',
     role: 'admin',
     department: 'Directorate',
-    designation: 'Co Director'
+    designation: 'Director'
   },
   {
     id: 'admin-examcell',
@@ -1439,7 +1439,7 @@ export const dbService = {
 
   // --- ADMIN REGISTRATION RESTRICTED ---
   registerAdmin: () => {
-    throw new Error('Wrong Credentials / Registration Restricted: Admin access is exclusively reserved for Principal, Chairman, Co Director, and Examcell.');
+    throw new Error('Wrong Credentials / Registration Restricted: Admin access is exclusively reserved for Principal, Chairman, Director, and Examcell.');
   },
 
   // --- USER LOGIN ---

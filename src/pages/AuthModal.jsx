@@ -738,25 +738,25 @@ export function AuthModal({ isOpen, onClose, initialRole = 'student', onSuccess 
                         <div className="text-slate-300 text-[10px] mt-1">User: <span className="text-cyan-300">chairman_gitamw</span></div>
                       </div>
 
-                      {/* Co Director */}
+                      {/* Director */}
                       <div 
                         onClick={() => { 
-                          setLoginUsername('codirector_gitamw'); 
+                          setLoginUsername('director_gitamw'); 
                           setLoginPassword(''); 
                           setError(''); 
                           document.getElementById('admin-password-input')?.focus();
                         }}
                         className={`p-3 rounded-xl border transition-all cursor-pointer ${
-                          loginUsername === 'codirector_gitamw'
+                          loginUsername === 'director_gitamw'
                             ? 'bg-amber-500/20 border-amber-400 shadow-md ring-2 ring-amber-400/30'
                             : 'bg-slate-900/90 border-amber-500/20 hover:border-amber-400 hover:scale-[1.02]'
                         }`}
                       >
                         <div className="font-extrabold text-white font-outfit text-xs flex items-center justify-between">
-                          <span>🏢 Co Director</span>
-                          {loginUsername === 'codirector_gitamw' && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                          <span>🏢 Director</span>
+                          {loginUsername === 'director_gitamw' && <Check className="w-3.5 h-3.5 text-amber-400" />}
                         </div>
-                        <div className="text-slate-300 text-[10px] mt-1">User: <span className="text-cyan-300">codirector_gitamw</span></div>
+                        <div className="text-slate-300 text-[10px] mt-1">User: <span className="text-cyan-300">director_gitamw</span></div>
                       </div>
 
                       {/* Examcell */}
