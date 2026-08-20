@@ -167,7 +167,7 @@ function MainContent() {
         return user ? <ProfilePage /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />;
 
       case 'downloads':
-        return user?.role === 'admin' ? <AdminPanel /> : (user ? <DownloadsPage user={user} onSelectTopic={handleOpenTopic} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />);
+        return user?.role === 'admin' ? <AdminPanel /> : (user?.role === 'faculty' ? <FacultyDashboard user={user} /> : (user ? <DownloadsPage user={user} onSelectTopic={handleOpenTopic} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />));
 
       case 'attendance':
         return user?.role === 'admin' ? <AdminPanel /> : (user ? <AttendancePage user={user} /> : <LandingPage onOpenAuth={handleOpenAuth} onSelectYear={handleSelectYear} user={user} />);

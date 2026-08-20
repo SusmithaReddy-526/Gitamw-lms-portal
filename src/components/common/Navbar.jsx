@@ -33,7 +33,7 @@ export function Navbar({ activeTab, setActiveTab }) {
     { id: 'subjects', label: 'Subjects', icon: BookOpen, requiresAuth: true },
     { id: 'attendance', label: 'Attendance', icon: UserCheck, requiresAuth: true, hideForAdmin: true },
     { id: 'search', label: 'Search', icon: Search, hideForAdmin: true },
-    { id: 'downloads', label: 'Downloads', icon: Download, requiresAuth: true, hideForAdmin: true },
+    { id: 'downloads', label: 'Downloads', icon: Download, requiresAuth: true, hideForAdmin: true, hideForFaculty: true },
   ];
 
   if (user?.role === 'admin') {
@@ -42,6 +42,7 @@ export function Navbar({ activeTab, setActiveTab }) {
   }
 
   if (user?.role === 'faculty') {
+    navItems = navItems.filter(item => !item.hideForFaculty);
     navItems.push({ id: 'faculty-portal', label: 'Faculty Upload', icon: Sparkles });
   }
 

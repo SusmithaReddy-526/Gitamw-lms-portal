@@ -384,6 +384,22 @@ export function FacultyDashboard({ user }) {
     reader.readAsDataURL(fileObject);
   };
 
+  const handleSpeakerImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setAnnError('Speaker photo file size must be under 5MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        setAnnImage(reader.result);
+        setAnnError('');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handlePublishAnnouncement = (e) => {
     e.preventDefault();
     setAnnMessage('');
@@ -1821,15 +1837,21 @@ export function FacultyDashboard({ user }) {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Speaker Image URL / Photo Link
+                    📷 Chief Guest / Speaker Photo Upload (File)
                   </label>
                   <input
-                    type="url"
-                    placeholder="https://..."
-                    value={annImage}
-                    onChange={e => setAnnImage(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSpeakerImageChange}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-500 cursor-pointer outline-none focus:ring-2 focus:ring-amber-500"
                   />
+                  {annImage && (
+                    <div className="mt-2 flex items-center gap-2 p-1.5 rounded-xl bg-slate-900/60 border border-amber-500/30">
+                      <img src={annImage} alt="Speaker Preview" className="w-9 h-9 rounded-lg object-cover border border-amber-400" />
+                      <span className="text-[10px] text-emerald-400 font-bold">✓ Photo Attached</span>
+                      <button type="button" onClick={() => setAnnImage('')} className="text-[10px] text-rose-400 hover:underline font-bold ml-auto px-2">Remove</button>
+                    </div>
+                  )}
                 </div>
               </div>
 
