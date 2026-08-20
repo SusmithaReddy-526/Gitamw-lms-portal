@@ -18,7 +18,57 @@ const STORAGE_KEYS = {
   REGISTERED_ROLES: 'gitamw_lms_fresh_registered_roles_history'
 };
 
-// 4 Active Branches
+// Pre-seeded Official Department Faculty Accounts
+export const OFFICIAL_DEFAULT_FACULTY = [
+  {
+    id: 'fac-cse-01',
+    fullName: 'Dr. Vikram Sharma (HOD CSE)',
+    employeeId: 'EMP-CSE-01',
+    username: 'EMP-CSE-01',
+    role: 'faculty',
+    department: 'CSE',
+    branch: 'CSE',
+    email: 'faculty_cse@gitamw.edu.in',
+    mobile: '9876543210',
+    password: 'password123'
+  },
+  {
+    id: 'fac-aiml-01',
+    fullName: 'Dr. Anita Reddy (HOD AIML)',
+    employeeId: 'EMP-AIML-01',
+    username: 'EMP-AIML-01',
+    role: 'faculty',
+    department: 'AIML',
+    branch: 'AIML',
+    email: 'faculty_aiml@gitamw.edu.in',
+    mobile: '9876543211',
+    password: 'password123'
+  },
+  {
+    id: 'fac-ece-01',
+    fullName: 'Dr. K. Ramesh (HOD ECE)',
+    employeeId: 'EMP-ECE-01',
+    username: 'EMP-ECE-01',
+    role: 'faculty',
+    department: 'ECE',
+    branch: 'ECE',
+    email: 'faculty_ece@gitamw.edu.in',
+    mobile: '9876543212',
+    password: 'password123'
+  },
+  {
+    id: 'fac-eee-01',
+    fullName: 'Dr. S. Priya (HOD EEE)',
+    employeeId: 'EMP-EEE-01',
+    username: 'EMP-EEE-01',
+    role: 'faculty',
+    department: 'EEE',
+    branch: 'EEE',
+    email: 'faculty_eee@gitamw.edu.in',
+    mobile: '9876543213',
+    password: 'password123'
+  }
+];
 export const BRANCHES = [
   { id: 'CSE', name: 'Computer Science & Engineering', code: 'CSE', icon: 'Code', color: 'from-blue-500 to-indigo-600' },
   { id: 'AIML', name: 'Artificial Intelligence & Machine Learning', code: 'AIML', icon: 'Cpu', color: 'from-purple-500 to-pink-600' },
@@ -1208,9 +1258,23 @@ function initStorage() {
   ];
   oldKeys.forEach(k => safeRemoveItem(k));
 
-  if (!safeGetItem(STORAGE_KEYS.FACULTY)) {
-    safeSetItem(STORAGE_KEYS.FACULTY, JSON.stringify([]));
+  // Pre-seed official department faculty accounts
+  let currentFaculty = safeParse(STORAGE_KEYS.FACULTY, []);
+  let facultyUpdated = false;
+  OFFICIAL_DEFAULT_FACULTY.forEach(defFac => {
+    const exists = currentFaculty.some(f => 
+      (f.username || '').toLowerCase() === defFac.username.toLowerCase() || 
+      (f.employeeId || '').toLowerCase() === defFac.employeeId.toLowerCase()
+    );
+    if (!exists) {
+      currentFaculty.push(defFac);
+      facultyUpdated = true;
+    }
+  });
+  if (facultyUpdated || !safeGetItem(STORAGE_KEYS.FACULTY)) {
+    safeSetItem(STORAGE_KEYS.FACULTY, JSON.stringify(currentFaculty));
   }
+
   if (!safeGetItem(STORAGE_KEYS.USERS)) {
     safeSetItem(STORAGE_KEYS.USERS, JSON.stringify([]));
   }
@@ -1274,7 +1338,14 @@ export const dbService = {
   },
 
   getFacultyList: () => {
-    return safeParse(STORAGE_KEYS.FACULTY, []);
+    const stored = safeParse(STORAGE_KEYS.FACULTY, []);
+    const merged = [...stored];
+    OFFICIAL_DEFAULT_FACULTY.forEach(def => {
+      if (!merged.some(f => (f.username || '').toLowerCase() === def.username.toLowerCase() || (f.employeeId || '').toLowerCase() === def.employeeId.toLowerCase())) {
+        merged.push(def);
+      }
+    });
+    return merged;
   },
 
   getOfficialAdmins: () => OFFICIAL_DEFAULT_ADMINS,
@@ -1429,10 +1500,10 @@ export const dbService = {
     }
 
     // Check Faculty
-    const faculty = JSON.parse(localStorage.getItem(STORAGE_KEYS.FACULTY) || '[]');
+    const faculty = dbService.getFacultyList();
     const foundFaculty = faculty.find(f => 
-      (f.username.toLowerCase() === cleanUser || f.email.toLowerCase() === cleanUser || f.employeeId.toLowerCase() === cleanUser) && 
-      f.password === cleanPass
+      ((f.username || '').toLowerCase() === cleanUser || (f.email || '').toLowerCase() === cleanUser || (f.employeeId || '').toLowerCase() === cleanUser) && 
+      (f.password === password || f.password === cleanPass)
     );
     if (foundFaculty) return foundFaculty;
 

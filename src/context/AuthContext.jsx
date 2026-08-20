@@ -26,14 +26,26 @@ export function AuthProvider({ children }) {
       try {
         const students = dbService.getStudentsList();
         const faculty = dbService.getFacultyList();
-        const exists = students.some(s => s.username === user.username) || faculty.some(f => f.username === user.username);
+        const cleanUser = (user.username || '').toLowerCase().trim();
+        const cleanEmpId = (user.employeeId || '').toLowerCase().trim();
+        const cleanRoll = (user.rollNumber || '').toString().toLowerCase().trim();
+
+        const exists = students.some(s => 
+          (s.username || '').toLowerCase().trim() === cleanUser || 
+          (s.rollNumber || '').toString().toLowerCase().trim() === cleanUser ||
+          (cleanRoll && (s.rollNumber || '').toString().toLowerCase().trim() === cleanRoll)
+        ) || faculty.some(f => 
+          (f.username || '').toLowerCase().trim() === cleanUser || 
+          (f.employeeId || '').toLowerCase().trim() === cleanUser ||
+          (cleanEmpId && (f.employeeId || '').toLowerCase().trim() === cleanEmpId)
+        );
+
         if (!exists) {
           setUser(null);
           sessionStorage.removeItem(SESSION_KEY);
         }
       } catch {
-        setUser(null);
-        sessionStorage.removeItem(SESSION_KEY);
+        // Safe fallback - keep existing session active if DB lookup warning occurs
       }
     }
   }, []);
