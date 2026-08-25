@@ -421,16 +421,7 @@ const INITIAL_CURRICULUM = [
     semester: 'Sem 7',
     units: standardUnits
   },
-  {
-    yearId: '4th',
-    branchId: 'AIML',
-    subjectId: '23a52703_aiml',
-    subjectName: 'Employability Skills',
-    subjectCode: '23A52703',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: standardUnits
-  },
+
   {
     yearId: '4th',
     branchId: 'AIML',
@@ -513,16 +504,7 @@ const INITIAL_CURRICULUM = [
     semester: 'Sem 7',
     units: standardUnits
   },
-  {
-    yearId: '4th',
-    branchId: 'CSE',
-    subjectId: '23a52703_cse',
-    subjectName: 'Employability Skills',
-    subjectCode: '23A52703',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: standardUnits
-  },
+
 
   // --- 6. 3RD YEAR ECE (SEM 5) STRICT USER SUBJECTS ---
   {
@@ -749,16 +731,7 @@ const INITIAL_CURRICULUM = [
     semester: 'Sem 7',
     units: standardUnits
   },
-  {
-    yearId: '4th',
-    branchId: 'ECE',
-    subjectId: '23a52703_4th_ece',
-    subjectName: 'Employability Skills',
-    subjectCode: '23A52703',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: standardUnits
-  },
+
   {
     yearId: '4th',
     branchId: 'ECE',
@@ -841,16 +814,7 @@ const INITIAL_CURRICULUM = [
     semester: 'Sem 7',
     units: standardUnits
   },
-  {
-    yearId: '4th',
-    branchId: 'EEE',
-    subjectId: '23a52703_4th_eee',
-    subjectName: 'Employability Skills',
-    subjectCode: '23A52703',
-    sem: 'Sem 7',
-    semester: 'Sem 7',
-    units: standardUnits
-  },
+
   {
     yearId: '4th',
     branchId: 'EEE',
