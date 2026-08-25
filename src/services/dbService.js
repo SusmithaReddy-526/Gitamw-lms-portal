@@ -83,13 +83,27 @@ export const YEARS = [
   { id: '4th', title: '4th Year', description: 'Deep Electives, IoT, Major Capstone Project & Internship', sem: ['Sem 7', 'Sem 8'] }
 ];
 
-// Standard 5 Units helper
+// Standard 5 Units helper for Theory Subjects
 const standardUnits = [
   { unitId: 'unit-1', title: 'Unit-1' },
   { unitId: 'unit-2', title: 'Unit-2' },
   { unitId: 'unit-3', title: 'Unit-3' },
   { unitId: 'unit-4', title: 'Unit-4' },
   { unitId: 'unit-5', title: 'Unit-5' }
+];
+
+// Standard 10 Weeks helper for Lab & Practical Subjects
+const standardLabWeeks = [
+  { unitId: 'week-1', title: 'Week 1' },
+  { unitId: 'week-2', title: 'Week 2' },
+  { unitId: 'week-3', title: 'Week 3' },
+  { unitId: 'week-4', title: 'Week 4' },
+  { unitId: 'week-5', title: 'Week 5' },
+  { unitId: 'week-6', title: 'Week 6' },
+  { unitId: 'week-7', title: 'Week 7' },
+  { unitId: 'week-8', title: 'Week 8' },
+  { unitId: 'week-9', title: 'Week 9' },
+  { unitId: 'week-10', title: 'Week 10' }
 ];
 
 // Pre-seeded Campus Announcements
@@ -498,11 +512,11 @@ const INITIAL_CURRICULUM = [
     yearId: '4th',
     branchId: 'CSE',
     subjectId: '23a05703_cse',
-    subjectName: 'Prompt Engineering',
-    subjectCode: '23A05703',
+    subjectName: 'Prompt Engineering Lab',
+    subjectCode: '23A05703P',
     sem: 'Sem 7',
     semester: 'Sem 7',
-    units: standardUnits
+    units: standardLabWeeks
   },
   {
     yearId: '4th',
@@ -1670,7 +1684,9 @@ export const dbService = {
       const isLab = sName.includes('lab') || sName.includes('laboratory') || sName.includes('practical') || sCode.endsWith('p') || sCode.includes('lab');
       return {
         ...item,
-        credits: isLab ? 1.5 : 3
+        isLab: isLab,
+        credits: isLab ? 1.5 : 3,
+        units: isLab ? standardLabWeeks : (item.units || standardUnits)
       };
     });
   },
@@ -1706,7 +1722,9 @@ export const dbService = {
       const isLab = sName.includes('lab') || sName.includes('laboratory') || sName.includes('practical') || sCode.endsWith('p') || sCode.includes('lab');
       return {
         ...item,
-        credits: isLab ? 1.5 : 3
+        isLab: isLab,
+        credits: isLab ? 1.5 : 3,
+        units: isLab ? standardLabWeeks : (item.units || standardUnits)
       };
     });
   },

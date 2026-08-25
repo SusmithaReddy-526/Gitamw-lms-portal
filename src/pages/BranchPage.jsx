@@ -40,6 +40,10 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
     }
   };
 
+  const sName = (selectedSubject?.subjectName || '').toLowerCase();
+  const sCode = (selectedSubject?.subjectCode || '').toLowerCase();
+  const isLabSubject = selectedSubject?.isLab || sName.includes('lab') || sName.includes('laboratory') || sName.includes('practical') || sCode.endsWith('p') || sCode.includes('lab');
+
   const standardUnits = [
     { unitId: 'unit-1', name: 'Unit-1' },
     { unitId: 'unit-2', name: 'Unit-2' },
@@ -47,6 +51,21 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
     { unitId: 'unit-4', name: 'Unit-4' },
     { unitId: 'unit-5', name: 'Unit-5' }
   ];
+
+  const standardLabWeeks = [
+    { unitId: 'week-1', name: 'Week 1' },
+    { unitId: 'week-2', name: 'Week 2' },
+    { unitId: 'week-3', name: 'Week 3' },
+    { unitId: 'week-4', name: 'Week 4' },
+    { unitId: 'week-5', name: 'Week 5' },
+    { unitId: 'week-6', name: 'Week 6' },
+    { unitId: 'week-7', name: 'Week 7' },
+    { unitId: 'week-8', name: 'Week 8' },
+    { unitId: 'week-9', name: 'Week 9' },
+    { unitId: 'week-10', name: 'Week 10' }
+  ];
+
+  const activeCardsList = isLabSubject ? standardLabWeeks : standardUnits;
 
   // Subject Quizzes list
   const subjectQuizzes = selectedSubject 
@@ -181,24 +200,33 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
           )}
         </div>
       ) : (
-        /* STEP 2: STRICT CLEAN 6 CARDS (Unit-1, Unit-2, Unit-3, Unit-4, Unit-5 AND QUIZ CARD) */
+        /* STEP 2: DYNAMIC CARDS (Week 1-10 for Labs, Unit 1-5 for Theory + QUIZ CARD) */
         <div className="space-y-6">
           <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-2">
-            <span className="px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 text-xs font-bold font-mono">
-              {selectedSubject.subjectCode}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 text-xs font-bold font-mono">
+                {selectedSubject.subjectCode}
+              </span>
+              {isLabSubject && (
+                <span className="px-3 py-1 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-extrabold font-mono">
+                  🧪 LAB EXPERIMENT PORTAL
+                </span>
+              )}
+            </div>
             <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white font-outfit">
               {selectedSubject.subjectName}
             </h2>
             <p className="text-xs text-slate-500">
-              Select Unit 1-5 for PDF notes or click QUIZ card to participate in faculty published online quizzes.
+              {isLabSubject 
+                ? 'Select Week 1 to Week 10 to view or upload lab manuals, experiment code & lab materials, or click QUIZ card for lab tests.' 
+                : 'Select Unit 1-5 for PDF notes or click QUIZ card to participate in faculty published online quizzes.'}
             </p>
           </div>
 
-          {/* 6 CARDS GRID: 5 UNIT CARDS + 1 QUIZ CARD */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
-            {/* UNIT 1 TO UNIT 5 CARDS */}
-            {standardUnits.map((uItem) => {
+          {/* CARDS GRID: 10 WEEK CARDS OR 5 UNIT CARDS + 1 QUIZ CARD */}
+          <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${isLabSubject ? 'lg:grid-cols-5' : 'lg:grid-cols-6'} gap-5`}>
+            {/* WEEK OR UNIT CARDS */}
+            {activeCardsList.map((uItem) => {
               const matchingUnit = selectedSubject.units?.find(
                 u => u.unitId === uItem.unitId || u.title.toLowerCase().includes(uItem.name.toLowerCase())
               ) || { unitId: uItem.unitId, title: uItem.name, topics: [] };
@@ -210,7 +238,7 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
                   onClick={() => onSelectUnitTopic(selectedSubject, matchingUnit)}
                 >
                   <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-600 dark:text-brand-400 font-extrabold mx-auto flex items-center justify-center text-lg shadow-inner group-hover:bg-brand-500 group-hover:text-white transition-colors">
+                    <div className={`w-12 h-12 rounded-2xl ${isLabSubject ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400 group-hover:bg-purple-600' : 'bg-brand-500/10 text-brand-600 dark:text-brand-400 group-hover:bg-brand-500'} font-extrabold mx-auto flex items-center justify-center text-lg shadow-inner group-hover:text-white transition-colors`}>
                       <FileText className="w-6 h-6" />
                     </div>
 
@@ -218,13 +246,13 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
                       {uItem.name}
                     </h3>
                     
-                    <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300">
-                      PDF Reference Files
+                    <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold ${isLabSubject ? 'bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-300' : 'bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-300'}`}>
+                      {isLabSubject ? '🧪 Lab Manual & Code' : '📄 PDF Reference Files'}
                     </span>
                   </div>
 
-                  <div className="mt-6 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-1.5 text-xs font-bold text-brand-500 group-hover:translate-x-0.5 transition-transform">
-                    <span>Open PDF Notes</span>
+                  <div className={`mt-6 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-1.5 text-xs font-bold ${isLabSubject ? 'text-purple-600 dark:text-purple-400' : 'text-brand-500'} group-hover:translate-x-0.5 transition-transform`}>
+                    <span>{isLabSubject ? 'Open Lab Experiment' : 'Open PDF Notes'}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </div>
                 </div>

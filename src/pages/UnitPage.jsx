@@ -138,7 +138,7 @@ export function UnitPage({ subject, unit, user, onBack }) {
           className="flex items-center gap-2 px-4 py-2 rounded-xl glass-card text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Units
+          Back to Subject
         </button>
 
         <span className="px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-950 text-brand-600 dark:text-brand-400 text-xs font-bold uppercase">
@@ -158,12 +158,12 @@ export function UnitPage({ subject, unit, user, onBack }) {
             <span>{savedMessage}</span>
           </div>
           <span className="text-[10px] font-black uppercase bg-white/20 px-2 py-0.5 rounded-full">
-            Saved to Downloads
+            DOWNLOADS
           </span>
         </motion.div>
       )}
 
-      {/* Unit Title Banner */}
+      {/* Unit / Week Title Banner */}
       <div className="p-8 rounded-3xl glass-panel border border-slate-200 dark:border-slate-800 space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 text-brand-500 text-xs font-semibold">
           <BookOpen className="w-4 h-4" />
@@ -173,7 +173,9 @@ export function UnitPage({ subject, unit, user, onBack }) {
           {displayUnitName}
         </h2>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          View or Download faculty uploaded PDF reference materials directly into your personal Downloads Dashboard.
+          {displayUnitName.toLowerCase().includes('week')
+            ? 'View or Download faculty uploaded lab manuals, experiment code scripts & lab reference materials directly into your personal Downloads Dashboard.'
+            : 'View or Download faculty uploaded PDF reference materials directly into your personal Downloads Dashboard.'}
         </p>
       </div>
 

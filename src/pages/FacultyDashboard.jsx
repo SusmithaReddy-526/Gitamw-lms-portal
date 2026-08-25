@@ -972,19 +972,36 @@ export function FacultyDashboard({ user }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Target Syllabus Unit *
+                    {(subjectName.toLowerCase().includes('lab') || subjectName.toLowerCase().includes('laboratory') || subjectName.toLowerCase().includes('practical') || subjectCode.toLowerCase().endsWith('p')) ? 'Target Lab Week *' : 'Target Syllabus Unit *'}
                   </label>
                   <select
                     value={unitTitle}
                     onChange={e => setUnitTitle(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-brand-600 focus:ring-2 focus:ring-brand-500 outline-none"
                   >
-                    <option value="">-- Select Target Unit --</option>
-                    <option value="Unit-1">Unit-1</option>
-                    <option value="Unit-2">Unit-2</option>
-                    <option value="Unit-3">Unit-3</option>
-                    <option value="Unit-4">Unit-4</option>
-                    <option value="Unit-5">Unit-5</option>
+                    <option value="">-- {(subjectName.toLowerCase().includes('lab') || subjectName.toLowerCase().includes('laboratory') || subjectName.toLowerCase().includes('practical') || subjectCode.toLowerCase().endsWith('p')) ? 'Select Target Week (1-10)' : 'Select Target Unit (1-5)'} --</option>
+                    {(subjectName.toLowerCase().includes('lab') || subjectName.toLowerCase().includes('laboratory') || subjectName.toLowerCase().includes('practical') || subjectCode.toLowerCase().endsWith('p')) ? (
+                      <>
+                        <option value="Week 1">Week 1</option>
+                        <option value="Week 2">Week 2</option>
+                        <option value="Week 3">Week 3</option>
+                        <option value="Week 4">Week 4</option>
+                        <option value="Week 5">Week 5</option>
+                        <option value="Week 6">Week 6</option>
+                        <option value="Week 7">Week 7</option>
+                        <option value="Week 8">Week 8</option>
+                        <option value="Week 9">Week 9</option>
+                        <option value="Week 10">Week 10</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="Unit-1">Unit-1</option>
+                        <option value="Unit-2">Unit-2</option>
+                        <option value="Unit-3">Unit-3</option>
+                        <option value="Unit-4">Unit-4</option>
+                        <option value="Unit-5">Unit-5</option>
+                      </>
+                    )}
                   </select>
                 </div>
 
@@ -2064,18 +2081,35 @@ export function FacultyDashboard({ user }) {
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                    Target Unit *
+                    {assignSubjectSelect.toLowerCase().includes('lab') ? 'Target Lab Week *' : 'Target Unit *'}
                   </label>
                   <select
                     value={assignUnitTitle}
                     onChange={e => setAssignUnitTitle(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-medium focus:ring-2 focus:ring-purple-500 outline-none"
                   >
-                    <option value="Unit-1">Unit 1</option>
-                    <option value="Unit-2">Unit 2</option>
-                    <option value="Unit-3">Unit 3</option>
-                    <option value="Unit-4">Unit 4</option>
-                    <option value="Unit-5">Unit 5</option>
+                    {assignSubjectSelect.toLowerCase().includes('lab') ? (
+                      <>
+                        <option value="Week 1">Week 1</option>
+                        <option value="Week 2">Week 2</option>
+                        <option value="Week 3">Week 3</option>
+                        <option value="Week 4">Week 4</option>
+                        <option value="Week 5">Week 5</option>
+                        <option value="Week 6">Week 6</option>
+                        <option value="Week 7">Week 7</option>
+                        <option value="Week 8">Week 8</option>
+                        <option value="Week 9">Week 9</option>
+                        <option value="Week 10">Week 10</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="Unit-1">Unit 1</option>
+                        <option value="Unit-2">Unit 2</option>
+                        <option value="Unit-3">Unit 3</option>
+                        <option value="Unit-4">Unit 4</option>
+                        <option value="Unit-5">Unit 5</option>
+                      </>
+                    )}
                   </select>
                 </div>
               </div>
