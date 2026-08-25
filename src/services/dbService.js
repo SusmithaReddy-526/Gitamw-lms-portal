@@ -435,6 +435,16 @@ const INITIAL_CURRICULUM = [
   {
     yearId: '4th',
     branchId: 'AIML',
+    subjectId: '23a52703_4th_aiml',
+    subjectName: 'Employability Skills',
+    subjectCode: '23A52703',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'AIML',
     subjectId: '23a52703_lab',
     subjectName: 'Prompt Engineering Lab',
     subjectCode: '23A52703',
@@ -500,6 +510,16 @@ const INITIAL_CURRICULUM = [
     subjectId: '23a52702_cse',
     subjectName: 'Gender Sensitization',
     subjectCode: '23A52702',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'CSE',
+    subjectId: '23a52703_4th_cse',
+    subjectName: 'Employability Skills',
+    subjectCode: '23A52703',
     sem: 'Sem 7',
     semester: 'Sem 7',
     units: standardUnits
@@ -731,6 +751,16 @@ const INITIAL_CURRICULUM = [
     semester: 'Sem 7',
     units: standardUnits
   },
+  {
+    yearId: '4th',
+    branchId: 'ECE',
+    subjectId: '23a52703_4th_ece',
+    subjectName: 'Employability Skills',
+    subjectCode: '23A52703',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
 
   {
     yearId: '4th',
@@ -810,6 +840,16 @@ const INITIAL_CURRICULUM = [
     subjectId: '23a35501t_4th_eee',
     subjectName: 'Internet of Things',
     subjectCode: '23A35501T',
+    sem: 'Sem 7',
+    semester: 'Sem 7',
+    units: standardUnits
+  },
+  {
+    yearId: '4th',
+    branchId: 'EEE',
+    subjectId: '23a52703_4th_eee',
+    subjectName: 'Employability Skills',
+    subjectCode: '23A52703',
     sem: 'Sem 7',
     semester: 'Sem 7',
     units: standardUnits
