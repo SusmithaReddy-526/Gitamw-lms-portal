@@ -181,7 +181,11 @@ export function BranchPage({ selectedYear, selectedBranch, onSelectUnitTopic, on
                   </div>
 
                   <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-brand-500">
-                    <span>Open Unit-1 to Unit-5 & QUIZ</span>
+                    <span>
+                      {(subject.subjectName || '').toLowerCase().includes('lab') || (subject.subjectName || '').toLowerCase().includes('laboratory') || (subject.subjectCode || '').toLowerCase().endsWith('p')
+                        ? 'Open Week 1 to Week 10 & QUIZ'
+                        : 'Open Unit-1 to Unit-5 & QUIZ'}
+                    </span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </motion.div>
