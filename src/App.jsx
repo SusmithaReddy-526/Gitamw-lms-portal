@@ -35,6 +35,18 @@ function MainContent() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalRole, setAuthModalRole] = useState('student');
 
+  // Dynamic Favicon setup for browser tab
+  useEffect(() => {
+    let link = document.querySelector("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.getElementsByTagName('head')[0].appendChild(link);
+    }
+    link.type = 'image/png';
+    link.href = `${import.meta.env.BASE_URL}gitamw_logo.png`;
+  }, []);
+
   // Auto-route on login status change
   useEffect(() => {
     if (user) {
